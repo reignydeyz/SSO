@@ -10,15 +10,40 @@ namespace SSO.Business.Authentication.Handlers
     public class LoginQueryHandler : IRequestHandler<LoginQuery, string>
     {
         private readonly IAuthenticationService _authenticationService;
+        private readonly IUserManagementService _userManagementService;
+        private readonly IUserRoleManagementService _userRoleManagementService;
 
-        public LoginQueryHandler(IAuthenticationService authenticationService)
+        public LoginQueryHandler(IAuthenticationService authenticationService, IUserManagementService userManagementService, IUserRoleManagementService userRoleManagementService)
         {
             _authenticationService = authenticationService;
+            _userManagementService = userManagementService;
+            _userRoleManagementService = userRoleManagementService;
         }
 
         public async Task<string> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
             await _authenticationService.Login(request.Username, request.Password);
+
+            var user = await _userManagementService.GetByEmail(request.Username);
+            var roles = await _userRoleManagementService.Roles(request.Username);
+            
+            if (request.ApplicationId.HasValue)
+            {
+                if (!roles.Any(x => x.ApplicationId == request.ApplicationId))
+                    throw new UnauthorizedAccessException();
+
+                // Apply roles for the specific application
+                roles = roles.Where(x => x.ApplicationId == request.ApplicationId);
+            }
+            else
+            {
+                // Check root access
+                if (!roles.Any(x => x.Application.Name == "root"))
+                    throw new UnauthorizedAccessException();
+
+                // Apply roles for root
+                roles = roles.Where(x => x.Application.Name == "root");
+            }
 
             // TODO: Generate access token
             var token = string.Empty;

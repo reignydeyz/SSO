@@ -19,7 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain", "SSO.Domain\SS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Infrastructure", "SSO.Infrastructure\SSO.Infrastructure.csproj", "{DA2CA364-5B95-4CAA-9A8D-E6075DE5F022}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Infrastructure.Authentication", "SSO.Infrastructure.Authentication\SSO.Infrastructure.Authentication.csproj", "{2AFB1C75-3178-40E5-9600-818C06C114D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Infrastructure.Authentication", "SSO.Infrastructure.Authentication\SSO.Infrastructure.Authentication.csproj", "{2AFB1C75-3178-40E5-9600-818C06C114D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Infrastructure.UserManagement", "SSO.Infrastructure.UserManagement\SSO.Infrastructure.UserManagement.csproj", "{A26D71D6-E312-48D4-B743-53F7ACF9A792}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Infrastructure.Management", "SSO.Infrastructure.Management\SSO.Infrastructure.Management.csproj", "{BC9F771F-349D-4C96-807F-541B887E6606}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +51,14 @@ Global
 		{2AFB1C75-3178-40E5-9600-818C06C114D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AFB1C75-3178-40E5-9600-818C06C114D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AFB1C75-3178-40E5-9600-818C06C114D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A26D71D6-E312-48D4-B743-53F7ACF9A792}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A26D71D6-E312-48D4-B743-53F7ACF9A792}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A26D71D6-E312-48D4-B743-53F7ACF9A792}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A26D71D6-E312-48D4-B743-53F7ACF9A792}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC9F771F-349D-4C96-807F-541B887E6606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC9F771F-349D-4C96-807F-541B887E6606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC9F771F-349D-4C96-807F-541B887E6606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC9F771F-349D-4C96-807F-541B887E6606}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +69,8 @@ Global
 		{0B88FD78-0F85-482B-896B-7DB4B61CB2F2} = {EBC5C63E-D7FB-4D64-B85F-5CD5B739EAAD}
 		{DA2CA364-5B95-4CAA-9A8D-E6075DE5F022} = {78213346-AF3E-4D9C-B07F-698FFD328835}
 		{2AFB1C75-3178-40E5-9600-818C06C114D7} = {78213346-AF3E-4D9C-B07F-698FFD328835}
+		{A26D71D6-E312-48D4-B743-53F7ACF9A792} = {78213346-AF3E-4D9C-B07F-698FFD328835}
+		{BC9F771F-349D-4C96-807F-541B887E6606} = {78213346-AF3E-4D9C-B07F-698FFD328835}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEACCE13-B4FB-4B39-96F8-77FAB0425877}

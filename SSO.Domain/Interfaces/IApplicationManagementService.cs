@@ -1,6 +1,8 @@
-﻿namespace SSO.Domain.Interfaces
+﻿using SSO.Domain.Models;
+
+namespace SSO.Domain.Interfaces
 {
-    public interface IApplicationManagementService
+    public interface IApplicationManagementService : IRepository<Application>
     {
     }
 }
