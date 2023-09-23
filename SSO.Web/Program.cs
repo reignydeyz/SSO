@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SSO.Entities;
+using SSO.Domain.Models;
+using SSO.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 

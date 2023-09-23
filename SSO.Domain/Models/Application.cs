@@ -1,4 +1,4 @@
-﻿namespace SSO.Entities
+﻿namespace SSO.Domain.Models
 {
     public class Application
     {

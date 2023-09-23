@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using SSO.Entities.Configs;
+using SSO.Domain.Models;
+using SSO.Infrastructure.Configs;
 
-namespace SSO.Entities
+namespace SSO.Infrastructure
 {
     public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {

@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SSO.Entities;
+using SSO.Infrastructure;
 
 #nullable disable
 
-namespace SSO.Entities.Migrations
+namespace SSO.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230923024625_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,7 +131,7 @@ namespace SSO.Entities.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("SSO.Entities.Application", b =>
+            modelBuilder.Entity("SSO.Domain.Models.Application", b =>
                 {
                     b.Property<Guid>("ApplicationId")
                         .ValueGeneratedOnAdd()
@@ -171,7 +174,7 @@ namespace SSO.Entities.Migrations
                     b.ToTable("Applications");
                 });
 
-            modelBuilder.Entity("SSO.Entities.ApplicationRole", b =>
+            modelBuilder.Entity("SSO.Domain.Models.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -207,7 +210,7 @@ namespace SSO.Entities.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
-            modelBuilder.Entity("SSO.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("SSO.Domain.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -274,7 +277,7 @@ namespace SSO.Entities.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("SSO.Entities.ApplicationRole", null)
+                    b.HasOne("SSO.Domain.Models.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -283,7 +286,7 @@ namespace SSO.Entities.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("SSO.Entities.ApplicationUser", null)
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -292,7 +295,7 @@ namespace SSO.Entities.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("SSO.Entities.ApplicationUser", null)
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -301,13 +304,13 @@ namespace SSO.Entities.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("SSO.Entities.ApplicationRole", null)
+                    b.HasOne("SSO.Domain.Models.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SSO.Entities.ApplicationUser", null)
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -316,16 +319,16 @@ namespace SSO.Entities.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("SSO.Entities.ApplicationUser", null)
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SSO.Entities.ApplicationRole", b =>
+            modelBuilder.Entity("SSO.Domain.Models.ApplicationRole", b =>
                 {
-                    b.HasOne("SSO.Entities.Application", "Application")
+                    b.HasOne("SSO.Domain.Models.Application", "Application")
                         .WithMany()
                         .HasForeignKey("ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)

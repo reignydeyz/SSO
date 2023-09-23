@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Models;
 
-namespace SSO.Entities.Configs
+namespace SSO.Infrastructure.Configs
 {
     public class ApplicationConfig : IEntityTypeConfiguration<Application>
     {

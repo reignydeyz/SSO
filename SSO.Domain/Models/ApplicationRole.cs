@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace SSO.Entities
+namespace SSO.Domain.Models
 {
     public class ApplicationRole : IdentityRole
     {

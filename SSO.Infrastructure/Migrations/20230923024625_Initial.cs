@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace SSO.Entities.Migrations
+namespace SSO.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
