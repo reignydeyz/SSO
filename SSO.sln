@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain", "SSO.Domain\SS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Infrastructure", "SSO.Infrastructure\SSO.Infrastructure.csproj", "{DA2CA364-5B95-4CAA-9A8D-E6075DE5F022}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Infrastructure.Authentication", "SSO.Infrastructure.Authentication\SSO.Infrastructure.Authentication.csproj", "{2AFB1C75-3178-40E5-9600-818C06C114D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{DA2CA364-5B95-4CAA-9A8D-E6075DE5F022}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA2CA364-5B95-4CAA-9A8D-E6075DE5F022}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA2CA364-5B95-4CAA-9A8D-E6075DE5F022}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AFB1C75-3178-40E5-9600-818C06C114D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AFB1C75-3178-40E5-9600-818C06C114D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AFB1C75-3178-40E5-9600-818C06C114D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AFB1C75-3178-40E5-9600-818C06C114D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +56,7 @@ Global
 		{FC6666C1-4201-4E0D-8F82-C8CF17CD2594} = {9DA30341-B87B-426C-8782-5F025275621C}
 		{0B88FD78-0F85-482B-896B-7DB4B61CB2F2} = {EBC5C63E-D7FB-4D64-B85F-5CD5B739EAAD}
 		{DA2CA364-5B95-4CAA-9A8D-E6075DE5F022} = {78213346-AF3E-4D9C-B07F-698FFD328835}
+		{2AFB1C75-3178-40E5-9600-818C06C114D7} = {78213346-AF3E-4D9C-B07F-698FFD328835}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEACCE13-B4FB-4B39-96F8-77FAB0425877}

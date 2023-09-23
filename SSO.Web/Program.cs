@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SSO.Business.Authentication.Handlers;
 using SSO.Domain.Models;
 using SSO.Infrastructure;
+using AuthenticationService = SSO.Infrastructure.Authentication.AuthenticationService;
+using IAuthService = SSO.Domain.Interfaces.IAuthenticationService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +17,18 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginQueryHandler>());
+
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<IAuthService, AuthenticationService>();
 
 var app = builder.Build();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

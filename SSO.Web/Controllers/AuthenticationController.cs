@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SSO.Business.Forms;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using SSO.Business.Authentication.Queries;
 
 namespace SSO.Web.Controllers
 {
@@ -7,16 +8,32 @@ namespace SSO.Web.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        [HttpPost]
-        public IActionResult Post([FromBody] LoginForm form)
+        private readonly IMediator _mediator;
+
+        public AuthenticationController(IMediator mediator)
         {
-            return Ok();
+            _mediator = mediator;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        /// <summary>
+        /// Gets access token
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> Post([FromBody] LoginQuery form)
         {
-            return Ok();
+            try
+            {
+                var res = await _mediator.Send(form);
+
+                return Ok(res);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
         }
     }
 }

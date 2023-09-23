@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MediatR;
+using System.ComponentModel.DataAnnotations;
 
-namespace SSO.Business.Forms
+namespace SSO.Business.Authentication.Queries
 {
-    public class LoginForm
+    public class LoginQuery : IRequest<string>
     {
         public Guid? ApplicationId { get; set; }
 

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SSO.Business\SSO.Business.csproj" />
+    <ProjectReference Include="..\SSO.Infrastructure.Authentication\SSO.Infrastructure.Authentication.csproj" />
     <ProjectReference Include="..\SSO.Infrastructure\SSO.Infrastructure.csproj" />
   </ItemGroup>
 

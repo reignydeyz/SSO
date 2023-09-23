@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="12.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SSO.Domain\SSO.Domain.csproj" />
+    <ProjectReference Include="..\SSO.Infrastructure\SSO.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
