@@ -1,4 +1,4 @@
-﻿namespace SSO.Domain.Interfaces
+﻿namespace SSO.Domain.Authentication.Interfaces
 {
     public interface IAuthenticationService
     {

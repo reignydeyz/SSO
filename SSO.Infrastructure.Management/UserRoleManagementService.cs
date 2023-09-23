@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SSO.Domain.Interfaces;
+using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 
 namespace SSO.Infrastructure.Management

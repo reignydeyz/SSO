@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using SSO.Domain.Interfaces;
+using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Models;
 
 namespace SSO.Infrastructure.Authentication

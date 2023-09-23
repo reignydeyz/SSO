@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using SSO.Business.Authentication.Queries;
-using SSO.Domain.Interfaces;
+using SSO.Domain.Authentication.Interfaces;
+using SSO.Domain.Management.Interfaces;
+using SSO.Domain.UserManegement.Interfaces;
 
 namespace SSO.Business.Authentication.Handlers
 {

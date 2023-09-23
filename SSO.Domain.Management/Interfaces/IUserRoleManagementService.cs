@@ -1,6 +1,6 @@
 ﻿using SSO.Domain.Models;
 
-namespace SSO.Domain.Interfaces
+namespace SSO.Domain.Management.Interfaces
 {
     public interface IUserRoleManagementService
     {

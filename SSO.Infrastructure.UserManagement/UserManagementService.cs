@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
+using SSO.Domain.UserManegement.Interfaces;
 
 namespace SSO.Infrastructure.UserManagement
 {
