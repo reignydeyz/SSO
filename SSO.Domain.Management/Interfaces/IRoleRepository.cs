@@ -11,13 +11,13 @@ namespace SSO.Domain.Management.Interfaces
         /// </summary>
         /// <param name="roleName"></param>
         /// <returns></returns>
-        public Task<IEnumerable<Claim>> GetClaims(string roleName);
+        Task<IEnumerable<Claim>> GetClaims(string roleName);
 
         /// <summary>
         /// Gets role claims
         /// </summary>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public Task<IEnumerable<Claim>> GetClaims(Guid roleId);
+        Task<IEnumerable<Claim>> GetClaims(Guid roleId);
     }
 }

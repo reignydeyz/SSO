@@ -3,10 +3,8 @@ using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.UserManegement.Interfaces;
-using System.Security.Claims;
 
-namespace SSO.Business.Authentication.Handlers
-{
+namespace SSO.Business.Authentication.Handlers {
     /// <summary>
     /// Handler for login request
     /// </summary>
@@ -15,14 +13,12 @@ namespace SSO.Business.Authentication.Handlers
         private readonly IAuthenticationService _authenticationService;
         private readonly IUserRepository _userRepo;
         private readonly IUserRoleRepository _userRoleRepo;
-        private readonly IRoleRepository _roleRepository;
 
-        public LoginQueryHandler(IAuthenticationService authenticationService, IUserRepository userRepo, IUserRoleRepository userRoleRepo, IRoleRepository roleRepository)
+        public LoginQueryHandler(IAuthenticationService authenticationService, IUserRepository userRepo, IUserRoleRepository userRoleRepo)
         {
             _authenticationService = authenticationService;
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
-            _roleRepository = roleRepository;
         }
 
         public async Task<string> Handle(LoginQuery request, CancellationToken cancellationToken)
@@ -50,17 +46,7 @@ namespace SSO.Business.Authentication.Handlers
                 roles = roles.Where(x => x.Application.Name == "root");
             }
 
-            var claims = new List<Claim>();
-
-            foreach (var role in roles)
-            {
-                // TODO: Use AspNetUserClaims
-                // Get the claims for the role
-                var roleClaims = await _roleRepository.GetClaims(new Guid(role.Id));
-
-                // Add the retrieved claims to the list
-                claims.AddRange(roleClaims);
-            }
+            var claims = await _userRepo.GetClaims(new Guid(user.Id));
 
             // TODO: Generate access token
             var token = string.Empty;

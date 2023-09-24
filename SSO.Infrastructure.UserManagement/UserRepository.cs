@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SSO.Domain.Models;
 using SSO.Domain.UserManegement.Interfaces;
+using System.Security.Claims;
 
 namespace SSO.Infrastructure.UserManagement
 {
@@ -46,6 +47,18 @@ namespace SSO.Infrastructure.UserManagement
         public Task<ApplicationUser> Update(ApplicationUser param)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<Claim>> GetClaims(string userName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Claim>> GetClaims(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            return await _userManager.GetClaimsAsync(user);
         }
     }
 }
