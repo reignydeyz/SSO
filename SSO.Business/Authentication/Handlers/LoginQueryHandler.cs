@@ -3,6 +3,7 @@ using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.UserManegement.Interfaces;
+using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
 {
@@ -12,22 +13,24 @@ namespace SSO.Business.Authentication.Handlers
     public class LoginQueryHandler : IRequestHandler<LoginQuery, string>
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly IUserRepository _userManagementService;
-        private readonly IUserRoleRepository _userRoleManagementService;
+        private readonly IUserRepository _userRepo;
+        private readonly IUserRoleRepository _userRoleRepo;
+        private readonly IRoleRepository _roleRepository;
 
-        public LoginQueryHandler(IAuthenticationService authenticationService, IUserRepository userManagementService, IUserRoleRepository userRoleManagementService)
+        public LoginQueryHandler(IAuthenticationService authenticationService, IUserRepository userRepo, IUserRoleRepository userRoleRepo, IRoleRepository roleRepository)
         {
             _authenticationService = authenticationService;
-            _userManagementService = userManagementService;
-            _userRoleManagementService = userRoleManagementService;
+            _userRepo = userRepo;
+            _userRoleRepo = userRoleRepo;
+            _roleRepository = roleRepository;
         }
 
         public async Task<string> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
             await _authenticationService.Login(request.Username, request.Password);
 
-            var user = await _userManagementService.GetByEmail(request.Username);
-            var roles = await _userRoleManagementService.Roles(request.Username);
+            var user = await _userRepo.GetByEmail(request.Username);
+            var roles = await _userRoleRepo.Roles(request.Username);
             
             if (request.ApplicationId.HasValue)
             {
@@ -45,6 +48,18 @@ namespace SSO.Business.Authentication.Handlers
 
                 // Apply roles for root
                 roles = roles.Where(x => x.Application.Name == "root");
+            }
+
+            var claims = new List<Claim>();
+
+            foreach (var role in roles)
+            {
+                // TODO: Use AspNetUserClaims
+                // Get the claims for the role
+                var roleClaims = await _roleRepository.GetClaims(new Guid(role.Id));
+
+                // Add the retrieved claims to the list
+                claims.AddRange(roleClaims);
             }
 
             // TODO: Generate access token

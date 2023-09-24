@@ -26,12 +26,12 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task RemoveUserFromRolee(string username, string roleName)
+        public Task RemoveUserFromRole(string username, string roleName)
         {
             throw new NotImplementedException();
         }
 
-        public Task RemoveUserFromRolee(Guid userId, string roleId)
+        public Task RemoveUserFromRole(Guid userId, string roleId)
         {
             throw new NotImplementedException();
         }

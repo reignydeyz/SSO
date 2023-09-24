@@ -26,7 +26,7 @@ namespace SSO.Domain.Management.Interfaces
         /// <param name="username"></param>
         /// <param name="roleName"></param>
         /// <returns></returns>
-        Task RemoveUserFromRolee(string username, string roleName);
+        Task RemoveUserFromRole(string username, string roleName);
 
         /// <summary>
         /// Deletes user from role
@@ -34,7 +34,7 @@ namespace SSO.Domain.Management.Interfaces
         /// <param name="userId"></param>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        Task RemoveUserFromRolee(Guid userId, string roleId);
+        Task RemoveUserFromRole(Guid userId, string roleId);
 
         /// <summary>
         /// Gets user`s roles
