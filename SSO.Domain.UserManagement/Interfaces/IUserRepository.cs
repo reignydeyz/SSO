@@ -3,7 +3,7 @@ using SSO.Domain.Models;
 
 namespace SSO.Domain.UserManegement.Interfaces
 {
-    public interface IUserManagementService : IRepository<ApplicationUser>
+    public interface IUserRepository : IRepository<ApplicationUser>
     {
         Task<ApplicationUser> GetByEmail(string email);
     }

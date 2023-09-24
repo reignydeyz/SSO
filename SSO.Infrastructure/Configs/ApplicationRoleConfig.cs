@@ -10,6 +10,9 @@ namespace SSO.Infrastructure.Configs
         {
             builder.HasIndex(x => new { x.ApplicationId, x.Name }).IsUnique();
 
+            builder.Property(x => x.Name).IsRequired();
+            builder.Property(x => x.NormalizedName).IsRequired();
+
             builder.HasIndex(x => new { x.Name }).IsUnique(false);
         }
     }

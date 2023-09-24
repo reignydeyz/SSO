@@ -12,10 +12,10 @@ namespace SSO.Business.Authentication.Handlers
     public class LoginQueryHandler : IRequestHandler<LoginQuery, string>
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly IUserManagementService _userManagementService;
-        private readonly IUserRoleManagementService _userRoleManagementService;
+        private readonly IUserRepository _userManagementService;
+        private readonly IUserRoleRepository _userRoleManagementService;
 
-        public LoginQueryHandler(IAuthenticationService authenticationService, IUserManagementService userManagementService, IUserRoleManagementService userRoleManagementService)
+        public LoginQueryHandler(IAuthenticationService authenticationService, IUserRepository userManagementService, IUserRoleRepository userRoleManagementService)
         {
             _authenticationService = authenticationService;
             _userManagementService = userManagementService;

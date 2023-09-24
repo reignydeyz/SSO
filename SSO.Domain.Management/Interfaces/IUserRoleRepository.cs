@@ -2,7 +2,7 @@
 
 namespace SSO.Domain.Management.Interfaces
 {
-    public interface IUserRoleManagementService
+    public interface IUserRoleRepository
     {
         /// <summary>
         /// Adds user to role

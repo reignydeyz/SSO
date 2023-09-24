@@ -5,12 +5,12 @@ using SSO.Domain.Models;
 
 namespace SSO.Infrastructure.Management
 {
-    public class UserRoleManagementService : IUserRoleManagementService
+    public class UserRoleRepository : IUserRoleRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly AppDbContext _context;
 
-        public UserRoleManagementService(UserManager<ApplicationUser> userManager, AppDbContext context)
+        public UserRoleRepository(UserManager<ApplicationUser> userManager, AppDbContext context)
         {
             _userManager = userManager;
             _context = context;

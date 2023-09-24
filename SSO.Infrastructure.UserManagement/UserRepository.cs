@@ -4,11 +4,11 @@ using SSO.Domain.UserManegement.Interfaces;
 
 namespace SSO.Infrastructure.UserManagement
 {
-    public class UserManagementService : IUserManagementService
+    public class UserRepository : IUserRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserManagementService(UserManager<ApplicationUser> userManager)
+        public UserRepository(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
