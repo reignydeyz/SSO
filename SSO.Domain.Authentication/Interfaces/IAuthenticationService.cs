@@ -10,6 +10,15 @@
         Task Login(string username, string password);
 
         /// <summary>
+        /// Validates app then redirects to login page
+        /// </summary>
+        /// <param name="applicationId"></param>
+        /// <param name="applicationSecret"></param>
+        /// <param name="callbackUrl"></param>
+        /// <returns></returns>
+        Task LoginRequest(string applicationId, string applicationSecret, string callbackUrl);
+
+        /// <summary>
         /// Generates access token
         /// </summary>
         /// <param name="applicationId"></param>
