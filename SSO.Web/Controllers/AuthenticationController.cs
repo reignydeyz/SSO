@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
 
@@ -13,6 +14,19 @@ namespace SSO.Web.Controllers
         public AuthenticationController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        /// <summary>
+        /// Request for login page
+        /// </summary>
+        /// <param name="callbackUrl"></param>
+        /// <returns></returns>
+        [Authorize(AuthenticationSchemes = "Basic")]
+        [HttpGet]
+        public IActionResult Get([FromQuery] string callbackUrl)
+        {
+            // TODO: Redirect to login page
+            return Ok();
         }
 
         /// <summary>

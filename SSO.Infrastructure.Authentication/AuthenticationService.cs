@@ -30,5 +30,10 @@ namespace SSO.Infrastructure.Authentication
             if (!result.Succeeded)
                 throw new UnauthorizedAccessException();
         }
+
+        public Task LoginRequest(string applicationId, string applicationSecret, string callbackUrl)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
