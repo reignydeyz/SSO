@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
+using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
 {
@@ -23,14 +24,14 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Application>> Find(Func<Application, bool>? predicate)
+        public Task<IEnumerable<Application>> Find(Expression<Func<Application, bool>>? predicate)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Application> FindOne(Func<Application, bool> predicate)
+        public async Task<Application> FindOne(Expression<Func<Application, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.Applications.FirstOrDefaultAsync(predicate);
         }
 
         public async Task<List<string>> GetAllowedOrigins(Guid? applicationId)
@@ -46,6 +47,11 @@ namespace SSO.Infrastructure.Management
         public Task<string> GetPermissions(Guid applicationId)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Application> GetRoot()
+        {
+            return await _context.Applications.FirstAsync(x => x.Name == "root");
         }
 
         public Task<Application> Update(Application param)

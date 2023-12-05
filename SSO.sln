@@ -25,11 +25,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Infrastructure.UserMana
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Infrastructure.Management", "SSO.Infrastructure.Management\SSO.Infrastructure.Management.csproj", "{BC9F771F-349D-4C96-807F-541B887E6606}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Domain.Authentication", "SSO.Domain.Authentication\SSO.Domain.Authentication.csproj", "{BE785E47-C25C-490A-A836-C36FE5B47F64}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain.Authentication", "SSO.Domain.Authentication\SSO.Domain.Authentication.csproj", "{BE785E47-C25C-490A-A836-C36FE5B47F64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Domain.UserManagement", "SSO.Domain.UserManagement\SSO.Domain.UserManagement.csproj", "{ECB26F85-1CB2-4731-9C35-ADEC52620E44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain.UserManagement", "SSO.Domain.UserManagement\SSO.Domain.UserManagement.csproj", "{ECB26F85-1CB2-4731-9C35-ADEC52620E44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Domain.Management", "SSO.Domain.Management\SSO.Domain.Management.csproj", "{1EFF4F28-CE5D-43E5-AABF-C7888CB5AA69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain.Management", "SSO.Domain.Management\SSO.Domain.Management.csproj", "{1EFF4F28-CE5D-43E5-AABF-C7888CB5AA69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

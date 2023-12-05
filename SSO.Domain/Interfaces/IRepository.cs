@@ -1,4 +1,6 @@
-﻿namespace SSO.Domain.Interfaces
+﻿using System.Linq.Expressions;
+
+namespace SSO.Domain.Interfaces
 {
     public interface IRepository<T>
     {
@@ -27,13 +29,13 @@
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        Task<IEnumerable<T>> Find(Func<T, bool>? predicate);
+        Task<IEnumerable<T>> Find(Expression<Func<T, bool>>? predicate);
 
         /// <summary>
         /// Gets one entity
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        Task<T> FindOne(Func<T, bool> predicate);
+        Task<T> FindOne(Expression<Func<T, bool>> predicate);
     }
 }

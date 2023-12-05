@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace SSO.Infrastructure.Management
@@ -24,12 +25,12 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ApplicationRole>> Find(Func<ApplicationRole, bool>? predicate)
+        public Task<IEnumerable<ApplicationRole>> Find(Expression<Func<ApplicationRole, bool>>? predicate)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ApplicationRole> FindOne(Func<ApplicationRole, bool> predicate)
+        public Task<ApplicationRole> FindOne(Expression<Func<ApplicationRole, bool>> predicate)
         {
             throw new NotImplementedException();
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SSO.Domain.Models;
 using SSO.Domain.UserManegement.Interfaces;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace SSO.Infrastructure.UserManagement
@@ -24,7 +25,7 @@ namespace SSO.Infrastructure.UserManagement
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ApplicationUser>> Find(Func<ApplicationUser, bool>? predicate)
+        public Task<IEnumerable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
         {
             throw new NotImplementedException();
         }
@@ -39,7 +40,7 @@ namespace SSO.Infrastructure.UserManagement
             return user;
         }
 
-        public Task<ApplicationUser> FindOne(Func<ApplicationUser, bool> predicate)
+        public Task<ApplicationUser> FindOne(Expression<Func<ApplicationUser, bool>> predicate)
         {
             throw new NotImplementedException();
         }
