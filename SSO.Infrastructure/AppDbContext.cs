@@ -15,12 +15,14 @@ namespace SSO.Infrastructure
         public DbSet<Application> Applications { get; set; }
         public DbSet<ApplicationPermission> ApplicationPermissions { get; set; }
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
+        public DbSet<ApplicationAllowedOrigin> ApplicationAllowedOrigins { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration(new ApplicationConfig());
             builder.ApplyConfiguration(new ApplicationPermissionConfig());
             builder.ApplyConfiguration(new ApplicationRoleConfig());
+            builder.ApplyConfiguration(new ApplicationAllowedOriginConfig());
 
             base.OnModelCreating(builder);
         }

@@ -13,5 +13,6 @@
         public DateTimeOffset? DateInactive { get; set; }
 
         public virtual ICollection<ApplicationPermission> Permissions { get; set; } = new List<ApplicationPermission>();
+        public virtual ICollection<ApplicationAllowedOrigin> AllowedOrigins { get; set; } = new List<ApplicationAllowedOrigin>();
     }
 }
