@@ -8,6 +8,7 @@ using SSO.Infrastructure;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.UserManagement;
 using SSO.Web.AuthenticationHandlers;
+using VueCliMiddleware;
 using AuthenticationService = SSO.Infrastructure.Authentication.AuthenticationService;
 using IAuthenticationService = SSO.Domain.Authentication.Interfaces.IAuthenticationService;
 
@@ -28,6 +29,11 @@ builder.Services.AddControllers();
 builder.Services.AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
 
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "ClientApp/dist";
+});
+
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
@@ -42,6 +48,14 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapWhen(r => !r.Request.Path.Value.StartsWith("/swagger"), builder => {
+    builder.UseSpa(spa =>
+    {
+        spa.Options.SourcePath = "ClientApp/";
+        spa.UseVueCli(npmScript: "serve");
+    });
+});
 
 app.MapControllerRoute(
     name: "default",
