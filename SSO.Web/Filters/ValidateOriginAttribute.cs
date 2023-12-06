@@ -26,14 +26,14 @@ namespace SSO.Web.Filters
                             : null;
 
                 if (app is null)
-                    context.Result = new StatusCodeResult(404);
+                    context.Result = new NotFoundObjectResult("App not found.");
                 else
                 {
                     // Validate allowed origin
                     var allowedOrigins = await appRepository.GetAllowedOrigins(app.ApplicationId);
 
                     if (!allowedOrigins.Contains(origin))
-                        context.Result = new StatusCodeResult(400);
+                        context.Result = new StatusCodeResult(403);
 
                     if (context.Result is null)
                         await next();
