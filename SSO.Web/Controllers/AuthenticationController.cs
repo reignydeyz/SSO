@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
-using SSO.Web.Filters;
 
 namespace SSO.Web.Controllers
 {
@@ -21,7 +20,6 @@ namespace SSO.Web.Controllers
         /// </summary>
         /// <param name="callbackUrl"></param>
         /// <returns></returns>
-        [ValidateOrigin]
         [HttpGet]
         public IActionResult Get([FromQuery] string callbackUrl)
         {

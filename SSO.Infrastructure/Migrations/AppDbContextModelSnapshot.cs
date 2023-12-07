@@ -173,20 +173,6 @@ namespace SSO.Infrastructure.Migrations
                     b.ToTable("Applications");
                 });
 
-            modelBuilder.Entity("SSO.Domain.Models.ApplicationAllowedOrigin", b =>
-                {
-                    b.Property<Guid>("ApplicationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Origin")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("ApplicationId", "Origin");
-
-                    b.ToTable("ApplicationAllowedOrigins");
-                });
-
             modelBuilder.Entity("SSO.Domain.Models.ApplicationPermission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -387,15 +373,6 @@ namespace SSO.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SSO.Domain.Models.ApplicationAllowedOrigin", b =>
-                {
-                    b.HasOne("SSO.Domain.Models.Application", null)
-                        .WithMany("AllowedOrigins")
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("SSO.Domain.Models.ApplicationPermission", b =>
                 {
                     b.HasOne("SSO.Domain.Models.Application", "Application")
@@ -420,8 +397,6 @@ namespace SSO.Infrastructure.Migrations
 
             modelBuilder.Entity("SSO.Domain.Models.Application", b =>
                 {
-                    b.Navigation("AllowedOrigins");
-
                     b.Navigation("Permissions");
                 });
 #pragma warning restore 612, 618

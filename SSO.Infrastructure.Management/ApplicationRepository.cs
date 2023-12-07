@@ -34,24 +34,9 @@ namespace SSO.Infrastructure.Management
             return await _context.Applications.FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<List<string>> GetAllowedOrigins(Guid? applicationId)
-        {
-            var origins = _context.ApplicationAllowedOrigins.AsQueryable();
-
-            if (applicationId.HasValue)
-                origins = origins.Where(x => x.ApplicationId == applicationId);
-
-            return await origins.Select(x => x.Origin).ToListAsync();
-        }
-
         public Task<string> GetPermissions(Guid applicationId)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<Application> GetRoot()
-        {
-            return await _context.Applications.FirstAsync(x => x.Name == "root");
         }
 
         public Task<Application> Update(Application param)
