@@ -45,7 +45,7 @@ var app = builder.Build();
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.UseRouting();
-
+app.UseSpaStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
