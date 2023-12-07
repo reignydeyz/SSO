@@ -28,13 +28,13 @@ namespace SSO.Business.Authentication.Handlers {
             var user = await _userRepo.GetByEmail(request.Username);
             var roles = await _userRoleRepo.Roles(request.Username);
             
-            if (request.ApplicationId.HasValue)
+            if (request.AppId.HasValue)
             {
-                if (!roles.Any(x => x.ApplicationId == request.ApplicationId))
+                if (!roles.Any(x => x.ApplicationId == request.AppId))
                     throw new UnauthorizedAccessException();
 
                 // Apply roles for the specific application
-                roles = roles.Where(x => x.ApplicationId == request.ApplicationId);
+                roles = roles.Where(x => x.ApplicationId == request.AppId);
             }
             else
             {
