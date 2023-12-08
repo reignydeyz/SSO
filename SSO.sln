@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain.UserManagement",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain.Management", "SSO.Domain.Management\SSO.Domain.Management.csproj", "{1EFF4F28-CE5D-43E5-AABF-C7888CB5AA69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Infrastructure.Settings", "SSO.Infrastructure.Settings\SSO.Infrastructure.Settings.csproj", "{1BA2202A-CC55-423A-BE73-BB2810898F00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{1EFF4F28-CE5D-43E5-AABF-C7888CB5AA69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EFF4F28-CE5D-43E5-AABF-C7888CB5AA69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EFF4F28-CE5D-43E5-AABF-C7888CB5AA69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BA2202A-CC55-423A-BE73-BB2810898F00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BA2202A-CC55-423A-BE73-BB2810898F00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BA2202A-CC55-423A-BE73-BB2810898F00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BA2202A-CC55-423A-BE73-BB2810898F00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +98,7 @@ Global
 		{BE785E47-C25C-490A-A836-C36FE5B47F64} = {EBC5C63E-D7FB-4D64-B85F-5CD5B739EAAD}
 		{ECB26F85-1CB2-4731-9C35-ADEC52620E44} = {EBC5C63E-D7FB-4D64-B85F-5CD5B739EAAD}
 		{1EFF4F28-CE5D-43E5-AABF-C7888CB5AA69} = {EBC5C63E-D7FB-4D64-B85F-5CD5B739EAAD}
+		{1BA2202A-CC55-423A-BE73-BB2810898F00} = {78213346-AF3E-4D9C-B07F-698FFD328835}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEACCE13-B4FB-4B39-96F8-77FAB0425877}

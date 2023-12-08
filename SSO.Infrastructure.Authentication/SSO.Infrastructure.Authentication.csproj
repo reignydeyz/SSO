@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SSO.Domain.Authentication\SSO.Domain.Authentication.csproj" />
     <ProjectReference Include="..\SSO.Domain\SSO.Domain.csproj" />
+    <ProjectReference Include="..\SSO.Infrastructure.Settings\SSO.Infrastructure.Settings.csproj" />
     <ProjectReference Include="..\SSO.Infrastructure\SSO.Infrastructure.csproj" />
   </ItemGroup>
 

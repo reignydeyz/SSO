@@ -1,13 +1,18 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SSO.Business.Authentication.Handlers;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using SSO.Domain.UserManegement.Interfaces;
 using SSO.Infrastructure;
 using SSO.Infrastructure.Management;
+using SSO.Infrastructure.Settings.Constants;
+using SSO.Infrastructure.Settings.Options;
 using SSO.Infrastructure.UserManagement;
 using SSO.Web.AuthenticationHandlers;
+using System.Text;
 using VueCliMiddleware;
 using AuthenticationService = SSO.Infrastructure.Authentication.AuthenticationService;
 using IAuthenticationService = SSO.Domain.Authentication.Interfaces.IAuthenticationService;
@@ -29,6 +34,26 @@ builder.Services.AddControllers();
 builder.Services.AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = TokenValidationParamConstants.Audience,
+        ValidIssuer = TokenValidationParamConstants.Issuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+    };
+});
+
 builder.Services.AddSpaStaticFiles(configuration =>
 {
     configuration.RootPath = "ClientApp/dist";
@@ -39,6 +64,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JWT"));
 
 var app = builder.Build();
 
