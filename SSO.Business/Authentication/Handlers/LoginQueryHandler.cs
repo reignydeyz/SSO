@@ -25,17 +25,14 @@ namespace SSO.Business.Authentication.Handlers {
         {
             await _authenticationService.Login(request.Username, request.Password);
 
-            var user = await _userRepo.GetByEmail(request.Username);
-            var roles = await _userRoleRepo.Roles(request.Username);
-
             // TODO: Get appId of root
             request.AppId ??= new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6");
 
-            if (!roles.Any(x => x.ApplicationId == request.AppId))
-                throw new UnauthorizedAccessException();
+            var user = await _userRepo.GetByEmail(request.Username);
+            var roles = await _userRoleRepo.Roles(request.Username, request.AppId.Value);            
 
-            // Apply roles for the specific application
-            roles = roles.Where(x => x.ApplicationId == request.AppId);
+            if (!roles.Any())
+                throw new UnauthorizedAccessException();
 
             var claims = await _userRepo.GetClaims(new Guid(user.Id), request.AppId.Value);
 

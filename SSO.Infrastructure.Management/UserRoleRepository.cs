@@ -36,12 +36,12 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ApplicationRole>> Roles(Guid userId)
+        public Task<IEnumerable<ApplicationRole>> Roles(Guid userId, Guid applicationId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<ApplicationRole>> Roles(string username)
+        public async Task<IEnumerable<ApplicationRole>> Roles(string username, Guid applicationId)
         {
             var user = await _userManager.FindByEmailAsync(username);
 
@@ -50,7 +50,8 @@ namespace SSO.Infrastructure.Management
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            return _context.Roles.Include(x => x.Application).Where(x => roles.Contains(x.Name));
+            return _context.Roles.Include(x => x.Application).Where(x => roles.Contains(x.Name)
+                    && x.ApplicationId == applicationId);
         }
     }
 }

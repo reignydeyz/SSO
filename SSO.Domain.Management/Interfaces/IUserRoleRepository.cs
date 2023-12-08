@@ -40,14 +40,16 @@ namespace SSO.Domain.Management.Interfaces
         /// Gets user`s roles
         /// </summary>
         /// <param name="userId"></param>
+        /// <param name="applicationId"></param>
         /// <returns></returns>
-        Task<IEnumerable<ApplicationRole>> Roles(Guid userId);
+        Task<IEnumerable<ApplicationRole>> Roles(Guid userId, Guid applicationId);
 
         /// <summary>
         /// Gets user`s roles
         /// </summary>
-        /// <param name="userId"></param>
+        /// <param name="username"></param>
+        /// <param name="applicationId"
         /// <returns></returns>
-        Task<IEnumerable<ApplicationRole>> Roles(string username);
+        Task<IEnumerable<ApplicationRole>> Roles(string username, Guid applicationId);
     }
 }
