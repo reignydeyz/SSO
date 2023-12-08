@@ -8,6 +8,7 @@ namespace SSO.Domain.UserManegement.Interfaces
     {
         Task<ApplicationUser> GetByEmail(string email);
 
+        // TODO: Move to another repository
         /// <summary>
         /// Gets user claims
         /// </summary>
@@ -16,6 +17,7 @@ namespace SSO.Domain.UserManegement.Interfaces
         /// <returns></returns>
         Task<IEnumerable<Claim>> GetClaims(string userName, Guid applicationId);
 
+        // TODO: Move to another repository
         /// <summary>
         /// Gets user claims
         /// </summary>
