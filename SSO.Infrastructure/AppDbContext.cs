@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Models;
 using SSO.Infrastructure.Configs;
 
 namespace SSO.Infrastructure
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, 
+        ApplicationUserClaim, IdentityUserRole<string>, IdentityUserLogin<string>, 
+        ApplicationRoleClaim, IdentityUserToken<string>>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -16,6 +19,8 @@ namespace SSO.Infrastructure
         public DbSet<ApplicationPermission> ApplicationPermissions { get; set; }
         public DbSet<ApplicationRole> ApplicationRoles { get; set; }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<ApplicationUserClaim> ApplicationUserClaims { get; set; }
+        public DbSet<ApplicationRoleClaim> ApplicationRoleClaims { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -23,6 +28,7 @@ namespace SSO.Infrastructure
             builder.ApplyConfiguration(new ApplicationPermissionConfig());
             builder.ApplyConfiguration(new ApplicationRoleConfig());
             builder.ApplyConfiguration(new ApplicationUserConfig());
+            builder.ApplyConfiguration(new ApplicationRoleClaimConfig());
 
             base.OnModelCreating(builder);
         }

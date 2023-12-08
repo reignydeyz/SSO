@@ -27,26 +27,17 @@ namespace SSO.Business.Authentication.Handlers {
 
             var user = await _userRepo.GetByEmail(request.Username);
             var roles = await _userRoleRepo.Roles(request.Username);
-            
-            if (request.AppId.HasValue)
-            {
-                if (!roles.Any(x => x.ApplicationId == request.AppId))
-                    throw new UnauthorizedAccessException();
 
-                // Apply roles for the specific application
-                roles = roles.Where(x => x.ApplicationId == request.AppId);
-            }
-            else
-            {
-                // Check root access
-                if (!roles.Any(x => x.Application.Name == "root"))
-                    throw new UnauthorizedAccessException();
+            // TODO: Get appId of root
+            request.AppId ??= new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6");
 
-                // Apply roles for root
-                roles = roles.Where(x => x.Application.Name == "root");
-            }
+            if (!roles.Any(x => x.ApplicationId == request.AppId))
+                throw new UnauthorizedAccessException();
 
-            var claims = await _userRepo.GetClaims(new Guid(user.Id));
+            // Apply roles for the specific application
+            roles = roles.Where(x => x.ApplicationId == request.AppId);
+
+            var claims = await _userRepo.GetClaims(new Guid(user.Id), request.AppId.Value);
 
             // TODO: Generate access token
             var token = string.Empty;

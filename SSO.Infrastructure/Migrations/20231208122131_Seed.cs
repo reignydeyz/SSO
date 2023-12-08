@@ -18,19 +18,19 @@ namespace SSO.Infrastructure.Migrations
             #region Root permissions
             migrationBuilder.InsertData(
                 table: "ApplicationPermissions",
-                columns: new[] { "Id", "ApplicationId", "Permission", "Description" },
-                values: new object[] { Guid.NewGuid(), new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), "app-management", "Application management" });
+                columns: new[] { "PermissionId", "ApplicationId", "Name", "Description" },
+                values: new object[] { new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), "app-management", "Application management" });
 
             migrationBuilder.InsertData(
                 table: "ApplicationPermissions",
-                columns: new[] { "Id", "ApplicationId", "Permission", "Description" },
-                values: new object[] { Guid.NewGuid(), new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), "role-management", "Role management" });
+                columns: new[] { "PermissionId", "ApplicationId", "Name", "Description" },
+                values: new object[] { new Guid("69f900c3-dc6a-44e6-9988-50bba13542c7"), new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), "role-management", "Role management" });
 
             migrationBuilder.InsertData(
                 table: "ApplicationPermissions",
-                columns: new[] { "Id", "ApplicationId", "Permission", "Description" },
-                values: new object[] { Guid.NewGuid(), new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), "user-management", "User management" });
-            #endregion            
+                columns: new[] { "PermissionId", "ApplicationId", "Name", "Description" },
+                values: new object[] { new Guid("69f900c3-dc6a-44e6-9988-50bba13542c8"), new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), "user-management", "User management" });
+            #endregion
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
@@ -40,18 +40,18 @@ namespace SSO.Infrastructure.Migrations
             #region User permissions
             migrationBuilder.InsertData(
                 table: "AspNetUserClaims",
-                columns: new[] { "UserId", "ClaimType", "ClaimValue" },
-                values: new object[] { "b54a1e6b-c2ea-43f8-b48f-24db5338554f", "Permission", "app-management" });
+                columns: new[] { "PermissionId", "UserId", "ClaimType", "ClaimValue" },
+                values: new object[] { "69f900c3-dc6a-44e6-9988-50bba13542c6", "b54a1e6b-c2ea-43f8-b48f-24db5338554f", "Permission", "app-management" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserClaims",
-                columns: new[] { "UserId", "ClaimType", "ClaimValue" },
-                values: new object[] { "b54a1e6b-c2ea-43f8-b48f-24db5338554f", "Permission", "role-management" });
+                columns: new[] { "PermissionId", "UserId", "ClaimType", "ClaimValue" },
+                values: new object[] { "69f900c3-dc6a-44e6-9988-50bba13542c7", "b54a1e6b-c2ea-43f8-b48f-24db5338554f", "Permission", "role-management" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserClaims",
-                columns: new[] { "UserId", "ClaimType", "ClaimValue" },
-                values: new object[] { "b54a1e6b-c2ea-43f8-b48f-24db5338554f", "Permission", "user-management" });
+                columns: new[] { "PermissionId", "UserId", "ClaimType", "ClaimValue" },
+                values: new object[] { "69f900c3-dc6a-44e6-9988-50bba13542c8", "b54a1e6b-c2ea-43f8-b48f-24db5338554f", "Permission", "user-management" });
             #endregion
 
             migrationBuilder.InsertData(
@@ -62,18 +62,18 @@ namespace SSO.Infrastructure.Migrations
             #region Root admin permissions
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
-                columns: new[] { "RoleId", "ClaimType", "ClaimValue" },
-                values: new object[] { "63881191-d2e8-49fd-a42e-b82eff79da17", "Permission", "app-management" });
+                columns: new[] { "PermissionId", "RoleId", "ClaimType", "ClaimValue" },
+                values: new object[] { "69f900c3-dc6a-44e6-9988-50bba13542c6", "63881191-d2e8-49fd-a42e-b82eff79da17", "Permission", "app-management" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
-                columns: new[] { "RoleId", "ClaimType", "ClaimValue" },
-                values: new object[] { "63881191-d2e8-49fd-a42e-b82eff79da17", "Permission", "role-management" });
+                columns: new[] { "PermissionId", "RoleId", "ClaimType", "ClaimValue" },
+                values: new object[] { "69f900c3-dc6a-44e6-9988-50bba13542c6", "63881191-d2e8-49fd-a42e-b82eff79da17", "Permission", "role-management" });
 
             migrationBuilder.InsertData(
                 table: "AspNetRoleClaims",
-                columns: new[] { "RoleId", "ClaimType", "ClaimValue" },
-                values: new object[] { "63881191-d2e8-49fd-a42e-b82eff79da17", "Permission", "user-management" });
+                columns: new[] { "PermissionId", "RoleId", "ClaimType", "ClaimValue" },
+                values: new object[] { "69f900c3-dc6a-44e6-9988-50bba13542c6", "63881191-d2e8-49fd-a42e-b82eff79da17", "Permission", "user-management" });
             #endregion
 
             migrationBuilder.InsertData(

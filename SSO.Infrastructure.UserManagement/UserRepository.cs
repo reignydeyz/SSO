@@ -9,10 +9,12 @@ namespace SSO.Infrastructure.UserManagement
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
 
-        public UserRepository(UserManager<ApplicationUser> userManager)
+        public UserRepository(UserManager<ApplicationUser> userManager, AppDbContext context)
         {
             _userManager = userManager;
+            _context = context;
         }
 
         public Task<ApplicationUser> Add(ApplicationUser param)
@@ -50,16 +52,17 @@ namespace SSO.Infrastructure.UserManagement
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Claim>> GetClaims(string userName)
+        public Task<IEnumerable<Claim>> GetClaims(string userName, Guid applicationId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Claim>> GetClaims(Guid userId)
+        public async Task<IEnumerable<Claim>> GetClaims(Guid userId, Guid applicationId)
         {
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
-            return await _userManager.GetClaimsAsync(user);
+            return _context.ApplicationUserClaims.Where(x => x.UserId == userId.ToString()
+                        && x.Permission.ApplicationId == applicationId).Select(x => new Claim(x.ClaimType!, x.ClaimValue!));
         }
     }
 }

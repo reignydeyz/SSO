@@ -8,9 +8,10 @@ namespace SSO.Infrastructure.Configs
     {
         public void Configure(EntityTypeBuilder<ApplicationPermission> builder)
         {
-            builder.HasIndex(x => new { x.ApplicationId, x.Permission }).IsUnique();
+            builder.HasKey(x => x.PermissionId);
+            builder.HasIndex(x => new { x.ApplicationId, x.Name }).IsUnique();
 
-            builder.Property(x => x.Permission).HasMaxLength(100).IsRequired();
+            builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
             builder.Property(x => x.Description).HasMaxLength(200);
 
             builder.HasOne(x => x.Application).WithMany(x => x.Permissions)
