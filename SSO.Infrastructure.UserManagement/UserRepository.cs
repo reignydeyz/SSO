@@ -48,5 +48,10 @@ namespace SSO.Infrastructure.UserManagement
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> Any(Expression<Func<ApplicationUser, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

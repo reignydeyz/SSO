@@ -19,6 +19,11 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
+        public async Task<bool> Any(Expression<Func<Application, bool>> predicate)
+        {
+            return await _context.Applications.AnyAsync(predicate);
+        }
+
         public Task Delete(Application param)
         {
             throw new NotImplementedException();

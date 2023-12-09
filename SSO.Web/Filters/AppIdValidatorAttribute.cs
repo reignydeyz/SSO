@@ -15,10 +15,7 @@ namespace SSO.Web.Filters
             
             if (form.AppId.HasValue)
             {
-                // TODO: Add Any()
-                var app = await appRepo.FindOne(x => x.ApplicationId == form.AppId! && x.DateInactive == null);
-
-                if (app is null)
+                if (!(await appRepo.Any(x => x.ApplicationId == form.AppId! && x.DateInactive == null)))
                     context.Result = new StatusCodeResult(404);
             }
 

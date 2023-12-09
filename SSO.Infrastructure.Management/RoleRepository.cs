@@ -20,6 +20,11 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
+        public Task<bool> Any(Expression<Func<ApplicationRole, bool>> predicate)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task Delete(ApplicationRole param)
         {
             throw new NotImplementedException();

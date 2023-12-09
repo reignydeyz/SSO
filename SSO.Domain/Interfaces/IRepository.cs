@@ -37,5 +37,12 @@ namespace SSO.Domain.Interfaces
         /// <param name="predicate"></param>
         /// <returns></returns>
         Task<T> FindOne(Expression<Func<T, bool>> predicate);
+
+        /// <summary>
+        /// Checks any element of a sequence satisfies the predicate 
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        Task<bool> Any(Expression<Func<T, bool>> predicate);
     }
 }
