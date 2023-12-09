@@ -3,20 +3,25 @@ using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.UserManegement.Interfaces;
+using System.Security.Claims;
 
-namespace SSO.Business.Authentication.Handlers {
+namespace SSO.Business.Authentication.Handlers
+{
     /// <summary>
     /// Handler for login request
     /// </summary>
     public class LoginQueryHandler : IRequestHandler<LoginQuery, string>
     {
-        private readonly IAuthenticationService _authenticationService;
-        private readonly IUserRepository _userRepo;
-        private readonly IUserRoleRepository _userRoleRepo;
+        readonly IAuthenticationService _authenticationService;
+        readonly ITokenService _tokenService;
+        readonly IUserRepository _userRepo;
+        readonly IUserRoleRepository _userRoleRepo;
 
-        public LoginQueryHandler(IAuthenticationService authenticationService, IUserRepository userRepo, IUserRoleRepository userRoleRepo)
+        public LoginQueryHandler(IAuthenticationService authenticationService, ITokenService tokenService,
+            IUserRepository userRepo, IUserRoleRepository userRoleRepo)
         {
             _authenticationService = authenticationService;
+            _tokenService = tokenService;
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
         }
@@ -29,15 +34,22 @@ namespace SSO.Business.Authentication.Handlers {
             request.AppId ??= new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6");
 
             var user = await _userRepo.GetByEmail(request.Username);
-            var roles = await _userRoleRepo.Roles(request.Username, request.AppId.Value);            
+            var roles = await _userRoleRepo.Roles(request.Username, request.AppId.Value);
+
+            var claims = new List<Claim>() {
+                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.Email, user.Email)
+            };
 
             if (!roles.Any())
                 throw new UnauthorizedAccessException();
 
-            var claims = await _userRepo.GetClaims(new Guid(user.Id), request.AppId.Value);
+            foreach (var role in roles)
+                claims.Add(new Claim(ClaimTypes.Role, role.Name!));
 
-            // TODO: Generate access token
-            var token = string.Empty;
+            claims.AddRange((await _userRepo.GetClaims(new Guid(user.Id), request.AppId.Value)).ToList());
+
+            var token = _tokenService.GenerateToken(new ClaimsIdentity(claims));
 
             return token;
         }

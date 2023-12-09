@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SSO.Business.Authentication.Handlers;
+using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using SSO.Domain.UserManegement.Interfaces;
 using SSO.Infrastructure;
+using SSO.Infrastructure.Authentication;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
 using SSO.Infrastructure.Settings.Options;
@@ -60,6 +62,8 @@ builder.Services.AddSpaStaticFiles(configuration =>
 });
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();

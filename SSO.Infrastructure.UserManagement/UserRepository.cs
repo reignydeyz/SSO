@@ -62,7 +62,7 @@ namespace SSO.Infrastructure.UserManagement
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             return _context.ApplicationUserClaims.Where(x => x.UserId == userId.ToString()
-                        && x.Permission.ApplicationId == applicationId).Select(x => new Claim(x.ClaimType!, x.ClaimValue!));
+                        && x.Permission.ApplicationId == applicationId).Select(x => new Claim("permissions", x.ClaimValue!));
         }
     }
 }
