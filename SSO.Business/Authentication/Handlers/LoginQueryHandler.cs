@@ -16,14 +16,16 @@ namespace SSO.Business.Authentication.Handlers
         readonly ITokenService _tokenService;
         readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
+        readonly IUserClaimRepository _userClaimRepository;
 
         public LoginQueryHandler(IAuthenticationService authenticationService, ITokenService tokenService,
-            IUserRepository userRepo, IUserRoleRepository userRoleRepo)
+            IUserRepository userRepo, IUserRoleRepository userRoleRepo, IUserClaimRepository userClaimRepository)
         {
             _authenticationService = authenticationService;
             _tokenService = tokenService;
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
+            _userClaimRepository = userClaimRepository;
         }
 
         public async Task<string> Handle(LoginQuery request, CancellationToken cancellationToken)
@@ -47,7 +49,7 @@ namespace SSO.Business.Authentication.Handlers
             foreach (var role in roles)
                 claims.Add(new Claim(ClaimTypes.Role, role.Name!));
 
-            claims.AddRange((await _userRepo.GetClaims(new Guid(user.Id), request.AppId.Value)).ToList());
+            claims.AddRange((await _userClaimRepository.GetClaims(new Guid(user.Id), request.AppId.Value)).ToList());
 
             var token = _tokenService.GenerateToken(new ClaimsIdentity(claims));
 
