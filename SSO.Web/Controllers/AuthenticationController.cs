@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
+using SSO.Web.Filters;
 
 namespace SSO.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AppIdValidator]
     public class AuthenticationController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -18,10 +20,10 @@ namespace SSO.Web.Controllers
         /// <summary>
         /// Request for login page
         /// </summary>
-        /// <param name="callbackUrl"></param>
+        /// <param name="form"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Get([FromQuery] string callbackUrl)
+        public IActionResult Get([FromQuery] InitLoginQuery form)
         {
             // TODO: Redirect to login page
             return Ok();
