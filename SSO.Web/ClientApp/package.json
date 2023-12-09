@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "serve-dev": "vue-cli-service serve --mode dev --port 8081",
     "build": "vue-cli-service build"
   },
   "dependencies": {
@@ -12,6 +13,7 @@
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.2",
     "core-js": "^3.34.0",
+    "js-cookie": "^3.0.5",
     "json-formatter-js": "^2.3.4",
     "jwt-decode": "^4.0.0",
     "mitt": "^3.0.1",
