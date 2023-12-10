@@ -56,7 +56,12 @@ export default {
 			if (decoded.exp < Date.now() / 1000) {
 				Cookies.remove(this.key);
 			} else {
-				window.location.href = "main";
+				if (this.urlParams.get('callbackUrl')) {
+					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${token}`;
+				}
+				else {
+					window.location.href = "main";
+				}
 			}
 		}
 	},
@@ -67,7 +72,13 @@ export default {
 			login(this.param).then(r => {
 				emitter.emit('showLoader', false);
 				Cookies.set(this.key, r.data, { expires: 1 });
-				window.location.href = "main";
+				
+				if (this.urlParams.get('callbackUrl')) {
+					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data}`;
+				}
+				else {
+					window.location.href = "main";
+				}
 			}, err => {
 				emitter.emit('showLoader', false);
 				alert('Access denied.');
