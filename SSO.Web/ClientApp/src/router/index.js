@@ -1,4 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router";
+import { canActivate } from '@/services/auth-guard.service'
 
 const routes = [
     {
@@ -10,6 +11,9 @@ const routes = [
         path: "/main",
         name: "Main",
         component: () => import('@/pages/Main.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
     }
 ];
 
