@@ -1,7 +1,10 @@
-﻿namespace SSO.Business.Authentication.Queries
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SSO.Business.Authentication.Queries
 {
     public class InitLoginQuery : AuthDto
     {
-        public string? CallbackUrl { get; set; }
+        [Url(ErrorMessage = "Not a valid Uri.")]
+        public string CallbackUrl { get; set; }
     }
 }

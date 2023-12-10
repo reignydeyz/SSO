@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain.UserManagement",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Domain.Management", "SSO.Domain.Management\SSO.Domain.Management.csproj", "{1EFF4F28-CE5D-43E5-AABF-C7888CB5AA69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Infrastructure.Settings", "SSO.Infrastructure.Settings\SSO.Infrastructure.Settings.csproj", "{1BA2202A-CC55-423A-BE73-BB2810898F00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Infrastructure.Settings", "SSO.Infrastructure.Settings\SSO.Infrastructure.Settings.csproj", "{1BA2202A-CC55-423A-BE73-BB2810898F00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

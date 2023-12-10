@@ -25,8 +25,7 @@ namespace SSO.Web.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] InitLoginQuery form)
         {
-            // TODO: Redirect to login page
-            return Ok();
+            return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
         }
 
         /// <summary>
