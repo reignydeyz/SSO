@@ -36,6 +36,7 @@
 import { login } from "@/services/authentication.service";
 import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
+import { emitter } from '@/services/emitter.service';
 
 export default {
 	data: () => ({
@@ -61,11 +62,15 @@ export default {
 	},
 	methods: {
 		submit() {
+			emitter.emit('showLoader', true);
+
 			login(this.param).then(r => {
+				emitter.emit('showLoader', false);
 				Cookies.set(this.key, r.data, { expires: 1 });
 				window.location.href = "main";
 			}, err => {
-				console.log(err);
+				emitter.emit('showLoader', false);
+				alert('Access denied.');
 			});
 		}
 	}
