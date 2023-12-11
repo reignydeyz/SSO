@@ -1,14 +1,19 @@
 <template>
-    <router-view />
+    <Navbar v-if="isAuthenticated()" />
+    <div v-bind:class="isAuthenticated() ? 'app-wrapper' : 'row g-0 app-auth-wrapper'">
+        <router-view />
+    </div>
     <Loader v-show="loading" />
 </template>
 
 <script>
+import Cookies from 'js-cookie';
+import Navbar from "@/components/Navbar.vue";
 import Loader from "@/components/Loader.vue";
 import { emitter } from '@/services/emitter.service';
 
 export default {
-    components: { Loader },
+    components: { Navbar, Loader },
     data() {
         return { loading: false };
     },
@@ -17,6 +22,11 @@ export default {
             this.loading = e;
         });
     },
+    methods: {
+        isAuthenticated() {
+            return Cookies.get('root') != null;
+        }
+    }
 }
 </script>
 
