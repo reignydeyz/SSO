@@ -77,6 +77,10 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JWT"));
 
 var app = builder.Build();
 
+#if DEBUG
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+#endif
+
 app.UseRouting();
 app.UseSpaStaticFiles();
 app.UseAuthentication();
