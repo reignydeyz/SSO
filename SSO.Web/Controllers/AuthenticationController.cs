@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
 using SSO.Web.Filters;
@@ -8,7 +7,6 @@ namespace SSO.Web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [AppIdValidator]
     public class AuthenticationController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -24,7 +22,8 @@ namespace SSO.Web.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Get([FromQuery] InitLoginQuery form)
+        [AppIdValidator]
+        public IActionResult Init([FromQuery] InitLoginQuery form)
         {
             return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
         }
@@ -35,14 +34,40 @@ namespace SSO.Web.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost]
+        [AppIdValidator]
         [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> Post([FromBody] LoginQuery form)
+        public async Task<IActionResult> Login([FromBody] LoginQuery form)
         {
             try
             {
                 var res = await _mediator.Send(form);
 
                 return Ok(res);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+        }
+
+        /// <summary>
+        /// Gets access token as root
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost("root")]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> LoginAsRoot([FromBody] LoginAsRootQuery form)
+        {
+            try
+            {
+                var res = await _mediator.Send(form);
+
+                return Ok(res);
+            }
+            catch (ArgumentNullException)
+            {
+                return Unauthorized();
             }
             catch (UnauthorizedAccessException)
             {
