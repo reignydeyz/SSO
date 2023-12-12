@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SSO.Business.Authentication.Handlers;
@@ -15,6 +16,7 @@ using SSO.Infrastructure.Settings.Constants;
 using SSO.Infrastructure.Settings.Options;
 using SSO.Infrastructure.UserManagement;
 using SSO.Web.AuthenticationHandlers;
+using System.Security.Claims;
 using System.Text;
 using VueCliMiddleware;
 using AuthenticationService = SSO.Infrastructure.Authentication.AuthenticationService;
@@ -57,6 +59,19 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = TokenValidationParamConstants.Issuer,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
     };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.DefaultPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+
+    options.AddPolicy("RootPolicy", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim(ClaimTypes.System);
+    });
 });
 
 builder.Services.AddSpaStaticFiles(configuration =>
