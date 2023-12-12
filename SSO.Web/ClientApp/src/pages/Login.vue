@@ -38,27 +38,28 @@ import { emitter } from '@/services/emitter.service';
 export default {
 	data: () => ({
 		param: new Object(),
-		urlParams: new URLSearchParams(window.location.search),
-		key: "root"
+		urlParams: new URLSearchParams(window.location.search)
 	}),
 	mounted() {
-		this.key = this.urlParams.get('appId') ?? this.key;
+		if (!this.urlParams.get('appId')
+			|| !this.urlParams.get('callbackUrl')
+			|| !Cookies.get('appId')
+			|| this.urlParams.get('appId') != Cookies.get('appId')) {
+			window.location.href = "invalid";
+		}
 
-		let token = Cookies.get(this.key);
+		this.param.appId = this.urlParams.get('appId');
 
-		if (token) {
+		if (Cookies.get('token')) {
+			var token = Cookies.get('token');
+
 			let decoded = jwtDecode(token);
 
 			// Check if the token is expired
 			if (decoded.exp < Date.now() / 1000) {
-				Cookies.remove(this.key);
+				Cookies.remove('token');
 			} else {
-				if (this.urlParams.get('callbackUrl')) {
-					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${token}`;
-				}
-				else {
-					window.location.href = "main";
-				}
+				window.location.href = `${this.urlParams.get('callbackUrl')}?token=${token}`;
 			}
 		}
 	},
@@ -68,13 +69,10 @@ export default {
 
 			login(this.param).then(r => {
 				emitter.emit('showLoader', false);
-				Cookies.set(this.key, r.data, { expires: 1 });
+				Cookies.set('token', r.data, { expires: 1 });
 
 				if (this.urlParams.get('callbackUrl')) {
 					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data}`;
-				}
-				else {
-					window.location.href = "main";
 				}
 			}, err => {
 				emitter.emit('showLoader', false);

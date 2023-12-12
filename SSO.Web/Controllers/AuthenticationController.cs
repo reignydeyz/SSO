@@ -23,9 +23,20 @@ namespace SSO.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [AppIdValidator]
-        public IActionResult Init([FromQuery] InitLoginQuery form)
+        public async Task<IActionResult> Init([FromQuery] InitLoginQuery form)
         {
-            return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
+            try
+            {
+                await _mediator.Send(form);
+
+                Response.Cookies.Append("appId", form.AppId!.Value.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1), HttpOnly = false });
+
+                return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>

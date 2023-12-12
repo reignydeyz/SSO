@@ -49,7 +49,14 @@ namespace SSO.Infrastructure.Management
             return await apps.ToListAsync();
         }
 
-        public Task<string> GetPermissions(Guid applicationId)
+        public async Task<IEnumerable<string>> GetCallbackUrls(Guid applicationId)
+        {
+            var res = _context.ApplicationCallbacks.Where(x => x.ApplicationId == applicationId).Select(x => x.Url);
+
+            return await res.ToListAsync();
+        }
+
+        public Task<IEnumerable<string>> GetPermissions(Guid applicationId)
         {
             throw new NotImplementedException();
         }
