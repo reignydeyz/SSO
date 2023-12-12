@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
 {
-    public class LoginAsRootQueryHandler : IRequestHandler<LoginAsRootQuery, string>
+    public class LoginAsRootQueryHandler : IRequestHandler<LoginAsRootQuery, TokenDto>
     {
         readonly IAuthenticationService _authenticationService;
         readonly ITokenService _tokenService;
@@ -29,7 +29,7 @@ namespace SSO.Business.Authentication.Handlers
             _root = applicationRepository.FindOne(x => x.Name == "root").Result;
         }
 
-        public async Task<string> Handle(LoginAsRootQuery request, CancellationToken cancellationToken)
+        public async Task<TokenDto> Handle(LoginAsRootQuery request, CancellationToken cancellationToken)
         {
             await _authenticationService.Login(request.Username, request.Password);
 
@@ -51,9 +51,10 @@ namespace SSO.Business.Authentication.Handlers
 
             claims.AddRange((await _userClaimRepository.GetClaims(new Guid(user.Id), _root.ApplicationId)).ToList());
 
-            var token = _tokenService.GenerateToken(new ClaimsIdentity(claims));
+            var expires = DateTime.Now.AddMinutes(_root.TokenExpiration);
+            var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires);
 
-            return token;
+            return new TokenDto { AccessToken = token, Expires = expires };
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
 using SSO.Web.Filters;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace SSO.Web.Controllers
 {
@@ -29,6 +30,15 @@ namespace SSO.Web.Controllers
             {
                 await _mediator.Send(form);
 
+                if (Request.Cookies["token"] != null)
+                {
+                    var token = Request.Cookies["token"];
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+
+                    return Redirect($"{form.CallbackUrl}?token=");
+                }
+
                 Response.Cookies.Append("appId", form.AppId!.Value.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1), HttpOnly = false });
 
                 return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
@@ -53,6 +63,8 @@ namespace SSO.Web.Controllers
             {
                 var res = await _mediator.Send(form);
 
+                Response.Cookies.Append("token", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
+
                 return Ok(res);
             }
             catch (UnauthorizedAccessException)
@@ -73,6 +85,8 @@ namespace SSO.Web.Controllers
             try
             {
                 var res = await _mediator.Send(form);
+
+                Response.Cookies.Append("root", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
 
                 return Ok(res);
             }

@@ -1,8 +1,7 @@
 import Cookies from 'js-cookie';
 
 const canActivate = () => {
-    if (Cookies.get('root'))
-    {
+    if (Cookies.get('root')) {
         return true;
     }
 

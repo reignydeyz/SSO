@@ -13,7 +13,7 @@ namespace SSO.Infrastructure.Migrations
             migrationBuilder.InsertData(
                 table: "Applications",
                 columns: new[] { "ApplicationId", "Name", "TokenExpiration", "RefreshTokenExpiration", "CreatedBy", "DateCreated", "ModifiedBy", "DateModified" },
-                values: new object[] { new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), "root", 15, 1 * 60 * 24 * 2, "system", DateTimeOffset.Now, "system", DateTimeOffset.Now });
+                values: new object[] { new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6"), "root", 1 * 60 * 24, 1 * 60 * 24 * 7, "system", DateTimeOffset.Now, "system", DateTimeOffset.Now });
 
             #region Root permissions
             migrationBuilder.InsertData(

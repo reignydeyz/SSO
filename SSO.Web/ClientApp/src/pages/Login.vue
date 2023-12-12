@@ -32,7 +32,6 @@
 <script>
 import { login } from "@/services/authentication.service";
 import Cookies from 'js-cookie';
-import { jwtDecode } from "jwt-decode";
 import { emitter } from '@/services/emitter.service';
 
 export default {
@@ -53,14 +52,7 @@ export default {
 		if (Cookies.get('token')) {
 			var token = Cookies.get('token');
 
-			let decoded = jwtDecode(token);
-
-			// Check if the token is expired
-			if (decoded.exp < Date.now() / 1000) {
-				Cookies.remove('token');
-			} else {
-				window.location.href = `${this.urlParams.get('callbackUrl')}?token=${token}`;
-			}
+			window.location.href = `${this.urlParams.get('callbackUrl')}?token=${token}`;
 		}
 	},
 	methods: {
@@ -69,10 +61,9 @@ export default {
 
 			login(this.param).then(r => {
 				emitter.emit('showLoader', false);
-				Cookies.set('token', r.data, { expires: 1 });
 
 				if (this.urlParams.get('callbackUrl')) {
-					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data}`;
+					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
 				}
 			}, err => {
 				emitter.emit('showLoader', false);

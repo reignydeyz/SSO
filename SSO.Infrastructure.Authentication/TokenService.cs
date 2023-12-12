@@ -19,7 +19,7 @@ namespace SSO.Infrastructure.Authentication
             _jwtOptions = jwtOptions.Value;
         }
 
-        public string GenerateToken(ClaimsIdentity claims)
+        public string GenerateToken(ClaimsIdentity claims, DateTime? expiry = null)
         {
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.Secret));
 
@@ -27,7 +27,7 @@ namespace SSO.Infrastructure.Authentication
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1), // TODO: Make expiry configurable
+                Expires = expiry ?? DateTime.Now.AddDays(1),
                 Issuer = TokenValidationParamConstants.Issuer,
                 Audience = TokenValidationParamConstants.Audience,
                 SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)

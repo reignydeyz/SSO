@@ -4,6 +4,6 @@ namespace SSO.Domain.Authentication.Interfaces
 {
     public interface ITokenService
     {
-        string GenerateToken(ClaimsIdentity claims);
+        string GenerateToken(ClaimsIdentity claims, DateTime? expiry = null);
     }
 }

@@ -32,7 +32,6 @@
 <script>
 import { loginAsRoot } from "@/services/authentication.service";
 import Cookies from 'js-cookie';
-import { jwtDecode } from "jwt-decode";
 import { emitter } from '@/services/emitter.service';
 
 export default {
@@ -41,16 +40,7 @@ export default {
 	}),
 	mounted() {
 		if (Cookies.get('root')) {
-			var token = Cookies.get('root');
-
-			let decoded = jwtDecode(token);
-
-			// Check if the token is expired
-			if (decoded.exp < Date.now() / 1000) {
-				Cookies.remove('root');
-			} else {
-				window.location.href = 'main';
-			}
+			window.location.href = 'main';
 		}
 	},
 	methods: {
@@ -59,7 +49,6 @@ export default {
 
 			loginAsRoot(this.param).then(r => {
 				emitter.emit('showLoader', false);
-				Cookies.set('root', r.data, { expires: 1 });
 
 				window.location.href = 'main';
 			}, err => {
