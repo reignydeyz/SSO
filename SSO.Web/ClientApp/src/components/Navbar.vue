@@ -45,7 +45,7 @@
             <div class="sidepanel-inner d-flex flex-column">
                 <a href="#" id="sidepanel-close" class="sidepanel-close d-xl-none" @click="onMenuClose()">&times;</a>
                 <div class="app-branding">
-                    <router-link to="/" class="app-logo">
+                    <router-link to="/main" class="app-logo">
                         <img class="logo-icon me-2" :src="require('@/assets/logo.png')" alt="logo" /><span
                             class="logo-text">SSO</span>
                     </router-link>
@@ -57,7 +57,7 @@
                         <li class="nav-item">
                             <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
 
-                            <router-link to="/" class="nav-link">
+                            <router-link to="/main" class="nav-link">
                                 <span class="nav-icon">
                                     <i class="fas fa-home"></i>
                                 </span>

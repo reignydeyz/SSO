@@ -12,12 +12,9 @@ namespace SSO.Web.Filters
             var appRepo = context.HttpContext.RequestServices.GetService<IApplicationRepository>();
 
             var form = context.ActionArguments["form"] as AuthDto;
-            
-            if (form.AppId.HasValue)
-            {
-                if (!(await appRepo.Any(x => x.ApplicationId == form.AppId! && x.DateInactive == null)))
-                    context.Result = new StatusCodeResult(404);
-            }
+
+            if (!(await appRepo.Any(x => x.ApplicationId == form.AppId! && x.DateInactive == null)))
+                context.Result = new StatusCodeResult(404);
 
             if (context.Result is null)
                 await next();

@@ -21,6 +21,10 @@ export default {
         emitter.on("showLoader", (e) => {
             this.loading = e;
         });
+        
+        if (this.isAuthenticated()) {
+            document.body.style.backgroundColor = "#F5F6FE";
+        }
     },
     methods: {
         isAuthenticated() {
@@ -33,7 +37,7 @@ export default {
 <style>
 :root {
     --primary-color: #F80;
-    --highlight-color: #f4e6fb;
+    --highlight-color: #fff3e5;
 }
 
 .btn-danger,

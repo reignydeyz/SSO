@@ -39,6 +39,16 @@ namespace SSO.Infrastructure.Management
             return await _context.Applications.FirstOrDefaultAsync(predicate);
         }
 
+        public async Task<IEnumerable<Application>> GetAppsByUserId(Guid userId)
+        {
+            var roleIds = _context.UserRoles.Where(x => x.UserId == userId.ToString())
+                        .Select(x => x.RoleId);
+
+            var apps = _context.Roles.Where(x => roleIds.Contains(x.Id.ToString())).Select(x => x.Application);
+
+            return await apps.ToListAsync();
+        }
+
         public Task<string> GetPermissions(Guid applicationId)
         {
             throw new NotImplementedException();

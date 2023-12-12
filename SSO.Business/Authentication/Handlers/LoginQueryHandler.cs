@@ -2,7 +2,7 @@
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
-using SSO.Domain.UserManegement.Interfaces;
+using SSO.Domain.UserManagement.Interfaces;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
@@ -32,13 +32,11 @@ namespace SSO.Business.Authentication.Handlers
         {
             await _authenticationService.Login(request.Username, request.Password);
 
-            // TODO: Get appId of root
-            request.AppId ??= new Guid("69f900c3-dc6a-44e6-9988-50bba13542c6");
-
             var user = await _userRepo.GetByEmail(request.Username);
             var roles = await _userRoleRepo.Roles(request.Username, request.AppId.Value);
 
             var claims = new List<Claim>() {
+                new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
                 new Claim(ClaimTypes.Email, user.Email)
             };

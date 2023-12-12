@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SSO.Business.Authentication.Handlers;
+using SSO.Business.Mappings;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
-using SSO.Domain.UserManegement.Interfaces;
+using SSO.Domain.UserManagement.Interfaces;
 using SSO.Infrastructure;
 using SSO.Infrastructure.Authentication;
 using SSO.Infrastructure.Management;
@@ -25,6 +26,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<AppDbContext>();
@@ -73,8 +76,6 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JWT"));
 
 var app = builder.Build();
-
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 app.UseRouting();
 app.UseSpaStaticFiles();

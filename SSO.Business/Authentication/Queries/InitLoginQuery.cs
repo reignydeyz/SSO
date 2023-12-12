@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MediatR;
+using System.ComponentModel.DataAnnotations;
 
 namespace SSO.Business.Authentication.Queries
 {
-    public class InitLoginQuery : AuthDto
+    public class InitLoginQuery : AuthDto, IRequest<Unit>
     {
         [Url(ErrorMessage = "Not a valid Uri.")]
         public string CallbackUrl { get; set; }

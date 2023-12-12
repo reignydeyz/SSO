@@ -22,3 +22,13 @@
         <!--//row-->
     </div>
 </template>
+
+<script>
+import * as navbar from "@/services/navbar.service";
+
+export default {
+    mounted() {
+        navbar.init(this.$route);
+    }
+}
+</script>
