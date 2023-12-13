@@ -3,7 +3,6 @@ using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
-using SSO.Domain.UserManagement.Interfaces;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
