@@ -32,9 +32,10 @@ namespace SSO.Business.Authentication.Handlers
 
         public async Task<TokenDto> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
-            await _authenticationService.Login(request.Username, request.Password);
-
             var app = await _appRepo.FindOne(x => x.ApplicationId == request.AppId);
+
+            await _authenticationService.Login(request.Username, request.Password, app);
+
             var user = await _userRepo.GetByEmail(request.Username);
             var roles = await _userRoleRepo.Roles(request.Username, request.AppId.Value);
 

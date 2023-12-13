@@ -1,4 +1,6 @@
-﻿namespace SSO.Domain.Authentication.Interfaces
+﻿using SSO.Domain.Models;
+
+namespace SSO.Domain.Authentication.Interfaces
 {
     public interface IAuthenticationService
     {
@@ -7,6 +9,7 @@
         /// </summary>
         /// <param name="username"></param>
         /// <param name="password"></param>
-        Task Login(string username, string password);
+        /// <param name="app"></param>
+        Task Login(string username, string password, Application app);
     }
 }

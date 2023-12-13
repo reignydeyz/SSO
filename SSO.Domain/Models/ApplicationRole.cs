@@ -2,7 +2,7 @@
 
 namespace SSO.Domain.Models
 {
-    public class ApplicationRole : IdentityRole
+    public class ApplicationRole : IdentityRole<string>
     {
         public Guid ApplicationId { get; set; }
 

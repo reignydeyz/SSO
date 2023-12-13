@@ -67,9 +67,9 @@ namespace SSO.Web.Controllers
 
                 return Ok(res);
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized();
+                return Unauthorized(ex.Message);
             }
         }
 
@@ -94,9 +94,9 @@ namespace SSO.Web.Controllers
             {
                 return Unauthorized();
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized();
+                return Unauthorized(ex.Message);
             }
         }
     }

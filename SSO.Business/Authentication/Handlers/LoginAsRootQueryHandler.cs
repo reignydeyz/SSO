@@ -31,7 +31,7 @@ namespace SSO.Business.Authentication.Handlers
 
         public async Task<TokenDto> Handle(LoginAsRootQuery request, CancellationToken cancellationToken)
         {
-            await _authenticationService.Login(request.Username, request.Password);
+            await _authenticationService.Login(request.Username, request.Password, _root);
 
             var user = await _userRepo.GetByEmail(request.Username);
             var roles = await _userRoleRepo.Roles(request.Username, _root.ApplicationId);
