@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
 using SSO.Web.Filters;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace SSO.Web.Controllers
 {
@@ -30,22 +29,26 @@ namespace SSO.Web.Controllers
             {
                 await _mediator.Send(form);
 
+                Response.Cookies.Append("appId", form.AppId!.Value.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1), HttpOnly = false });
+
                 if (Request.Cookies["token"] != null)
                 {
-                    var token = Request.Cookies["token"];
-                    var tokenHandler = new JwtSecurityTokenHandler();
-                    var jsonToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+                    var token = await _mediator.Send(new SwitchAppQuery { Token = Request.Cookies["token"], AppId = form.AppId });
 
-                    return Redirect($"{form.CallbackUrl}?token=");
+                    Response.Cookies.Append("token", token.AccessToken, new CookieOptions { Expires = token.Expires, HttpOnly = false });
+
+                    return Redirect($"{form.CallbackUrl}?token={token.AccessToken}");
                 }
-
-                Response.Cookies.Append("appId", form.AppId!.Value.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1), HttpOnly = false });
 
                 return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
             }
             catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
             }
         }
 

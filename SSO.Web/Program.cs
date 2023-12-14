@@ -99,7 +99,7 @@ app.UseSpaStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapWhen(r => !(r.Request.Path.Value.StartsWith("/swagger") || r.Request.Path.Value.StartsWith("/api")), builder => {
+app.MapWhen(r => !r.Request.Path.Value.StartsWith("/api"), builder => {
     builder.UseSpa(spa =>
     {
         spa.Options.SourcePath = "ClientApp/";

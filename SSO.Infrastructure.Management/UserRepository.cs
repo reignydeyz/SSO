@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Linq.Expressions;
@@ -8,10 +9,12 @@ namespace SSO.Infrastructure.Management
     public class UserRepository : IUserRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly AppDbContext _context;
 
-        public UserRepository(UserManager<ApplicationUser> userManager)
+        public UserRepository(UserManager<ApplicationUser> userManager, AppDbContext context)
         {
             _userManager = userManager;
+            _context = context;
         }
 
         public Task<ApplicationUser> Add(ApplicationUser param)
@@ -39,9 +42,9 @@ namespace SSO.Infrastructure.Management
             return user;
         }
 
-        public Task<ApplicationUser> FindOne(Expression<Func<ApplicationUser, bool>> predicate)
+        public async Task<ApplicationUser> FindOne(Expression<Func<ApplicationUser, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.ApplicationUsers.FirstOrDefaultAsync(predicate);
         }
 
         public Task<ApplicationUser> Update(ApplicationUser param)
