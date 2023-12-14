@@ -14,9 +14,13 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public Task<Application> Add(Application param)
+        public async Task<Application> Add(Application param)
         {
-            throw new NotImplementedException();
+            _context.Add(param);
+
+            await _context.SaveChangesAsync();
+
+            return param;
         }
 
         public async Task<bool> Any(Expression<Func<Application, bool>> predicate)

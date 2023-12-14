@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SSO.Business.Applications;
+using SSO.Business.Applications.Commands;
 using SSO.Domain.Models;
 
 namespace SSO.Business.Mappings
@@ -9,6 +10,9 @@ namespace SSO.Business.Mappings
         public ApplicationProfile()
         {
             CreateMap<Application, ApplicationDto>()
+                .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
+
+            CreateMap<CreateAppCommand, Application>()
                 .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
         }
     }

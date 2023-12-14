@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Mappings;
 using SSO.Domain.Authentication.Interfaces;
@@ -14,6 +15,7 @@ using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
 using SSO.Infrastructure.Settings.Options;
 using SSO.Web.AuthenticationHandlers;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using VueCliMiddleware;
@@ -95,6 +97,40 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JWT"));
 
+builder.Services.AddSwaggerGen(x =>
+{
+    x.SwaggerDoc("Client", new OpenApiInfo { Title = "Client", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
+    x.SwaggerDoc("System", new OpenApiInfo { Title = "System", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    x.IncludeXmlComments(xmlPath);
+
+    x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    x.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
 var app = builder.Build();
 
 #if DEBUG
@@ -106,7 +142,9 @@ app.UseSpaStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapWhen(r => !r.Request.Path.Value.StartsWith("/api"), builder => {
+app.MapWhen(r => !(r.Request.Path.Value.StartsWith("/swagger")
+        || r.Request.Path.Value.StartsWith("/api")), builder =>
+{
     builder.UseSpa(spa =>
     {
         spa.Options.SourcePath = "ClientApp/";
@@ -117,5 +155,12 @@ app.MapWhen(r => !r.Request.Path.Value.StartsWith("/api"), builder => {
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/Client/swagger.json", "Client");
+    options.SwaggerEndpoint("/swagger/System/swagger.json", "System");
+});
 
 app.Run();

@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace SSO.Web.Controllers
 {
+    [ApiExplorerSettings(GroupName = "System")]
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]

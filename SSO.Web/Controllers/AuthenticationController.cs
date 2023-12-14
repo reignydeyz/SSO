@@ -23,6 +23,7 @@ namespace SSO.Web.Controllers
         /// <returns></returns>
         [HttpGet]
         [AppIdValidator]
+        [ApiExplorerSettings(GroupName = "Client")]
         public async Task<IActionResult> Init([FromQuery] InitLoginQuery form)
         {
             try
@@ -60,6 +61,7 @@ namespace SSO.Web.Controllers
         [HttpPost]
         [AppIdValidator]
         [ProducesResponseType(typeof(string), 200)]
+        [ApiExplorerSettings(GroupName = "System")]
         public async Task<IActionResult> Login([FromBody] LoginQuery form)
         {
             try
@@ -83,6 +85,7 @@ namespace SSO.Web.Controllers
         /// <returns></returns>
         [HttpPost("root")]
         [ProducesResponseType(typeof(string), 200)]
+        [ApiExplorerSettings(GroupName = "System")]
         public async Task<IActionResult> LoginAsRoot([FromBody] LoginAsRootQuery form)
         {
             try
