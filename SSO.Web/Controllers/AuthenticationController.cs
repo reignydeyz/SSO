@@ -46,9 +46,9 @@ namespace SSO.Web.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
-                return Unauthorized(ex.Message);
+                return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
             }
         }
 
