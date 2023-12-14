@@ -27,6 +27,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Apply Migrations
+using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
+
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
