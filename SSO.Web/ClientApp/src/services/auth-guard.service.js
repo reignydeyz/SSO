@@ -5,7 +5,7 @@ const canActivate = () => {
         return true;
     }
 
-    window.location.href = "/root";
+    window.location.href = "/";
     return false;
 }
 

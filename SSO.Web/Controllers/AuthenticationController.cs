@@ -41,7 +41,7 @@ namespace SSO.Web.Controllers
                     return Redirect($"{form.CallbackUrl}?token={token.AccessToken}");
                 }
 
-                return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
+                return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
             }
             catch (ArgumentException ex)
             {
@@ -49,7 +49,7 @@ namespace SSO.Web.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return Redirect($"{Request.Scheme}://{Request.Host}?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
+                return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
             }
         }
 
