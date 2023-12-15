@@ -30,7 +30,7 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ApplicationRole>> Find(Expression<Func<ApplicationRole, bool>>? predicate)
+        public Task<IQueryable<ApplicationRole>> Find(Expression<Func<ApplicationRole, bool>>? predicate)
         {
             throw new NotImplementedException();
         }

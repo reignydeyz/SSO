@@ -29,7 +29,7 @@ namespace SSO.Domain.Interfaces
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        Task<IEnumerable<T>> Find(Expression<Func<T, bool>>? predicate);
+        Task<IQueryable<T>> Find(Expression<Func<T, bool>>? predicate);
 
         /// <summary>
         /// Gets one entity

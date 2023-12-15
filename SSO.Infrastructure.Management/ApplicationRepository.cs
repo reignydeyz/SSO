@@ -33,9 +33,9 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Application>> Find(Expression<Func<Application, bool>>? predicate)
+        public async Task<IQueryable<Application>> Find(Expression<Func<Application, bool>>? predicate)
         {
-            throw new NotImplementedException();
+            return _context.Applications.AsQueryable();
         }
 
         public async Task<Application> FindOne(Expression<Func<Application, bool>> predicate)

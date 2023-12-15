@@ -27,7 +27,7 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
+        public Task<IQueryable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
         {
             throw new NotImplementedException();
         }
