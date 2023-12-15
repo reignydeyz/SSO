@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SSO.Business.Applications;
 using SSO.Business.Applications.Commands;
+using System.Security.Claims;
 
 namespace SSO.Web.Controllers
 {
@@ -10,6 +14,13 @@ namespace SSO.Web.Controllers
     [ApiController]
     public class ApplicationController : ControllerBase
     {
+        readonly IMediator _mediator;
+
+        public ApplicationController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
         /// <summary>
         /// Creates new app
         /// </summary>
@@ -17,9 +28,21 @@ namespace SSO.Web.Controllers
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         [HttpPost]
-        public IActionResult Create([FromBody] CreateAppCommand param)
+        [ProducesResponseType(typeof(ApplicationDto), 200)]
+        public async Task<IActionResult> Create([FromBody] CreateAppCommand param)
         {
-            throw new NotImplementedException();
+            try
+            {
+                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+
+                var res = await _mediator.Send(param);
+
+                return Ok(res);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict();
+            }
         }
     }
 }

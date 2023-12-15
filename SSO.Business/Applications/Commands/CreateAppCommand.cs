@@ -10,6 +10,6 @@ namespace SSO.Business.Applications.Commands
         public string Name { get; set; }
 
         [JsonIgnore]
-        public string Author { get; set; }
+        public string? Author { get; set; }
     }
 }
