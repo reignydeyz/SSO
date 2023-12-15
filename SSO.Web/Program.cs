@@ -13,7 +13,7 @@ using SSO.Infrastructure;
 using SSO.Infrastructure.Authentication;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
-using SSO.Infrastructure.Settings.Options;
+using SSO.Infrastructure.Settings.Services;
 using SSO.Web.AuthenticationHandlers;
 using System.Reflection;
 using System.Security.Claims;
@@ -48,6 +48,10 @@ builder.Services.AddControllers();
 builder.Services.AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
 
+builder.Services.AddMemoryCache();
+
+var jwtSecret = Guid.NewGuid().ToString();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -64,7 +68,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = TokenValidationParamConstants.Audience,
         ValidIssuer = TokenValidationParamConstants.Issuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
     };
 });
 
@@ -86,6 +90,9 @@ builder.Services.AddSpaStaticFiles(configuration =>
     configuration.RootPath = "ClientApp/dist";
 });
 
+// Register the JwtSecret as a singleton service
+builder.Services.AddSingleton(_ => new JwtSecretService(jwtSecret));
+
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
@@ -94,8 +101,6 @@ builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IUserClaimRepository, UserClaimRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
-
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("JWT"));
 
 builder.Services.AddSwaggerGen(x =>
 {

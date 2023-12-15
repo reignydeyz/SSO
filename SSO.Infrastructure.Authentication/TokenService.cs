@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Infrastructure.Settings.Constants;
-using SSO.Infrastructure.Settings.Options;
+using SSO.Infrastructure.Settings.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -11,17 +10,16 @@ namespace SSO.Infrastructure.Authentication
 {
     public class TokenService : ITokenService
     {
+        readonly string _jwtSecret;
 
-        private readonly JwtOptions _jwtOptions;
-
-        public TokenService(IOptions<JwtOptions> jwtOptions)
+        public TokenService(JwtSecretService jwtSecretService)
         {
-            _jwtOptions = jwtOptions.Value;
+            _jwtSecret = jwtSecretService.Secret;
         }
 
         public string GenerateToken(ClaimsIdentity claims, DateTime? expiry = null)
         {
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtOptions.Secret));
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSecret));
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
