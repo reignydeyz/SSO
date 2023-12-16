@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { loginAsRoot } from "@/services/authentication.service";
+import { loginToSystem } from "@/services/authentication.service";
 import Cookies from 'js-cookie';
 import { emitter } from '@/services/emitter.service';
 
@@ -43,18 +43,18 @@ export default {
 		document.title = 'Login | System';
 	},
 	mounted() {
-		if (Cookies.get('root')) {
-			window.location.href = 'main';
+		if (Cookies.get('system')) {
+			window.location.href = 'init';
 		}
 	},
 	methods: {
 		submit() {
 			emitter.emit('showLoader', true);
 
-			loginAsRoot(this.param).then(r => {
+			loginToSystem(this.param).then(r => {
 				emitter.emit('showLoader', false);
 
-				window.location.href = 'main';
+				window.location.href = 'init';
 			}, err => {
 				emitter.emit('showLoader', false);
 				alert('Access denied.');

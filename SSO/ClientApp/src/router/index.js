@@ -4,8 +4,8 @@ import { canActivate } from '@/services/auth-guard.service'
 const routes = [
     {
         path: "/",
-        name: "Root",
-        component: () => import('@/pages/Root.vue'),
+        name: "System",
+        component: () => import('@/pages/System.vue'),
     },
     {
         path: "/login",

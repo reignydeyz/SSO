@@ -17,7 +17,7 @@ namespace SSO.Controllers
         }
 
         /// <summary>
-        /// Request for login page
+        /// Request for app login
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
@@ -54,7 +54,7 @@ namespace SSO.Controllers
         }
 
         /// <summary>
-        /// Gets access token
+        /// Authentication for app user
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
@@ -79,20 +79,20 @@ namespace SSO.Controllers
         }
 
         /// <summary>
-        /// Gets access token as root
+        /// Authentication for system
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        [HttpPost("root")]
+        [HttpPost("system")]
         [ProducesResponseType(typeof(string), 200)]
         [ApiExplorerSettings(GroupName = "System")]
-        public async Task<IActionResult> LoginAsRoot([FromBody] LoginAsRootQuery form)
+        public async Task<IActionResult> LoginToSystem([FromBody] LoginToSystemQuery form)
         {
             try
             {
                 var res = await _mediator.Send(form);
 
-                Response.Cookies.Append("root", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
+                Response.Cookies.Append("system", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
 
                 return Ok(res);
             }

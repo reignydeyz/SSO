@@ -1,16 +1,16 @@
 <template>
-    <Navbar v-if="isAuthenticated()" />
-    <div v-bind:class="isAuthenticated() ? 'app-wrapper' : 'row g-0 app-auth-wrapper'">
+    <Navbar v-if="isRoot()" />
+    <div v-bind:class="isRoot() ? 'app-wrapper' : 'row g-0 app-auth-wrapper'">
         <router-view />
     </div>
     <Loader v-show="loading" />
 </template>
 
 <script>
-import Cookies from 'js-cookie';
 import Navbar from "@/components/Navbar.vue";
 import Loader from "@/components/Loader.vue";
 import { emitter } from '@/services/emitter.service';
+import { hasRootAccess } from '@/services/account.service';
 
 export default {
     components: { Navbar, Loader },
@@ -22,13 +22,13 @@ export default {
             this.loading = e;
         });
         
-        if (this.isAuthenticated()) {
+        if (this.isRoot()) {
             document.body.style.backgroundColor = "#F5F6FE";
         }
     },
     methods: {
-        isAuthenticated() {
-            return Cookies.get('root') != null;
+        isRoot() {
+            return hasRootAccess();
         }
     }
 }

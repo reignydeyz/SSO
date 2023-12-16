@@ -12,8 +12,8 @@ using SSO.Infrastructure;
 namespace SSO.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231208115559_Initial")]
-    partial class Initial
+    [Migration("20231216130229_Seed")]
+    partial class Seed
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -102,6 +102,9 @@ namespace SSO.Infrastructure.Migrations
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<short>("MaxAccessFailedCount")
+                        .HasColumnType("smallint");
+
                     b.Property<string>("ModifiedBy")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -124,6 +127,20 @@ namespace SSO.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Applications");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.ApplicationCallback", b =>
+                {
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("ApplicationId", "Url");
+
+                    b.ToTable("ApplicationCallbacks");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationPermission", b =>
@@ -198,10 +215,12 @@ namespace SSO.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("PermissionId")
                         .HasColumnType("uniqueidentifier");
@@ -231,6 +250,29 @@ namespace SSO.Infrastructure.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasDefaultValue("admin");
+
+                    b.Property<DateTime?>("DateConfirmed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateCreated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<DateTime?>("DateInactive")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -245,6 +287,12 @@ namespace SSO.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasDefaultValue("admin");
 
+                    b.Property<DateTime?>("LastFailedPasswordAttempt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastLoginDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -252,11 +300,28 @@ namespace SSO.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasDefaultValue("admin");
 
+                    b.Property<DateTime?>("LastPasswordChanged")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastSessionId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasDefaultValue("35c7c988-7c48-4f13-bf41-4edbd060a394");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasDefaultValue("admin");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -265,6 +330,9 @@ namespace SSO.Infrastructure.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("PasswordExpiry")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -368,6 +436,17 @@ namespace SSO.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.ApplicationCallback", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Application", "Application")
+                        .WithMany("Callbacks")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.ApplicationPermission", b =>
                 {
                     b.HasOne("SSO.Domain.Models.Application", "Application")
@@ -426,6 +505,8 @@ namespace SSO.Infrastructure.Migrations
 
             modelBuilder.Entity("SSO.Domain.Models.Application", b =>
                 {
+                    b.Navigation("Callbacks");
+
                     b.Navigation("Permissions");
                 });
 #pragma warning restore 612, 618

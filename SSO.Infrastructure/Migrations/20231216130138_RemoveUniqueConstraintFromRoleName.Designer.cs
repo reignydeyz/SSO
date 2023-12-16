@@ -12,8 +12,8 @@ using SSO.Infrastructure;
 namespace SSO.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231213033302_ApplicationUserProperties")]
-    partial class ApplicationUserProperties
+    [Migration("20231216130138_RemoveUniqueConstraintFromRoleName")]
+    partial class RemoveUniqueConstraintFromRoleName
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,6 +101,9 @@ namespace SSO.Infrastructure.Migrations
 
                     b.Property<DateTimeOffset>("DateModified")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<short>("MaxAccessFailedCount")
+                        .HasColumnType("smallint");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired()
@@ -212,10 +215,12 @@ namespace SSO.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid>("PermissionId")
                         .HasColumnType("uniqueidentifier");

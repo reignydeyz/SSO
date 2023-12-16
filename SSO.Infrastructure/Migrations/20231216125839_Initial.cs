@@ -19,6 +19,7 @@ namespace SSO.Infrastructure.Migrations
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     TokenExpiration = table.Column<int>(type: "int", nullable: false),
                     RefreshTokenExpiration = table.Column<int>(type: "int", nullable: false),
+                    MaxAccessFailedCount = table.Column<short>(type: "smallint", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     DateCreated = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     ModifiedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -37,6 +38,17 @@ namespace SSO.Infrastructure.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: "admin"),
                     LastName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: "admin"),
+                    PasswordExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastSessionId = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: "35c7c988-7c48-4f13-bf41-4edbd060a394"),
+                    LastLoginDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastPasswordChanged = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastFailedPasswordAttempt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DateConfirmed = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
+                    CreatedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: "admin"),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, defaultValue: "admin"),
+                    DateInactive = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -55,6 +67,24 @@ namespace SSO.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApplicationCallbacks",
+                columns: table => new
+                {
+                    ApplicationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationCallbacks", x => new { x.ApplicationId, x.Url });
+                    table.ForeignKey(
+                        name: "FK_ApplicationCallbacks_Applications_ApplicationId",
+                        column: x => x.ApplicationId,
+                        principalTable: "Applications",
+                        principalColumn: "ApplicationId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -174,8 +204,8 @@ namespace SSO.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PermissionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ClaimType = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ClaimValue = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -305,6 +335,9 @@ namespace SSO.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ApplicationCallbacks");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 

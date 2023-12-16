@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 
-const canActivate = () => {
-    if (Cookies.get('root')) {
+const canActivate = (to) => {
+    if (Cookies.get('token')) {
         return true;
     }
 

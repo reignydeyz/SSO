@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
 {
-    public class LoginAsRootQueryHandler : IRequestHandler<LoginAsRootQuery, TokenDto>
+    public class LoginToSystemQueryHandler : IRequestHandler<LoginToSystemQuery, TokenDto>
     {
         readonly IAuthenticationService _authenticationService;
         readonly ITokenService _tokenService;
@@ -16,7 +16,7 @@ namespace SSO.Business.Authentication.Handlers
         readonly IUserClaimRepository _userClaimRepository;
         readonly Application _root;
 
-        public LoginAsRootQueryHandler(IAuthenticationService authenticationService, ITokenService tokenService,
+        public LoginToSystemQueryHandler(IAuthenticationService authenticationService, ITokenService tokenService,
             IApplicationRepository applicationRepository,
             IUserRepository userRepo, IUserRoleRepository userRoleRepo, IUserClaimRepository userClaimRepository)
         {
@@ -28,27 +28,31 @@ namespace SSO.Business.Authentication.Handlers
             _root = applicationRepository.FindOne(x => x.Name == "root").Result;
         }
 
-        public async Task<TokenDto> Handle(LoginAsRootQuery request, CancellationToken cancellationToken)
+        public async Task<TokenDto> Handle(LoginToSystemQuery request, CancellationToken cancellationToken)
         {
             await _authenticationService.Login(request.Username, request.Password, _root);
 
             var user = await _userRepo.GetByEmail(request.Username);
+
+            // Checks root access
             var roles = await _userRoleRepo.Roles(request.Username, _root.ApplicationId);
 
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.System, _root.ApplicationId.ToString())
+                new Claim(ClaimTypes.Email, user.Email)
             };
 
-            if (!roles.Any())
-                throw new UnauthorizedAccessException();
+            // Has root access
+            if (roles.Any())
+            {
+                claims.Add(new Claim(ClaimTypes.System, _root.ApplicationId.ToString()));
 
-            foreach (var role in roles)
-                claims.Add(new Claim(ClaimTypes.Role, role.Name!));
+                foreach (var role in roles)
+                    claims.Add(new Claim(ClaimTypes.Role, role.Name!));
 
-            claims.AddRange((await _userClaimRepository.GetClaims(new Guid(user.Id), _root.ApplicationId)).ToList());
+                claims.AddRange((await _userClaimRepository.GetClaims(new Guid(user.Id), _root.ApplicationId)).ToList());
+            }
 
             var expires = DateTime.Now.AddMinutes(_root.TokenExpiration);
             var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires);
