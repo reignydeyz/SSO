@@ -1,9 +1,12 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
+using SSO.Business.Applications;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Mappings;
 using SSO.Domain.Authentication.Interfaces;
@@ -14,13 +17,10 @@ using SSO.Infrastructure.Authentication;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
 using SSO.Infrastructure.Settings.Services;
-using SSO.Web.AuthenticationHandlers;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using VueCliMiddleware;
-using AuthenticationService = SSO.Infrastructure.Authentication.AuthenticationService;
-using IAuthenticationService = SSO.Domain.Authentication.Interfaces.IAuthenticationService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,26 +29,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Apply Migrations
 using (var scope = builder.Services.BuildServiceProvider().CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.Migrate();
 }
 
-builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
-
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<AppDbContext>();
 
+builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginQueryHandler>());
-
-builder.Services.AddControllers();
-
-builder.Services.AddAuthentication("Basic")
-    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
-
-builder.Services.AddMemoryCache();
 
 var jwtSecret = Guid.NewGuid().ToString();
 
@@ -83,11 +75,6 @@ builder.Services.AddAuthorization(options =>
         policy.RequireAuthenticatedUser();
         policy.RequireClaim(ClaimTypes.System);
     });
-});
-
-builder.Services.AddSpaStaticFiles(configuration =>
-{
-    configuration.RootPath = "ClientApp/dist";
 });
 
 // Register the JwtSecret as a singleton service
@@ -136,19 +123,18 @@ builder.Services.AddSwaggerGen(x =>
     });
 });
 
+builder.Services.AddControllers()
+    .AddOData(options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents("odata", GetEdmModel()));
+
 var app = builder.Build();
 
-#if DEBUG
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-#endif
+// Configure the HTTP request pipeline.
 
-app.UseRouting();
-app.UseSpaStaticFiles();
-app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapWhen(r => !(r.Request.Path.Value.StartsWith("/swagger")
-        || r.Request.Path.Value.StartsWith("/api")), builder =>
+string[] prefixes = { "/swagger", "/api", "/odata" };
+
+app.MapWhen(r => !prefixes.Any(p => r.Request.Path.Value.StartsWith(p)), builder =>
 {
     builder.UseSpa(spa =>
     {
@@ -157,9 +143,7 @@ app.MapWhen(r => !(r.Request.Path.Value.StartsWith("/swagger")
     });
 });
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllers();
 
 app.UseSwagger();
 app.UseSwaggerUI(options =>
@@ -169,3 +153,15 @@ app.UseSwaggerUI(options =>
 });
 
 app.Run();
+
+IEdmModel GetEdmModel()
+{
+    var builder = new ODataConventionModelBuilder();
+
+    builder.EntitySet<ApplicationDto>("Application")
+        .EntityType.HasKey(x => x.ApplicationId);
+
+    builder.EnableLowerCamelCase();
+
+    return builder.GetEdmModel();
+}

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using SSO.Business.Authentication;
 using SSO.Domain.Management.Interfaces;
 
-namespace SSO.Web.Filters
+namespace SSO.Filters
 {
     public class AppIdValidatorAttribute : ActionFilterAttribute, IAsyncActionFilter
     {

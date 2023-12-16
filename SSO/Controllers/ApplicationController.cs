@@ -1,12 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
 using SSO.Business.Applications;
 using SSO.Business.Applications.Commands;
+using SSO.Business.Applications.Queries;
 using System.Security.Claims;
 
-namespace SSO.Web.Controllers
+namespace SSO.Controllers
 {
     [ApiExplorerSettings(GroupName = "System")]
     [Authorize(Policy = "RootPolicy")]
@@ -19,6 +21,17 @@ namespace SSO.Web.Controllers
         public ApplicationController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        /// <summary>
+        /// Finds apps
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [EnableQuery]
+        public IQueryable<ApplicationDto> Get()
+        {
+            return _mediator.Send(new GetApplicationsQuery { }).Result;
         }
 
         /// <summary>

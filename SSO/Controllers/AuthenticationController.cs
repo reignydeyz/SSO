@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
-using SSO.Web.Filters;
+using SSO.Filters;
 
-namespace SSO.Web.Controllers
+namespace SSO.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

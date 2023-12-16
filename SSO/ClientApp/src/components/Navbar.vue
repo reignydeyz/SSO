@@ -102,7 +102,7 @@ export default {
 
         logOut() {
             Cookies.remove('root');
-            location.reload();
+            window.location.href = '/';
         },
     },
 };
