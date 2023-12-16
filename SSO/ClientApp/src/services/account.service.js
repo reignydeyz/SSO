@@ -10,7 +10,7 @@ const hasRootAccess = () => {
 
     const decoded = jwtDecode(token);
 
-    return !!decoded.system;
+    return !!decoded.role;
 }
 
 export {

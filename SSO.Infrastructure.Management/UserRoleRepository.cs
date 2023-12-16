@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 
@@ -48,10 +47,11 @@ namespace SSO.Infrastructure.Management
             if (user is null)
                 throw new ArgumentNullException();
 
-            var roles = await _userManager.GetRolesAsync(user);
+            var roles = from r in _context.Roles.Where(x => x.ApplicationId == applicationId)
+                      join ur in _context.UserRoles.Where(x => x.UserId == user.Id) on r.Id equals ur.RoleId
+                      select r;
 
-            return _context.Roles.Include(x => x.Application).Where(x => roles.Contains(x.Name)
-                    && x.ApplicationId == applicationId);
+            return roles;
         }
     }
 }
