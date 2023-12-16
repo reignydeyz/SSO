@@ -10,8 +10,7 @@ using System.Security.Claims;
 
 namespace SSO.Controllers
 {
-    [ApiExplorerSettings(GroupName = "System")]
-    [Authorize(Policy = "RootPolicy")]
+    [ApiExplorerSettings(GroupName = "System")]    
     [Route("api/[controller]")]
     [ApiController]
     public class ApplicationController : ControllerBase
@@ -29,9 +28,30 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpGet]
         [EnableQuery]
-        public IQueryable<ApplicationDto> Get()
+        [Authorize(Policy = "RootPolicy")]
+        public IQueryable<ApplicationDto> Find()
         {
             return _mediator.Send(new GetApplicationsQuery { }).Result;
+        }
+
+        /// <summary>
+        /// Gets app by Id
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpGet("{appId}")]
+        public async Task<IActionResult> Get([FromRoute] GetAppByIdQuery param)
+        {
+            try
+            {
+                var res = await _mediator.Send(param);
+
+                return Ok(res);
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>
@@ -42,6 +62,7 @@ namespace SSO.Controllers
         /// <exception cref="NotImplementedException"></exception>
         [HttpPost]
         [ProducesResponseType(typeof(ApplicationDto), 200)]
+        [Authorize(Policy = "RootPolicy")]
         public async Task<IActionResult> Create([FromBody] CreateAppCommand param)
         {
             try

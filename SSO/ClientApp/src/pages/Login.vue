@@ -4,7 +4,8 @@
 			<div class="app-auth-body mx-auto">
 				<div class="app-auth-branding mb-4"><a class="app-logo" href="index.html"><img class="logo-icon me-2"
 							:src="require('@/assets/logo.png')" alt="logo"></a></div>
-				<h2 class="auth-heading text-center mb-5">Log in to SSO</h2>
+				<h2 class="auth-heading text-center mb-3">Welcome</h2>
+				<p class="mb-4">Login to SSO to continue to {{app}}.</p>
 				<div class="auth-form-container text-start">
 					<form class="auth-form login-form" @submit.prevent="submit()">
 						<div class="email mb-3">
@@ -31,15 +32,17 @@
 
 <script>
 import { login } from "@/services/authentication.service";
+import { getAppById } from "@/services/application.service";
 import Cookies from 'js-cookie';
 import { emitter } from '@/services/emitter.service';
 
 export default {
 	data: () => ({
 		param: new Object(),
-		urlParams: new URLSearchParams(window.location.search)
+		urlParams: new URLSearchParams(window.location.search),
+		app: '---',
 	}),
-	mounted() {
+	created() {
 		if (!this.urlParams.get('appId')
 			|| !this.urlParams.get('callbackUrl')
 			|| !Cookies.get('appId')
@@ -47,6 +50,11 @@ export default {
 			window.location.href = "invalid";
 		}
 
+		getAppById(this.urlParams.get('appId')).then(r => {
+			this.app = r.data.name;
+		});
+	},
+	mounted() {
 		this.param.appId = this.urlParams.get('appId');
 
 		if (Cookies.get('token')) {
