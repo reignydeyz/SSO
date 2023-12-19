@@ -12,6 +12,15 @@ const routes = [
         name: "Login",
         component: () => import('@/pages/Login.vue'),
     },
+    ,
+    {
+        path: "/init",
+        name: "Init",
+        component: () => import('@/pages/Init.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
+    },
     {
         path: "/main",
         name: "Main",

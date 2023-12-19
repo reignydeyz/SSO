@@ -13,6 +13,17 @@ const hasRootAccess = () => {
     return !!decoded.role;
 }
 
+const getAccount = () => {
+    const token = Cookies.get('system');
+
+    if (!token) {
+        return false;
+    }
+
+    return jwtDecode(token);
+}
+
 export {
-    hasRootAccess
+    hasRootAccess,
+    getAccount
 }

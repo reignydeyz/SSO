@@ -54,6 +54,19 @@ namespace SSO.Controllers
         }
 
         /// <summary>
+        /// Logout
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Append("token", string.Empty, new CookieOptions { Expires = DateTime.Now.AddDays(-1), HttpOnly = false });
+            Response.Cookies.Append("system", string.Empty, new CookieOptions { Expires = DateTime.Now.AddDays(-1), HttpOnly = false });
+
+            return Ok();
+        }
+
+        /// <summary>
         /// Authentication for app user
         /// </summary>
         /// <param name="form"></param>

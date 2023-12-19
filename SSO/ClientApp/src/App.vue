@@ -1,6 +1,6 @@
 <template>
-    <Navbar v-if="isRoot()" />
-    <div v-bind:class="isRoot() ? 'app-wrapper' : 'row g-0 app-auth-wrapper'">
+    <Navbar v-if="showNav" />
+    <div v-bind:class="showNav ? 'app-wrapper' : 'row g-0 app-auth-wrapper'">
         <router-view />
     </div>
     <Loader v-show="loading" />
@@ -10,26 +10,35 @@
 import Navbar from "@/components/Navbar.vue";
 import Loader from "@/components/Loader.vue";
 import { emitter } from '@/services/emitter.service';
-import { hasRootAccess } from '@/services/account.service';
 
 export default {
-    components: { Navbar, Loader },
+    components: {
+        Navbar, Loader,
+    },
+    watch: {
+        '$route'(to, from) {
+            // Check if the current route is in the allowedNavs array
+            this.showNav = !this.allowedNavs.includes(to.path);
+        },
+    },
     data() {
-        return { loading: false };
+        return { loading: false, showNav: true, allowedNavs: ['/', '/init'] };
     },
     created() {
         emitter.on("showLoader", (e) => {
             this.loading = e;
         });
-        
-        if (this.isRoot()) {
-            document.body.style.backgroundColor = "#F5F6FE";
-        }
-    },
-    methods: {
-        isRoot() {
-            return hasRootAccess();
-        }
+
+        emitter.on("showNav", (e) => {
+            this.showNav = e;
+
+            if (this.showNav) {
+                document.body.style.backgroundColor = "#F5F6FE";
+            }
+            else {
+                document.body.style.backgroundColor = "";
+            }
+        });
     }
 }
 </script>
@@ -68,5 +77,9 @@ export default {
     background: crimson;
     color: white;
     border: 1px solid crimson
+}
+
+a:hover {
+    color: var(--primary-color);
 }
 </style>

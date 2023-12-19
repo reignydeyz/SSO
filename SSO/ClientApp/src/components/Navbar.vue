@@ -15,7 +15,7 @@
                             <div class="app-utility-item">
                                 <span class="text-muted">SSO</span>
                             </div>
-                            
+
                             <div class="app-utility-item app-user-dropdown dropdown">
                                 <a class="dropdown-toggle" id="user-dropdown-toggle" data-bs-toggle="dropdown" href="#"
                                     role="button" aria-expanded="false">
@@ -23,7 +23,7 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="user-dropdown-toggle">
                                     <li>
-                                        <button class="dropdown-item" href="#" @click="logOut">
+                                        <button class="dropdown-item" href="#" @click="signout">
                                             Log Out
                                         </button>
                                     </li>
@@ -70,7 +70,7 @@
                 </nav>
                 <!--//app-nav-->
                 <div class="app-sidepanel-footer">
-                    
+
                 </div>
                 <!--//app-sidepanel-footer-->
             </div>
@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie';
+import { logout } from "@/services/authentication.service";
 export default {
     mounted() {
 
@@ -100,9 +100,10 @@ export default {
                 .classList.remove("sidepanel-visible");
         },
 
-        logOut() {
-            Cookies.remove('root');
-            window.location.href = '/';
+        signout() {
+            logout().then(r => {
+                window.location.href = '/';
+            })
         },
     },
 };
