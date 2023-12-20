@@ -24,7 +24,26 @@ const routes = [
     {
         path: "/main",
         name: "Main",
+        meta: { mustBeRoot: true },
         component: () => import('@/pages/Main.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
+    },
+    {
+        path: "/applications",
+        name: "Applications",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Applications/Manage.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
+    },
+    {
+        path: "/applications/new",
+        name: "New Application",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Applications/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate())
           }

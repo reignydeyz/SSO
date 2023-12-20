@@ -28,17 +28,6 @@ export default {
         emitter.on("showLoader", (e) => {
             this.loading = e;
         });
-
-        emitter.on("showNav", (e) => {
-            this.showNav = e;
-
-            if (this.showNav) {
-                document.body.style.backgroundColor = "#F5F6FE";
-            }
-            else {
-                document.body.style.backgroundColor = "";
-            }
-        });
     }
 }
 </script>
