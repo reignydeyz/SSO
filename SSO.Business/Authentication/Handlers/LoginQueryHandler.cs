@@ -53,7 +53,7 @@ namespace SSO.Business.Authentication.Handlers
             claims.AddRange((await _userClaimRepo.GetClaims(new Guid(user.Id), request.AppId.Value)).ToList());
 
             var expires = DateTime.Now.AddMinutes(app.TokenExpiration);
-            var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires);
+            var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires, app.Name);
 
             return new TokenDto { AccessToken = token, Expires = expires };
         }

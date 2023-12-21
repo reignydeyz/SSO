@@ -128,6 +128,14 @@ builder.Services.AddSwaggerGen(x =>
 builder.Services.AddControllers()
     .AddOData(options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents("odata", GetEdmModel()));
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAnyOrigin", policy => {
+        policy.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

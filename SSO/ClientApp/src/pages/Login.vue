@@ -52,6 +52,7 @@ export default {
 
 		getAppById(this.urlParams.get('appId')).then(r => {
 			this.app = r.data.name;
+			document.title = 'Login | ' + r.data.name;
 		});
 	},
 	mounted() {

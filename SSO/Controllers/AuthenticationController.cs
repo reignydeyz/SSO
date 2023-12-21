@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
 using SSO.Filters;
@@ -24,6 +25,7 @@ namespace SSO.Controllers
         [HttpGet]
         [AppIdValidator]
         [ApiExplorerSettings(GroupName = "Client")]
+        [EnableCors("AllowAnyOrigin")]
         public async Task<IActionResult> Init([FromQuery] InitLoginQuery form)
         {
             try
@@ -58,6 +60,7 @@ namespace SSO.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("logout")]
+        [EnableCors("AllowAnyOrigin")]
         public IActionResult Logout()
         {
             Response.Cookies.Append("token", string.Empty, new CookieOptions { Expires = DateTime.Now.AddDays(-1), HttpOnly = false });
