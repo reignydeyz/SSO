@@ -23,6 +23,14 @@ const routes = [
           }
     },
     {
+        path: "/changepassword",
+        name: "ChangePassword",
+        component: () => import('@/pages/ChangePassword.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
+    },
+    {
         path: "/main",
         name: "Main",
         meta: { mustBeRoot: true },

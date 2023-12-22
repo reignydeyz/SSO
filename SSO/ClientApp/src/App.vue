@@ -22,7 +22,7 @@ export default {
         },
     },
     data() {
-        return { loading: false, showNav: true, allowedNavs: ['/', '/init', '/login'] };
+        return { loading: false, showNav: true, allowedNavs: ['/', '/init', '/login', '/changepassword'] };
     },
     created() {
         emitter.on("showLoader", (e) => {
