@@ -21,7 +21,7 @@
                       type="text"
                       class="form-control"
                       id="setting-input-2"
-                      placeholder="Label"
+                      placeholder="Name"
                       required
                       autocomplete="off"
                     />
@@ -44,12 +44,28 @@
   </template>
 
 <script>
+import { addApp } from "@/services/application.service";
+import { emitter } from "@/services/emitter.service";
+import * as navbar from "@/services/navbar.service";
 export default {
   data: () => ({
     application: new Object(),
   }),
+  mounted() {
+    navbar.init(window.location.pathname);
+  },
   methods: {
     onSubmit() {
+      emitter.emit("showLoader", true);
+
+      addApp(this.application).then(
+        (r) => {
+          this.$router.push("../applications");
+        },
+        (err) => {
+          emitter.emit("showLoader", false);
+        }
+      );
     },
   },
 };

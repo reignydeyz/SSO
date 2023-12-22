@@ -1,5 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 import { canActivate } from '@/services/auth-guard.service'
+import * as navbar from "@/services/navbar.service";
 
 const routes = [
     {
