@@ -14,7 +14,7 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public async Task<Application> Add(Application param)
+        public async Task<Application> Add(Application param, object? args)
         {
             _context.Add(param);
 
@@ -65,7 +65,7 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<Application> Update(Application param)
+        public Task<Application> Update(Application param, object? args = null)
         {
             throw new NotImplementedException();
         }

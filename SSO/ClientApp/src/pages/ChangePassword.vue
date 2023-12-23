@@ -38,13 +38,16 @@
 </template>
 
 <script>
-
+import { changePassword } from "@/services/account.service";
 export default {
 	data: () => ({
 		param: new Object(),
 	}),
 	methods: {
 		submit() {
+			changePassword(this.param).then(r => {
+				this.$router.push("/");
+			});
 		},
 		back() {
 			history.back();

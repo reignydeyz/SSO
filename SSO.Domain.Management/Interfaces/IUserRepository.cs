@@ -6,5 +6,7 @@ namespace SSO.Domain.Management.Interfaces
     public interface IUserRepository : IRepository<ApplicationUser>
     {
         Task<ApplicationUser> GetByEmail(string email);
+
+        Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null);
     }
 }

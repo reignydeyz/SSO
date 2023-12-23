@@ -1,5 +1,6 @@
 import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
+import axios from 'axios';
 
 const hasRootAccess = () => {
     const token = Cookies.get('system');
@@ -23,7 +24,10 @@ const getAccount = () => {
     return jwtDecode(token);
 }
 
+const changePassword = async (param) => await axios.post("/api/account/changepassword", param);
+
 export {
     hasRootAccess,
-    getAccount
+    getAccount,
+    changePassword
 }

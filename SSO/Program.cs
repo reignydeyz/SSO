@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -38,7 +39,8 @@ using (var scope = builder.Services.BuildServiceProvider().CreateScope())
 #endif
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddEntityFrameworkStores<AppDbContext>();
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 

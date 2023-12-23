@@ -17,7 +17,7 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public Task<ApplicationUser> Add(ApplicationUser param)
+        public Task<ApplicationUser> Add(ApplicationUser param, object? args = null)
         {
             throw new NotImplementedException();
         }
@@ -47,7 +47,7 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationUsers.FirstOrDefaultAsync(predicate);
         }
 
-        public Task<ApplicationUser> Update(ApplicationUser param)
+        public Task<ApplicationUser> Update(ApplicationUser param, object? args = null)
         {
             throw new NotImplementedException();
         }
@@ -55,6 +55,20 @@ namespace SSO.Infrastructure.Management
         public Task<bool> Any(Expression<Func<ApplicationUser, bool>> predicate)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
+
+            await _userManager.ResetPasswordAsync(applicationUser, token, password);
+
+            var rec = _context.ApplicationUsers.First(x => x.Id == applicationUser.Id);
+
+            rec.DateModified = DateTime.Now;
+            rec.ModifiedBy = author == null ? $"{applicationUser.FirstName} {applicationUser.LastName}" : $"{author.FirstName} {author.LastName}";
+
+            _context.SaveChanges();
         }
     }
 }

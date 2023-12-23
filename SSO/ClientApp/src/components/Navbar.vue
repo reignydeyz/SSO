@@ -23,6 +23,11 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="user-dropdown-toggle">
                                     <li>
+                                        <router-link to="/changepassword" class="dropdown-item" href="#">
+                                            Change password
+                                        </router-link>
+                                    </li>
+                                    <li>
                                         <button class="dropdown-item" href="#" @click="signout">
                                             Log Out
                                         </button>

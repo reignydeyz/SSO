@@ -15,7 +15,7 @@ namespace SSO.Infrastructure.Management
             _roleManager = roleManager;
         }
 
-        public Task<ApplicationRole> Add(ApplicationRole param)
+        public Task<ApplicationRole> Add(ApplicationRole param, object? args)
         {
             throw new NotImplementedException();
         }
@@ -57,7 +57,7 @@ namespace SSO.Infrastructure.Management
             return await _roleManager.GetClaimsAsync(role);
         }
 
-        public Task<ApplicationRole> Update(ApplicationRole param)
+        public Task<ApplicationRole> Update(ApplicationRole param, object? args)
         {
             throw new NotImplementedException();
         }

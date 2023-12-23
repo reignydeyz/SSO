@@ -8,15 +8,17 @@ namespace SSO.Domain.Interfaces
         /// Adds entity
         /// </summary>
         /// <param name="param"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        Task<T> Add(T param);
+        Task<T> Add(T param, object? args = null);
 
         /// <summary>
         /// Updates entity
         /// </summary>
         /// <param name="param"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        Task<T> Update(T param);
+        Task<T> Update(T param, object? args = null);
 
         /// <summary>
         /// Deletes entity
