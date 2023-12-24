@@ -19,6 +19,7 @@ export default {
         '$route'(to, from) {
             // Check if the current route is in the allowedNavs array
             this.showNav = !this.allowedNavs.includes(to.path);
+            document.body.style.backgroundColor = this.showNav ? '#F8F8FF' : '';
         },
     },
     data() {
