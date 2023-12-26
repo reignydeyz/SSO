@@ -72,4 +72,8 @@ export default {
 a:hover {
     color: var(--primary-color);
 }
+
+th:has(i) {
+    cursor: pointer;
+}
 </style>

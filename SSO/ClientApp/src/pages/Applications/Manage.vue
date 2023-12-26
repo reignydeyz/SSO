@@ -9,7 +9,7 @@
                     <div class="page-utilities">
                         <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
                             <div class="col-auto">
-                                <form class="docs-search-form row gx-1 align-items-center">
+                                <form class="docs-search-form row gx-1 align-items-center" @submit.prevent="search(1)">
                                     <div class="col-auto">
                                         <input v-model="application.name" type="text" class="form-control search-docs"
                                             placeholder="Name" />
@@ -41,10 +41,35 @@
                     <div class="app-card app-card-orders-table shadow-sm mb-5">
                         <div class="table-responsive">
                             <table class="table app-table-hover mb-0 text-left">
+                                <caption class="p-2">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="p-2"><small>Found: {{ this.pagination.totalRecords }}</small></div>
+                                        <div class="p-2">
+                                            <small>Items per page:&nbsp;&nbsp;</small>
+                                            <select class="form-select form-select-sm ms-auto d-inline-flex w-auto"
+                                                v-model="pagination.pageSize" @change="search(1)">
+                                                <option value="2">2</option>
+                                                <option value="10">10</option>
+                                                <option value="15">15</option>
+                                                <option value="20">20</option>
+                                                <option value="35">35</option>
+                                                <option value="50">50</option>
+                                                <option value="75">75</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </caption>
                                 <thead>
                                     <tr>
                                         <th class="cell">ID</th>
-                                        <th class="cell">Name</th>
+                                        <th class="cell" @click="sortData('name')">
+                                            Name
+                                            <i v-if="sort === 'name'" v-bind:class="{
+                                                'bi-arrow-down': sortDirection === 'asc',
+                                                'bi-arrow-up': sortDirection === 'desc',
+                                            }"></i>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -56,6 +81,32 @@
                             </table>
                         </div>
                     </div>
+
+                    <nav aria-label="..." v-if="pagination.endPage > 1" class="app-pagination">
+                        <ul class="pagination justify-content-center flex-wrap">
+                            <li class="page-item" v-if="pagination.currentPage > 1">
+                                <a class="page-link" tabindex="-1" aria-disabled="true" style="cursor: pointer"
+                                    @click="paginate(1)">First</a>
+                            </li>
+                            <li class="page-item" v-if="pagination.currentPage > 1">
+                                <a class="page-link" style="cursor: pointer"
+                                    @click="paginate(pagination.currentPage - 1)">Previous</a>
+                            </li>
+                            <li class="page-item" v-bind:class="{ active: pagination.currentPage == p }"
+                                v-for="p in pagination.pageIndices" :key="p">
+                                <a class="page-link" style="cursor: pointer" @click="paginate(p)">{{ p }}</a>
+                            </li>
+                            <li class="page-item" v-if="pagination.currentPage < pagination.totalPages">
+                                <a class="page-link" style="cursor: pointer"
+                                    @click="paginate(pagination.currentPage + 1)">Next</a>
+                            </li>
+                            <li class="page-item" v-if="pagination.currentPage < pagination.totalPages">
+                                <a class="page-link" style="cursor: pointer"
+                                    @click="paginate(pagination.totalPages)">Last</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <!--//app-pagination-->
                 </div>
             </div>
         </div>
@@ -109,7 +160,22 @@ export default {
                     console.log(err);
                 }
             );
-        }
+        },
+        paginate(page) {
+            this.pagination.currentPage = page;
+            this.search();
+        },
+
+        sortData(field) {
+            if (field === this.sort) {
+                this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
+            } else {
+                this.sortDirection = "asc";
+            }
+
+            this.sort = field;
+            this.search(1);
+        },
     }
 }
 </script>

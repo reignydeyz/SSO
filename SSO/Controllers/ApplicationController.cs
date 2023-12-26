@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.EntityFrameworkCore;
 using SSO.Business.Applications;
@@ -29,6 +29,7 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Policy = "RootPolicy")]
+        [EnableQuery]
         public IQueryable<ApplicationDto> Get()
         {
             return _mediator.Send(new GetApplicationsQuery { }).Result;
