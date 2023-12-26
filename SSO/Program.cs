@@ -9,6 +9,8 @@ var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntityType<WeatherForecast>();
 modelBuilder.EntitySet<WeatherForecast>("WeatherForecast");
 
+modelBuilder.EnableLowerCamelCase();
+
 builder.Services.AddControllers().AddOData(
     options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
         "odata",
