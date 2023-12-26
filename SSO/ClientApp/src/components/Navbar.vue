@@ -76,7 +76,7 @@
                                 data-bs-target="#submenu-1" aria-expanded="false" aria-controls="submenu-1">
                                 <span class="nav-icon">
                                     <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
-                                    <i class="fas fa-tags"></i>
+                                    <i class="fas fa-cubes"></i>
                                 </span>
                                 <span class="nav-link-text">Applications</span>
                                 <span class="submenu-arrow">

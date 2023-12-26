@@ -19,7 +19,7 @@
 <script>
 import { hasRootAccess, getAccount } from '@/services/account.service';
 import { logout } from "@/services/authentication.service";
-
+import Cookies from 'js-cookie';
 export default {
     data() {
         return { account: new Object() };
@@ -33,7 +33,8 @@ export default {
 	methods: {
 		signout() {
             logout().then(r => {
-                window.location.href = '/';
+				Cookies.remove('system');
+                location.reload();
             })
         },
 	}
