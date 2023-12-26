@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using SSO;
+using SSO.Business.Applications;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Mappings;
 using SSO.Domain.Authentication.Interfaces;
@@ -27,6 +28,9 @@ var builder = WebApplication.CreateBuilder(args);
 var modelBuilder = new ODataConventionModelBuilder();
 modelBuilder.EntityType<WeatherForecast>();
 modelBuilder.EntitySet<WeatherForecast>("WeatherForecast");
+
+modelBuilder.EntityType<ApplicationDto>().HasKey(x => x.ApplicationId);
+modelBuilder.EntitySet<ApplicationDto>("Application");
 
 modelBuilder.EnableLowerCamelCase();
 
