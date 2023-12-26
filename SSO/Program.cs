@@ -46,6 +46,14 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
+#if !DEBUG
+using (var scope = builder.Services.BuildServiceProvider().CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
+#endif
+
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginQueryHandler>());
@@ -142,6 +150,10 @@ builder.Services.AddCors(options => {
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+#if DEBUG
+app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+#endif
 
 app.UseAuthorization();
 

@@ -54,6 +54,8 @@ export default {
 			loginToSystem(this.param).then(r => {
 				emitter.emit('showLoader', false);
 
+				Cookies.set('system', r.data.access_token, { expires: 1 });
+
 				window.location.href = 'init';
 			}, err => {
 				emitter.emit('showLoader', false);

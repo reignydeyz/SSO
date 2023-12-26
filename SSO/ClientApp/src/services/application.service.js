@@ -10,6 +10,8 @@ const searchApp = async (b, sort, sortDirection, page = 1, pageSize = 10) => {
     &$skip=${(page - 1) * pageSize}
     &$top=${pageSize}
     &$count=true`;
+
+    return axios.get(url);
 }
 
 const addApp = async (param) => await axios.post("/api/application/", param);
