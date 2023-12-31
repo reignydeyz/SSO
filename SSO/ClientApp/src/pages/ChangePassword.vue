@@ -10,19 +10,27 @@
 						<div class="email mb-3">
 							<label>Current password</label>
 							<input type="password" class="form-control signin-password" placeholder="Password"
-								required="required" v-model="param.currentPassword" autocomplete="off">
+								required="required" v-model="param.currentPassword" autocomplete="off"
+								ref="CurrentPassword">
+							<div class="invalid-feedback">
+								{{ errorMessage }}
+							</div>
 						</div><!--//form-group-->
 						<div class="password mb-3">
 							<label>New password</label>
 							<input type="password" class="form-control signin-password" placeholder="New password"
-								required="required" v-model="param.newPassword" autocomplete="off">
-
+								required="required" v-model="param.newPassword" autocomplete="off" ref="NewPassword">
+							<div class="invalid-feedback">
+								{{ errorMessage }}
+							</div>
 						</div><!--//form-group-->
 						<div class="password mb-3">
 							<label>Repeat password</label>
 							<input type="password" class="form-control signin-password" placeholder="New password"
-								required="required" v-model="param.repeatPassword" autocomplete="off">
-
+								required="required" v-model="param.repeatPassword" autocomplete="off" ref="RepeatPassword">
+							<div class="invalid-feedback">
+								{{ errorMessage }}
+							</div>
 						</div><!--//form-group-->
 						<div class="text-center">
 							<button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">Submit</button>
@@ -42,11 +50,39 @@ import { changePassword } from "@/services/account.service";
 export default {
 	data: () => ({
 		param: new Object(),
+		errorMessage: '---'
 	}),
 	methods: {
 		submit() {
+			// Clear error messages
+			const allInputs = document.querySelectorAll('.is-invalid');
+
+			allInputs.forEach((input) => {
+				input.classList.remove('is-invalid');
+			});
+
 			changePassword(this.param).then(r => {
 				this.$router.push("/");
+			}, error => {
+
+				// Check if the error is related to a specific input field
+				if (error && error.response && error.response.data && error.response.data.errors) {
+					const errorField = Object.keys(error.response.data.errors)[0];
+
+					// Add 'is-invalid' class to the corresponding input field
+					const inputElement = this.$refs[errorField];
+					if (inputElement) {
+						inputElement.classList.add('is-invalid');
+
+						const errorMessage = Object.values(error.response.data.errors)[0][0];
+						this.errorMessage = errorMessage;
+					}
+				}
+				else {
+					alert('Change password failed.');
+				}
+
+				return false;
 			});
 		},
 		back() {

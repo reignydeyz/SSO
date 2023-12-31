@@ -61,7 +61,10 @@ namespace SSO.Infrastructure.Management
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
 
-            await _userManager.ResetPasswordAsync(applicationUser, token, password);
+            var res = await _userManager.ResetPasswordAsync(applicationUser, token, password);
+
+            if (!res.Succeeded && res.Errors.Any())
+                throw new ArgumentException(res.Errors.First().Description);
 
             var rec = _context.ApplicationUsers.First(x => x.Id == applicationUser.Id);
 
