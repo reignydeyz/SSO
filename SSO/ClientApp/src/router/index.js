@@ -56,7 +56,16 @@ const routes = [
         beforeEnter: (to, from, next) => {
             next(canActivate())
           }
-    }
+    },
+    {
+        path: "/users",
+        name: "Users",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Users/Manage.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
+    },
 ];
 
 const router = createRouter({

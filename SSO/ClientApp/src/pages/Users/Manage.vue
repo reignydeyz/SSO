@@ -3,7 +3,7 @@
         <div class="container-xl pt-5">
             <div class="row g-3 mb-4 align-itemss-center justify-content-between">
                 <div class="col-auto">
-                    <h1 class="app-page-title mb-0">Applications</h1>
+                    <h1 class="app-page-title mb-0">Users</h1>
                 </div>
                 <div class="col-auto">
                     <div class="page-utilities">
@@ -11,8 +11,8 @@
                             <div class="col-auto">
                                 <form class="docs-search-form row gx-1 align-items-center" @submit.prevent="search(1)">
                                     <div class="col-auto">
-                                        <input v-model="application.name" type="text" class="form-control search-docs"
-                                            placeholder="Name" />
+                                        <input v-model="query" type="text" class="form-control search-docs"
+                                            placeholder="Name or email" />
                                     </div>
                                     <div class="col-auto">
                                         <button type="submit" class="btn app-btn-secondary">
@@ -24,7 +24,7 @@
                             <!--//col-->
 
                             <div class="col-auto">
-                                <router-link to="/applications/new" class="btn app-btn-primary"><i
+                                <router-link to="/users/new" class="btn app-btn-primary"><i
                                         class="bi bi-plus-lg"></i>&nbsp;Create
                                     New</router-link>
                             </div>
@@ -62,9 +62,23 @@
                                 <thead>
                                     <tr>
                                         <th class="cell">ID</th>
-                                        <th class="cell sortable" @click="sortData('name')">
-                                            Name
-                                            <i v-if="sort === 'name'" v-bind:class="{
+                                        <th class="cell sortable" @click="sortData('firstName')">
+                                            First name
+                                            <i v-if="sort === 'firstName'" v-bind:class="{
+                                                'bi-arrow-down': sortDirection === 'asc',
+                                                'bi-arrow-up': sortDirection === 'desc',
+                                            }"></i>
+                                        </th>
+                                        <th class="cell sortable" @click="sortData('lastName')">
+                                            Last name
+                                            <i v-if="sort === 'lastName'" v-bind:class="{
+                                                'bi-arrow-down': sortDirection === 'asc',
+                                                'bi-arrow-up': sortDirection === 'desc',
+                                            }"></i>
+                                        </th>
+                                        <th class="cell sortable" @click="sortData('email')">
+                                            Email
+                                            <i v-if="sort === 'email'" v-bind:class="{
                                                 'bi-arrow-down': sortDirection === 'asc',
                                                 'bi-arrow-up': sortDirection === 'desc',
                                             }"></i>
@@ -72,9 +86,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="i in applications" :key="i.applicationId">
-                                        <td class="cell">{{ i.applicationId }}</td>
-                                        <td class="cell">{{ i.name }}</td>
+                                    <tr v-for="i in users" :key="i.userId">
+                                        <td class="cell">{{ i.userId }}</td>
+                                        <td class="cell">{{ i.firstName }}</td>
+                                        <td class="cell">{{ i.lastName }}</td>
+                                        <td class="cell">{{ i.email }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -114,14 +130,14 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
-import { searchApp } from "@/services/application.service";
+import { searchUser } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import { pagination } from "@/services/pagination.service";
 export default {
     data: () => ({
-        application: new Object(),
-        applications: [],
-        sort: "name",
+        query: "",
+        users: [],
+        sort: "firstName",
         sortDirection: "asc",
         pagination: new Object(),
     }),
@@ -137,15 +153,15 @@ export default {
         search(p) {
             emitter.emit("showLoader", true);
             this.pagination.currentPage = p ?? this.pagination.currentPage;
-            searchApp(
-                this.application,
+            searchUser(
+                { firstName: this.query, lastName: this.query, email: this.query },
                 this.sort,
                 this.sortDirection,
                 this.pagination.currentPage,
                 this.pagination.pageSize
             ).then(
                 (r) => {
-                    this.applications = r.data.value;
+                    this.users = r.data.value;
 
                     this.pagination = pagination(
                         Object.values(r.data)[1], // Gets the @odata.count which is the 2nd property

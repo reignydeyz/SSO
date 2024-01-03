@@ -73,7 +73,7 @@ a:hover {
     color: var(--primary-color);
 }
 
-th:has(i) {
+.sortable {
     cursor: pointer;
 }
 </style>
