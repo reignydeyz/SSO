@@ -10,6 +10,7 @@ using SSO;
 using SSO.Business.Applications;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Mappings;
+using SSO.Business.Users;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
@@ -31,6 +32,9 @@ modelBuilder.EntitySet<WeatherForecast>("WeatherForecast");
 
 modelBuilder.EntityType<ApplicationDto>().HasKey(x => x.ApplicationId);
 modelBuilder.EntitySet<ApplicationDto>("Application");
+
+modelBuilder.EntityType<UserDto>().HasKey(x => x.UserId);
+modelBuilder.EntitySet<UserDto>("User");
 
 modelBuilder.EnableLowerCamelCase();
 
