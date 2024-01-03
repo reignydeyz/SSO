@@ -27,9 +27,9 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<IQueryable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
+        public async Task<IQueryable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
         {
-            throw new NotImplementedException();
+            return _context.ApplicationUsers;
         }
 
         public async Task<ApplicationUser> GetByEmail(string email)
