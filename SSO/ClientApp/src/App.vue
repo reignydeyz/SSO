@@ -76,4 +76,26 @@ a:hover {
 .sortable {
     cursor: pointer;
 }
+
+button.nav-link.active {
+  background-color: var(--primary-color) !important;
+  color: white;
+}
+
+button.nav-link,
+button.nav-link:hover {
+  color: var(--primary-color);
+}
+
+@media (max-width: 767px) {
+  .table-responsive .dropdown-menu {
+    transform: translate3d(0px, 3px, 0px) !important;
+    position: relative !important;
+  }
+}
+@media (min-width: 768px) {
+  .table-responsive {
+    overflow: inherit;
+  }
+}
 </style>

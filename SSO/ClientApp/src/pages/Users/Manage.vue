@@ -61,6 +61,7 @@
                                 </caption>
                                 <thead>
                                     <tr>
+                                        <th class="cell"></th>
                                         <th class="cell">ID</th>
                                         <th class="cell sortable" @click="sortData('firstName')">
                                             First name
@@ -87,6 +88,28 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="i in users" :key="i.userId">
+                                        <td class="cell">
+                                            <div class="dropdown">
+                                                <button class="btn-sm app-btn-secondary dropdown-toggle" type="button"
+                                                    id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    Action
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                    <li>
+                                                        <router-link :to="'/users/edit/' + i.userId"
+                                                            class="dropdown-item">Edit/View</router-link>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider" />
+                                                    </li>                                                    
+                                                    <li>
+                                                        <a class="dropdown-item" href="#"
+                                                            @click="onDelete(i.productId)">Remove</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
                                         <td class="cell">{{ i.userId }}</td>
                                         <td class="cell">{{ i.firstName }}</td>
                                         <td class="cell">{{ i.lastName }}</td>

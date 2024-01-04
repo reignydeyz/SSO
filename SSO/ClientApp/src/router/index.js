@@ -66,6 +66,15 @@ const routes = [
             next(canActivate())
           }
     },
+    {
+        path: "/users/edit/:id",
+        name: "Update User",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Users/Edit.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
+    },
 ];
 
 const router = createRouter({
