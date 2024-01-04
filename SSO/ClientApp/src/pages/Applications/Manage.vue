@@ -61,6 +61,7 @@
                                 </caption>
                                 <thead>
                                     <tr>
+                                        <th class="cell"></th>
                                         <th class="cell">ID</th>
                                         <th class="cell sortable" @click="sortData('name')">
                                             Name
@@ -73,6 +74,28 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="i in applications" :key="i.applicationId">
+                                        <td class="cell">
+                                            <div class="dropdown">
+                                                <button class="btn-sm app-btn-secondary dropdown-toggle" type="button"
+                                                    id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                    Action
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                                    <li>
+                                                        <router-link :to="'/applications/edit/' + i.applicationId"
+                                                            class="dropdown-item">Edit/View</router-link>
+                                                    </li>
+                                                    <li>
+                                                        <hr class="dropdown-divider" />
+                                                    </li>                                                    
+                                                    <li>
+                                                        <a class="dropdown-item" href="#"
+                                                            @click="onDelete(i.applicationId)">Remove</a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
                                         <td class="cell">{{ i.applicationId }}</td>
                                         <td class="cell">{{ i.name }}</td>
                                     </tr>

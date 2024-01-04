@@ -58,6 +58,15 @@ const routes = [
           }
     },
     {
+        path: "/applications/edit/:id",
+        name: "Update Application",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Applications/Edit.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
+    },
+    {
         path: "/users",
         name: "Users",
         meta: { mustBeRoot: true },

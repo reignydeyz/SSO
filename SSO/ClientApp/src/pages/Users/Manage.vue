@@ -105,7 +105,7 @@
                                                     </li>                                                    
                                                     <li>
                                                         <a class="dropdown-item" href="#"
-                                                            @click="onDelete(i.productId)">Remove</a>
+                                                            @click="onDelete(i.userId)">Remove</a>
                                                     </li>
                                                 </ul>
                                             </div>
