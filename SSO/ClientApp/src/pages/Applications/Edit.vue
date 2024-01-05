@@ -47,7 +47,11 @@
             </ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-                    // General info
+                    <hr class="mb-4" />
+                    <EditBasic :app="app" />
+
+                    <hr class="mb-4" />
+                    <EditCallbacks :app="app" />
                 </div>
                 <div class="tab-pane fade" id="pills-permissions" role="tabpanel" aria-labelledby="pills-permissions-tab">
                     // Permissions
@@ -65,10 +69,27 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
-
+import { getAppById } from "@/services/application.service";
+import { emitter } from "@/services/emitter.service";
+import EditBasic from "@/pages/Applications/components/EditBasic.vue";
+import EditCallbacks from "@/pages/Applications/components/EditCallbacks.vue";
 export default {
+    components: {
+        EditBasic,
+        EditCallbacks
+    },
+    data: () => ({
+        app: new Object()
+    }),
     mounted() {
         navbar.init(this.$route);
+
+        emitter.emit("showLoader", true);
+
+        getAppById(this.$route.params.id).then(r => {
+            this.app = r.data;
+            emitter.emit("showLoader", false);
+        });
     }
 }
 </script>

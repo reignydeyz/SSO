@@ -98,4 +98,10 @@ button.nav-link:hover {
     overflow: inherit;
   }
 }
+
+::placeholder {
+  /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: silver !important;
+  opacity: 1; /* Firefox */
+}
 </style>
