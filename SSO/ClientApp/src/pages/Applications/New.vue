@@ -16,8 +16,8 @@
               <form class="settings-form" @submit.prevent="onSubmit">
                 <div class="mb-3">
                   <label for="setting-input-2" class="form-label">Name*</label>
-                  <input v-model="application.name" type="text" class="form-control" id="setting-input-2"
-                    placeholder="Name" required autocomplete="off" />
+                  <input v-model="application.name" type="text" class="form-control" id="setting-input-2" maxlength="200"
+                    placeholder="Name" required autocomplete="off"/>
                 </div>
 
                 <button type="submit" class="btn app-btn-primary mt-3">
