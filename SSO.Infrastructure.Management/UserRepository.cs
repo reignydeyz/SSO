@@ -29,7 +29,7 @@ namespace SSO.Infrastructure.Management
 
         public async Task<IQueryable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
         {
-            return _context.ApplicationUsers;
+            return _context.ApplicationUsers.AsNoTracking();
         }
 
         public async Task<ApplicationUser> GetByEmail(string email)

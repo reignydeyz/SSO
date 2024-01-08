@@ -41,6 +41,7 @@ namespace SSO.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpGet("{appId}")]
+        [ProducesResponseType(typeof(ApplicationDetailDto), 200)]
         [ODataIgnored]
         public async Task<IActionResult> Get([FromRoute] GetAppByIdQuery param)
         {

@@ -2,7 +2,7 @@
 
 namespace SSO.Business.Applications.Queries
 {
-    public class GetAppByIdQuery : IRequest<ApplicationDto>
+    public class GetAppByIdQuery : IRequest<ApplicationDetailDto>
     {
         public Guid AppId { get; set; }
     }

@@ -5,7 +5,7 @@ using SSO.Domain.Management.Interfaces;
 
 namespace SSO.Business.Applications.Handlers
 {
-    public class GetAppByIdQueryHandler : IRequestHandler<GetAppByIdQuery, ApplicationDto>
+    public class GetAppByIdQueryHandler : IRequestHandler<GetAppByIdQuery, ApplicationDetailDto>
     {
         readonly IApplicationRepository _applicationRepository;
         readonly IMapper _mapper;
@@ -16,14 +16,14 @@ namespace SSO.Business.Applications.Handlers
             _mapper = mapper;
         }
 
-        public async Task<ApplicationDto> Handle(GetAppByIdQuery request, CancellationToken cancellationToken)
+        public async Task<ApplicationDetailDto> Handle(GetAppByIdQuery request, CancellationToken cancellationToken)
         {
             var res = await _applicationRepository.FindOne(x => x.ApplicationId == request.AppId);
 
             if (res is null)
                 throw new ArgumentNullException();
 
-            return _mapper.Map<ApplicationDto>(res);
+            return _mapper.Map<ApplicationDetailDto>(res);
         }
     }
 }

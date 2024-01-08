@@ -35,7 +35,7 @@ namespace SSO.Infrastructure.Management
 
         public async Task<IQueryable<Application>> Find(Expression<Func<Application, bool>>? predicate)
         {
-            return _context.Applications.AsQueryable();
+            return _context.Applications.AsQueryable().AsNoTracking();
         }
 
         public async Task<Application> FindOne(Expression<Func<Application, bool>> predicate)

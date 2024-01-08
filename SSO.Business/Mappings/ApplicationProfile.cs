@@ -12,6 +12,9 @@ namespace SSO.Business.Mappings
             CreateMap<Application, ApplicationDto>()
                 .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
 
+            CreateMap<Application, ApplicationDetailDto>()
+                .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
+
             CreateMap<CreateAppCommand, Application>()
                 .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
         }
