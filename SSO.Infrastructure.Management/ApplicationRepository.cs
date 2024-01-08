@@ -65,9 +65,20 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<Application> Update(Application param, object? args = null)
+        public async Task<Application> Update(Application param, object? args = null)
         {
-            throw new NotImplementedException();
+            var rec = await _context.Applications.FirstAsync(x => x.ApplicationId == param.ApplicationId);
+
+            rec.Name = param.Name;
+            rec.TokenExpiration = param.TokenExpiration;
+            rec.RefreshTokenExpiration = param.RefreshTokenExpiration;
+            rec.MaxAccessFailedCount = param.MaxAccessFailedCount;
+            rec.ModifiedBy = param.ModifiedBy;
+            rec.DateModified = DateTime.Now;
+
+            _context.SaveChanges();
+
+            return rec;
         }
     }
 }

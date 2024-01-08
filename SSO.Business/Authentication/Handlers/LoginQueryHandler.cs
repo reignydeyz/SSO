@@ -31,12 +31,12 @@ namespace SSO.Business.Authentication.Handlers
 
         public async Task<TokenDto> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
-            var app = await _appRepo.FindOne(x => x.ApplicationId == request.AppId);
+            var app = await _appRepo.FindOne(x => x.ApplicationId == request.ApplicationId);
 
             await _authenticationService.Login(request.Username, request.Password, app);
 
             var user = await _userRepo.GetByEmail(request.Username);
-            var roles = await _userRoleRepo.Roles(request.Username, request.AppId.Value);
+            var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId.Value);
 
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
@@ -50,7 +50,7 @@ namespace SSO.Business.Authentication.Handlers
             foreach (var role in roles)
                 claims.Add(new Claim(ClaimTypes.Role, role.Name!));
 
-            claims.AddRange((await _userClaimRepo.GetClaims(new Guid(user.Id), request.AppId.Value)).ToList());
+            claims.AddRange((await _userClaimRepo.GetClaims(new Guid(user.Id), request.ApplicationId.Value)).ToList());
 
             var expires = DateTime.Now.AddMinutes(app.TokenExpiration);
             var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires, app.Name);

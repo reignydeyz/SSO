@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using SSO.Business.Applications;
 using SSO.Business.Applications.Commands;
 using SSO.Business.Applications.Queries;
+using SSO.Filters;
 using System.Security.Claims;
 
 namespace SSO.Controllers
@@ -80,6 +81,19 @@ namespace SSO.Controllers
             {
                 return Conflict();
             }
+        }
+
+        /// <summary>
+        /// Updates app
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPut("{applicationId}")]
+        [AppIdValidator]
+        public async Task<IActionResult> Update([FromRoute] ApplicationIdDto form, [FromBody] UpdateAppCommand param)
+        {
+            return Ok();
         }
     }
 }

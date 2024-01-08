@@ -46,8 +46,8 @@ namespace SSO.Business.Authentication.Handlers
             if (await _userManager.IsLockedOutAsync(user))
                 throw new UnauthorizedAccessException("User is locked-out.");
 
-            var roles = await _userRoleRepo.Roles(user.UserName, request.AppId.Value);
-
+            var roles = await _userRoleRepo.Roles(user.UserName, request.ApplicationId.Value);
+            
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
@@ -60,7 +60,7 @@ namespace SSO.Business.Authentication.Handlers
             foreach (var role in roles)
                 claims.Add(new Claim(ClaimTypes.Role, role.Name!));
 
-            claims.AddRange((await _userClaimRepo.GetClaims(new Guid(user.Id), request.AppId.Value)).ToList());
+            claims.AddRange((await _userClaimRepo.GetClaims(new Guid(user.Id), request.ApplicationId.Value)).ToList());
 
             var expires = jsonToken.ValidTo;
             var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires);

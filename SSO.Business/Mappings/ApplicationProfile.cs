@@ -16,6 +16,8 @@ namespace SSO.Business.Mappings
                 .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
 
             CreateMap<CreateAppCommand, Application>()
+                .ForMember(x => x.TokenExpiration, from => from.MapFrom(x => 1440))
+                .ForMember(x => x.RefreshTokenExpiration, from => from.MapFrom(x => 10080))
                 .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
         }
     }

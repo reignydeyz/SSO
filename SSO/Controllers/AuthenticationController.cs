@@ -32,18 +32,18 @@ namespace SSO.Controllers
             {
                 await _mediator.Send(form);
 
-                Response.Cookies.Append("appId", form.AppId!.Value.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1), HttpOnly = false });
+                Response.Cookies.Append("appId", form.ApplicationId!.Value.ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(1), HttpOnly = false });
 
                 if (Request.Cookies["token"] != null)
                 {
-                    var token = await _mediator.Send(new SwitchAppQuery { Token = Request.Cookies["token"], AppId = form.AppId });
+                    var token = await _mediator.Send(new SwitchAppQuery { Token = Request.Cookies["token"], ApplicationId = form.ApplicationId });
 
                     Response.Cookies.Append("token", token.AccessToken, new CookieOptions { Expires = token.Expires, HttpOnly = false });
 
                     return Redirect($"{form.CallbackUrl}?token={token.AccessToken}");
                 }
 
-                return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
+                return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.ApplicationId}&callbackUrl={form.CallbackUrl}");
             }
             catch (ArgumentException ex)
             {
@@ -51,7 +51,7 @@ namespace SSO.Controllers
             }
             catch (UnauthorizedAccessException)
             {
-                return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.AppId}&callbackUrl={form.CallbackUrl}");
+                return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.ApplicationId}&callbackUrl={form.CallbackUrl}");
             }
         }
 

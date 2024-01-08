@@ -1,8 +1,9 @@
 ﻿using MediatR;
+using SSO.Business.Applications;
 
 namespace SSO.Business.Authentication.Queries
 {
-    public class SwitchAppQuery : AuthDto, IRequest<TokenDto>
+    public class SwitchAppQuery : ApplicationIdDto, IRequest<TokenDto>
     {
         public string Token { get; set; }
     }
