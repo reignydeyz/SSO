@@ -12,22 +12,22 @@
                     <form class="settings-form" @submit.prevent="onSubmit">
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Name*</label>
-                            <input v-model="app.name" type="text" class="form-control" id="setting-input-1"
+                            <input v-model="app.name" type="text" class="form-control" id="setting-input-1" maxlength="200"
                                 placeholder="Name" required="" autocomplete="off" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Token expiration (minutes)*</label>
-                            <input v-model="app.tokenExpiration" type="number" class="form-control" id="setting-input-2"
+                            <input type="number" class="form-control" id="setting-input-2" min="1" 
                                 placeholder="Number" required="" autocomplete="off" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Refresh token expiration (minutes)*</label>
-                            <input v-model="app.refreshTokenExpiration"  type="number" class="form-control" id="setting-input-3"
+                            <input type="number" class="form-control" id="setting-input-3" min="1" 
                                 placeholder="Number" required="" autocomplete="off" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Max access failed count*</label>
-                            <input v-model="app.maxAccessFailedCount"  type="number" class="form-control" id="setting-input-4"
+                            <input type="number" class="form-control" id="setting-input-4" min="1" 
                                 placeholder="Number" required="" autocomplete="off" />
                         </div>
 
