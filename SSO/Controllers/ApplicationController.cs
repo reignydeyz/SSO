@@ -91,9 +91,22 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPut("{applicationId}")]
         [AppIdValidator]
+        [Authorize(Policy = "RootPolicy")]
         public async Task<IActionResult> Update([FromRoute] ApplicationIdDto form, [FromBody] UpdateAppCommand param)
         {
-            return Ok();
+            try
+            {
+                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+                param.ApplicationId = form.ApplicationId!.Value;
+
+                var res = await _mediator.Send(param);
+
+                return Ok(res);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict();
+            }
         }
     }
 }
