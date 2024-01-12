@@ -1,4 +1,5 @@
-﻿using SSO.Domain.Management.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Linq.Expressions;
 
@@ -27,9 +28,11 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task Delete(ApplicationCallback param)
+        public async Task Delete(ApplicationCallback param)
         {
-            throw new NotImplementedException();
+            _context.Remove(param);
+
+            await _context.SaveChangesAsync();
         }
 
         public Task<IQueryable<ApplicationCallback>> Find(Expression<Func<ApplicationCallback, bool>>? predicate)
@@ -37,9 +40,9 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<ApplicationCallback> FindOne(Expression<Func<ApplicationCallback, bool>> predicate)
+        public async Task<ApplicationCallback> FindOne(Expression<Func<ApplicationCallback, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.ApplicationCallbacks.FirstOrDefaultAsync(predicate);
         }
 
         public Task<ApplicationCallback> Update(ApplicationCallback param, object? args = null)

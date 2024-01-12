@@ -7,6 +7,7 @@ using SSO.Business.ApplicationCallbacks.Commands;
 using SSO.Business.ApplicationCallbacks.Queries;
 using SSO.Business.Applications;
 using SSO.Filters;
+using System.ComponentModel.DataAnnotations;
 
 namespace SSO.Controllers
 {
@@ -25,7 +26,7 @@ namespace SSO.Controllers
         }
 
         /// <summary>
-        /// Gets App`s callbacks
+        /// Gets app`s callbacks
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
@@ -61,6 +62,29 @@ namespace SSO.Controllers
             catch (DbUpdateException)
             {
                 return Conflict();
+            }
+        }
+
+        /// <summary>
+        /// Removes app`s callback
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form, [FromQuery, Url, Required] string url)
+        {
+            try
+            {
+                var param = new RemoveAppCallbackCommand { ApplicationId = form.ApplicationId!.Value, Url = url };
+
+                var res = await _mediator.Send(param);
+
+                return Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
             }
         }
     }
