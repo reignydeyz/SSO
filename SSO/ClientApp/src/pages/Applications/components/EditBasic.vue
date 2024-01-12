@@ -29,6 +29,7 @@
                             <label for="setting-input-2" class="form-label">Max access failed count*</label>
                             <input v-model="app.maxAccessFailedCount" type="number" class="form-control"
                                 id="setting-input-4" min="0" placeholder="Number" required="" autocomplete="off" />
+                            <small class="ms-1">(0 for unlimitted)</small>
                         </div>
 
                         <button type="submit" class="btn app-btn-primary">

@@ -21,7 +21,7 @@ namespace SSO.Business.Applications.Commands
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessage = "Value must be greater than or equal to 1.")]
         public int RefreshTokenExpiration { get; set; }
 
-        [Range(minimum: 0, maximum: short.MaxValue, ErrorMessage = "Value must be greater than or equal to 1.")]
+        [Range(minimum: 0, maximum: short.MaxValue, ErrorMessage = "Value must be greater than or equal to 0.")]
         public short MaxAccessFailedCount { get; set; } = 0;
     }
 }
