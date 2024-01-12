@@ -17,18 +17,18 @@
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Token expiration (minutes)*</label>
-                            <input v-model="app.tokenExpiration" type="number" class="form-control" id="setting-input-2" min="1" 
-                                placeholder="Number" required="" autocomplete="off" />
+                            <input v-model="app.tokenExpiration" type="number" class="form-control" id="setting-input-2"
+                                min="1" placeholder="Number" required="" autocomplete="off" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Refresh token expiration (minutes)*</label>
-                            <input v-model="app.refreshTokenExpiration" type="number" class="form-control" id="setting-input-3" min="1" 
-                                placeholder="Number" required="" autocomplete="off" />
+                            <input v-model="app.refreshTokenExpiration" type="number" class="form-control"
+                                id="setting-input-3" min="1" placeholder="Number" required="" autocomplete="off" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Max access failed count*</label>
-                            <input v-model="app.maxAccessFailedCount" type="number" class="form-control" id="setting-input-4" min="1" 
-                                placeholder="Number" required="" autocomplete="off" />
+                            <input v-model="app.maxAccessFailedCount" type="number" class="form-control"
+                                id="setting-input-4" min="0" placeholder="Number" required="" autocomplete="off" />
                         </div>
 
                         <button type="submit" class="btn app-btn-primary">
@@ -44,7 +44,24 @@
 </template>
 
 <script>
+import { updateApp } from "@/services/application.service";
+import { emitter } from "@/services/emitter.service";
 export default {
     props: ["app"],
+    methods: {
+        onSubmit() {
+            emitter.emit("showLoader", true);
+
+            updateApp(this.app).then(
+                (r) => {
+                    this.$router.push("../../applications");
+                },
+                (err) => {
+                    alert('Failed to update record.');
+                    emitter.emit("showLoader", false);
+                }
+            );
+        },
+    }
 }
 </script>

@@ -16,8 +16,11 @@ const searchApp = async (b, sort, sortDirection, page = 1, pageSize = 10) => {
 
 const addApp = async (param) => await axios.post("/api/application/", param);
 
+const updateApp = async (param) => await axios.put(`/api/application/${param.applicationId}`, param);
+
 export {
     getAppById,
     addApp,
-    searchApp
+    searchApp,
+    updateApp
 }
