@@ -15,9 +15,9 @@ namespace SSO.Business.ApplicationCallbacks.Handlers
 
         public async Task<IEnumerable<string>> Handle(GetAppCallbacksByAppIdQuery request, CancellationToken cancellationToken)
         {
-            var res = await _applicationRepository.GetCallbackUrls(request.ApplicationId);
+            var res = await _applicationRepository.GetCallbacks(request.ApplicationId);
 
-            return res;
+            return res.Select(x => x.Url);
         }
     }
 }

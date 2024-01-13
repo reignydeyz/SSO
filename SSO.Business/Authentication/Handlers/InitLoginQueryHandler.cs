@@ -15,7 +15,7 @@ namespace SSO.Business.Authentication.Handlers
 
         public async Task<Unit> Handle(InitLoginQuery request, CancellationToken cancellationToken)
         {
-            var callbackUrls = await _applicationRepository.GetCallbackUrls(request.ApplicationId!.Value);
+            var callbackUrls = (await _applicationRepository.GetCallbacks(request.ApplicationId!.Value)).Select(x => x.Url);
 
             if (!callbackUrls.Contains(request.CallbackUrl))
                 throw new ArgumentException(message: "Callback url is invalid.", paramName: "InvalidCallback");
