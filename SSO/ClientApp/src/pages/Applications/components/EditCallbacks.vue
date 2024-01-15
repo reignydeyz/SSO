@@ -3,7 +3,7 @@
         <div class="col-12 col-md-4">
             <h3 class="section-title">Callbacks</h3>
             <div class="section-intro">
-                Manage your redirect URLs.
+                Manage the redirect URLs.
             </div>
         </div>
         <div class="col-12 col-md-8">
@@ -53,11 +53,13 @@ export default {
     props: ["app"],
     data: () => ({
         appCallback: new Object(),
-        appCallbacks: []
+        appCallbacks: [],
+        updated: false
     }),
     async updated() {
-        if (this.app.applicationId && (!this.appCallbacks || this.appCallbacks.length <= 0)) {
+        if (!this.updated) {
             this.appCallbacks = (await getAppCallbacks(this.app.applicationId)).data;
+            this.updated = true;
         }
     },
     methods: {

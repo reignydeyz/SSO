@@ -3,7 +3,7 @@
         <div class="col-12 col-md-4">
             <h3 class="section-title">General</h3>
             <div class="section-intro">
-                Basic information of your application.
+                Basic information of the application.
             </div>
         </div>
         <div class="col-12 col-md-8">
