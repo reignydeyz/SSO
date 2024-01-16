@@ -1,5 +1,6 @@
 using AutoMapper;
 using SSO.Business.ApplicationPermissions;
+using SSO.Business.ApplicationPermissions.Commands;
 using SSO.Domain.Models;
 
 namespace SSO.Business.Mappings
@@ -8,6 +9,9 @@ namespace SSO.Business.Mappings
     {
         public AppPermissionProfile()
         {
+            CreateMap<CreateAppPermissionCommand, ApplicationPermission>()
+                .IgnoreAllPropertiesWithAnInaccessibleSetter();
+
             CreateMap<ApplicationPermission, AppPermissionDto>()
                 .IgnoreAllPropertiesWithAnInaccessibleSetter();
         }

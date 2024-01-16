@@ -12,11 +12,12 @@
                     <form class="row g-3" @submit.prevent="onSubmit">
                         <div class="col-md-4">
                             <label class="visually-hidden">Name</label>
-                            <input v-model="permission.name" type="url" class="form-control" placeholder="Name" required>
+                            <input v-model="permission.name" type="text" class="form-control" placeholder="Name" required>
                         </div>
                         <div class="col-md-4">
                             <label class="visually-hidden">Description</label>
-                            <input v-model="permission.description" type="text" class="form-control" placeholder="Description" required>
+                            <input v-model="permission.description" type="text" class="form-control"
+                                placeholder="Description" required>
                         </div>
                         <div class="col-auto">
                             <button type="submit" class="btn app-btn-primary mb-3">Add</button>
@@ -34,7 +35,8 @@
                             <tbody>
                                 <tr v-for="i in permissions" :key="i.permissionId">
                                     <td class="cell">
-                                        <button class="btn-sm app-btn-secondary" type="button" @click="onRemove(i.permissionId)">
+                                        <button class="btn-sm app-btn-secondary" type="button"
+                                            @click="onRemove(i.permissionId)">
                                             Remove
                                         </button>
                                     </td>
@@ -53,29 +55,48 @@
 </template>
 
 <script>
+import { getAppPermissions, addAppPermission, removeAppPermission } from "@/services/application-permission.service";
 import { emitter } from "@/services/emitter.service";
 export default {
     props: ["app"],
     data: () => ({
         permission: new Object(),
-        permissions: []
+        permissions: [],
+        updated: false
     }),
     async updated() {
-        if (this.app.applicationId && (!this.permissions || this.permissions.length <= 0)) {
-            // TODO: Populate this.permissions
+        if (!this.updated) {
+            this.permissions = (await getAppPermissions(this.app.applicationId)).data;
+            this.updated = true;
         }
     },
     methods: {
         onSubmit() {
             emitter.emit("showLoader", true);
 
-            // TODO: Add logic
+            addAppPermission(this.app.applicationId, this.permission).then(r => {
+                getAppPermissions(this.app.applicationId).then(res => {
+                    this.permissions = res.data;
+                    this.permission = new Object();
+                    emitter.emit("showLoader", false);
+                });
+            },
+                (err) => {
+                    alert('Failed to add record.');
+                    emitter.emit("showLoader", false);
+                }
+            );
         },
 
-        onRemove(url) {
+        onRemove(id) {
             if (confirm('Are you sure you want to delete this record?')) {
                 emitter.emit("showLoader", true);
-                // TODO: Delete logic
+                removeAppPermission(this.app.applicationId, id).then(r => {
+                    getAppPermissions(this.app.applicationId).then(res => {
+                        this.permissions = res.data;
+                        emitter.emit("showLoader", false);
+                    });
+                });
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using SSO.Domain.Management.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Linq.Expressions;
 
@@ -13,9 +14,13 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public Task<ApplicationPermission> Add(ApplicationPermission param, object? args = null)
+        public async Task<ApplicationPermission> Add(ApplicationPermission param, object? args = null)
         {
-            throw new NotImplementedException();
+            _context.Add(param);
+
+            await _context.SaveChangesAsync();
+
+            return param;
         }
 
         public Task<bool> Any(Expression<Func<ApplicationPermission, bool>> predicate)
@@ -23,9 +28,11 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task Delete(ApplicationPermission param)
+        public async Task Delete(ApplicationPermission param)
         {
-            throw new NotImplementedException();
+            _context.Remove(param);
+
+            await _context.SaveChangesAsync();
         }
 
         public Task<IQueryable<ApplicationPermission>> Find(Expression<Func<ApplicationPermission, bool>>? predicate)
@@ -33,9 +40,9 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<ApplicationPermission> FindOne(Expression<Func<ApplicationPermission, bool>> predicate)
+        public async Task<ApplicationPermission> FindOne(Expression<Func<ApplicationPermission, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.ApplicationPermissions.FirstOrDefaultAsync(predicate);
         }
 
         public Task<ApplicationPermission> Update(ApplicationPermission param, object? args = null)

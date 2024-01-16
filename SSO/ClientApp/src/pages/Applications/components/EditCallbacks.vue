@@ -75,7 +75,7 @@ export default {
                     });
                 },
                 (err) => {
-                    alert('Failed add record.');
+                    alert('Failed to add record.');
                     emitter.emit("showLoader", false);
                 }
             );
