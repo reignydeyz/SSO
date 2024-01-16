@@ -17,6 +17,8 @@ namespace SSO.Infrastructure.Management
 
         public async Task<ApplicationRole> Add(ApplicationRole param, object? args)
         {
+            param.Id = Guid.NewGuid().ToString();
+
             var res = await _roleManager.CreateAsync(param);
 
             if (res.Succeeded)

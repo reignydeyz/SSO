@@ -2,6 +2,9 @@
     <div class="row g-4 settings-section">
         <div class="col-12 col-md-2">
             <h3 class="section-title">Create role</h3>
+            <div class="section-intro">
+                Add new role for the application.
+            </div>
         </div>
         <div class="col-12 col-md-10">
             <div class="app-card app-card-settings shadow-sm p-4">
@@ -25,20 +28,17 @@
         <hr class="mb-4" />
         <div class="row g-4 settings-section">
             <div class="col-12 col-md-2">
-                <h3 class="section-title">{{ i.name }}</h3>
-                <div class="section-intro">
-                    Choose permission for this role.
-                </div>
+                <h3 class="section-title"><i>{{ i.name }}</i></h3>
             </div>
             <div class="col-12 col-md-10">
-            <div class="app-card app-card-settings shadow-sm p-4">
-                <div class="app-card-body">
-                    // TBD
+                <div class="app-card app-card-settings shadow-sm p-4">
+                    <div class="app-card-body">
+                        // TBD
+                    </div>
+                    <!--//app-card-body-->
                 </div>
-                <!--//app-card-body-->
+                <!--//app-card-->
             </div>
-            <!--//app-card-->
-        </div>
         </div>
     </div>
 </template>
