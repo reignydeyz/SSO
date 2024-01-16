@@ -67,6 +67,13 @@ namespace SSO.Infrastructure.Management
             return await res.ToListAsync();
         }
 
+        public async Task<IEnumerable<ApplicationRole>> GetRoles(Guid applicationId)
+        {
+            var res = _context.ApplicationRoles.Where(x => x.ApplicationId == applicationId);
+
+            return await res.ToListAsync();
+        }
+
         public async Task<Application> Update(Application param, object? args = null)
         {
             var rec = await _context.Applications.FirstAsync(x => x.ApplicationId == param.ApplicationId);

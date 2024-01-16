@@ -58,7 +58,8 @@
                     <EditPermissions :app="app" />
                 </div>
                 <div class="tab-pane fade" id="pills-roles" role="tabpanel" aria-labelledby="pills-roles-tab">
-                    // Roles
+                    <hr class="mb-4" />
+                    <EditRoles :app="app" />
                 </div>
                 <div class="tab-pane fade" id="pills-users" role="tabpanel" aria-labelledby="pills-users-tab">
                     // Users
@@ -75,11 +76,13 @@ import { emitter } from "@/services/emitter.service";
 import EditBasic from "@/pages/Applications/components/EditBasic.vue";
 import EditCallbacks from "@/pages/Applications/components/EditCallbacks.vue";
 import EditPermissions from "@/pages/Applications/components/EditPermissions.vue";
+import EditRoles from "@/pages/Applications/components/EditRoles.vue";
 export default {
     components: {
         EditBasic,
         EditCallbacks,
-        EditPermissions
+        EditPermissions,
+        EditRoles
     },
     data: () => ({
         app: new Object()

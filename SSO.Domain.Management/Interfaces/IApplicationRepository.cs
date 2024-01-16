@@ -9,6 +9,8 @@ namespace SSO.Domain.Management.Interfaces
 
         public Task<IEnumerable<ApplicationCallback>> GetCallbacks(Guid applicationId);
 
+        public Task<IEnumerable<ApplicationRole>> GetRoles(Guid applicationId);
+
         public Task<IEnumerable<Application>> GetAppsByUserId(Guid userId);
     }
 }

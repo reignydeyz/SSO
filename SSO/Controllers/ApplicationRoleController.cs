@@ -1,0 +1,66 @@
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SSO.Business.ApplicationRoles.Queries;
+using SSO.Business.ApplicationRoles;
+using SSO.Business.Applications;
+using SSO.Filters;
+using Microsoft.EntityFrameworkCore;
+using SSO.Business.ApplicationRoles.Commands;
+
+namespace SSO.Controllers
+{
+    [ApiExplorerSettings(GroupName = "System")]
+    [Route("api/application/{applicationId}/role")]
+    [ApiController]
+    [AppIdValidator]
+    [Authorize(Policy = "RootPolicy")]
+    public class ApplicationRoleController : ControllerBase
+    {
+        readonly IMediator _mediator;
+
+        public ApplicationRoleController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        /// <summary>
+        /// Gets app`s roles 
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<AppRoleDto>), 200)]
+        public async Task<IActionResult> Get([FromRoute] ApplicationIdDto form)
+        {
+            var param = new GetAppRolesByAppIdQuery { ApplicationId = form.ApplicationId!.Value };
+
+            var res = await _mediator.Send(param);
+
+            return Ok(res);
+        }
+
+        /// <summary>
+        /// Creates new app role
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> Create([FromRoute] ApplicationIdDto form, [FromBody] CreateAppRoleCommand param)
+        {
+            try
+            {
+                param.ApplicationId = form.ApplicationId!.Value;
+
+                var res = await _mediator.Send(param);
+
+                return Ok(res);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict();
+            }
+        }
+    }
+}

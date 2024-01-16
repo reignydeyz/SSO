@@ -6,18 +6,23 @@ using System.Security.Claims;
 
 namespace SSO.Infrastructure.Management
 {
-    public class RoleRepository : IRoleRepository
+    public class ApplicationRoleRepository : IApplicationRoleRepository
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
 
-        public RoleRepository(RoleManager<ApplicationRole> roleManager)
+        public ApplicationRoleRepository(RoleManager<ApplicationRole> roleManager)
         {
             _roleManager = roleManager;
         }
 
-        public Task<ApplicationRole> Add(ApplicationRole param, object? args)
+        public async Task<ApplicationRole> Add(ApplicationRole param, object? args)
         {
-            throw new NotImplementedException();
+            var res = await _roleManager.CreateAsync(param);
+
+            if (res.Succeeded)
+                return await _roleManager.FindByNameAsync(param.Name);
+            else
+                throw new ArgumentException(res.Errors.First().Description);
         }
 
         public Task<bool> Any(Expression<Func<ApplicationRole, bool>> predicate)
