@@ -23,7 +23,7 @@
                             <button type="submit" class="btn app-btn-primary mb-3">Add</button>
                         </div>
                     </form>
-                    <div class="table-responsive" v-if="permissions.length > 0">
+                    <div class="table-responsive" v-if="permissions && permissions.length > 0">
                         <table class="table app-table-hover mb-0 text-left">
                             <thead>
                                 <tr>
@@ -35,7 +35,7 @@
                             <tbody>
                                 <tr v-for="i in permissions" :key="i.permissionId">
                                     <td class="cell">
-                                        <button class="btn-sm app-btn-secondary" type="button"
+                                        <button class="app-btn-sm app-btn-outline-danger bg-white" type="button"
                                             @click="onRemove(i.permissionId)">
                                             Remove
                                         </button>
@@ -55,31 +55,22 @@
 </template>
 
 <script>
-import { getAppPermissions, addAppPermission, removeAppPermission } from "@/services/application-permission.service";
+import { addAppPermission, removeAppPermission } from "@/services/application-permission.service";
 import { emitter } from "@/services/emitter.service";
 export default {
-    props: ["app"],
+    props: ["app", "permissions"],
+    emits: ["loadPermissions"],
     data: () => ({
-        permission: new Object(),
-        permissions: [],
-        updated: false
+        permission: new Object()
     }),
-    async updated() {
-        if (!this.updated) {
-            this.permissions = (await getAppPermissions(this.app.applicationId)).data;
-            this.updated = true;
-        }
-    },
     methods: {
         onSubmit() {
             emitter.emit("showLoader", true);
 
-            addAppPermission(this.app.applicationId, this.permission).then(r => {
-                getAppPermissions(this.app.applicationId).then(res => {
-                    this.permissions = res.data;
-                    this.permission = new Object();
-                    emitter.emit("showLoader", false);
-                });
+            addAppPermission(this.app.applicationId, this.permission).then(r => {                
+                this.permission = new Object();
+                this.$emit("loadPermissions");
+                emitter.emit("showLoader", false);
             },
                 (err) => {
                     alert('Failed to add record.');
@@ -92,10 +83,8 @@ export default {
             if (confirm('Are you sure you want to delete this record?')) {
                 emitter.emit("showLoader", true);
                 removeAppPermission(this.app.applicationId, id).then(r => {
-                    getAppPermissions(this.app.applicationId).then(res => {
-                        this.permissions = res.data;
-                        emitter.emit("showLoader", false);
-                    });
+                    this.$emit("loadPermissions");
+                    emitter.emit("showLoader", false);
                 });
             }
         }

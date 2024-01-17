@@ -62,7 +62,11 @@ builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginQueryHandler>());
 
+#if !DEBUG
 var jwtSecret = Guid.NewGuid().ToString();
+#else
+var jwtSecret = "62f59942-7c23-48e3-b8c0-ec81a0dacf51";
+#endif
 
 builder.Services.AddAuthentication(options =>
 {
@@ -110,6 +114,7 @@ builder.Services.AddScoped<IApplicationRoleRepository, ApplicationRoleRepository
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IApplicationCallbackRepository, ApplicationCallbackRepository>();
 builder.Services.AddScoped<IApplicationPermissionRepository, ApplicationPermissionRepository>();
+builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaimRepository>();
 
 builder.Services.AddSwaggerGen(x =>
 {

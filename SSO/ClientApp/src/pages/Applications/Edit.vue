@@ -55,11 +55,11 @@
                 </div>
                 <div class="tab-pane fade" id="pills-permissions" role="tabpanel" aria-labelledby="pills-permissions-tab">
                     <hr class="mb-4" />
-                    <EditPermissions :app="app" />
+                    <EditPermissions :app="app" :permissions="permissions" @load-permissions="loadPermissions" />
                 </div>
                 <div class="tab-pane fade" id="pills-roles" role="tabpanel" aria-labelledby="pills-roles-tab">
                     <hr class="mb-4" />
-                    <EditRoles :app="app" />
+                    <EditRoles :app="app" :roles="roles" :permissions="permissions" @load-roles="loadRoles" />
                 </div>
                 <div class="tab-pane fade" id="pills-users" role="tabpanel" aria-labelledby="pills-users-tab">
                     // Users
@@ -72,6 +72,8 @@
 <script>
 import * as navbar from "@/services/navbar.service";
 import { getAppById } from "@/services/application.service";
+import { getAppPermissions } from "@/services/application-permission.service";
+import { getAppRoles } from "@/services/application-role.service";
 import { emitter } from "@/services/emitter.service";
 import EditBasic from "@/pages/Applications/components/EditBasic.vue";
 import EditCallbacks from "@/pages/Applications/components/EditCallbacks.vue";
@@ -85,17 +87,30 @@ export default {
         EditRoles
     },
     data: () => ({
-        app: new Object()
+        app: new Object(),
+        permissions: [],
+        roles: [],
     }),
-    mounted() {
+    async mounted() {
         navbar.init(this.$route);
 
         emitter.emit("showLoader", true);
 
-        getAppById(this.$route.params.id).then(r => {
+        getAppById(this.$route.params.id).then(async (r) => {
             this.app = r.data;
+            await this.loadPermissions();
+            await this.loadRoles();
             emitter.emit("showLoader", false);
         });
+    },
+    methods: {
+        async loadPermissions() {
+            this.permissions = (await getAppPermissions(this.app.applicationId)).data;
+        },
+
+        async loadRoles() {
+            this.roles = (await getAppRoles(this.app.applicationId)).data;
+        }
     }
 }
 </script>

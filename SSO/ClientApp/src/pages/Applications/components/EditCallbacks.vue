@@ -29,7 +29,7 @@
                             <tbody>
                                 <tr v-for="i in appCallbacks" :key="i">
                                     <td class="cell">
-                                        <button class="btn-sm app-btn-secondary" type="button" @click="onRemove(i)">
+                                        <button class="app-btn-outline-danger app-btn-sm bg-white" type="button" @click="onRemove(i)">
                                             Remove
                                         </button>
                                     </td>

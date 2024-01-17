@@ -24,16 +24,28 @@
             <!--//app-card-->
         </div>
     </div>
-    <div v-for="i in appRoles" :key="i.roleId">
+    <div v-for="i in roles" :key="i.roleId">
         <hr class="mb-4" />
         <div class="row g-4 settings-section">
             <div class="col-12 col-md-2">
                 <h3 class="section-title"><i>{{ i.name }}</i></h3>
+                <button type="button" class="btn app-btn-outline-danger app-btn-sm">Remove</button>
             </div>
-            <div class="col-12 col-md-10">
+            <div class="col-12 col-md-10" v-if="getPermissions(i.roleId).length > 0">
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
-                        // TBD
+                        <p>Select the permissions for this role</p>
+                        <div class="form-check form-check-inline" v-for="p in getPermissions(i.roleId)"
+                            :key="p.permissionId">
+                            <label>
+                                <input class="form-check-input" type="checkbox" value="" v-model="p.selected" />
+                                <span>{{ p.description }}</span>
+                            </label>
+                        </div>
+                        <br />
+                        <button type="button" class="btn app-btn-primary mt-3">
+                            Save changes
+                        </button>
                     </div>
                     <!--//app-card-body-->
                 </div>
@@ -44,19 +56,81 @@
 </template>
 
 <script>
-import { getAppRoles, addAppRole, removeAppRole } from "@/services/application-role.service";
+import { addAppRole, removeAppRole } from "@/services/application-role.service";
+import { getAppRolePermissions } from "@/services/application-role-permission.service";
 import { emitter } from "@/services/emitter.service";
 export default {
-    props: ["app"],
+    props: ["app", "roles", "permissions"],
+    emits: ["loadRoles"],
     data: () => ({
         appRole: new Object(),
-        appRoles: [],
-        updated: false
+        rolePermissions: []
     }),
-    async updated() {
-        if (!this.updated) {
-            this.appRoles = (await getAppRoles(this.app.applicationId)).data;
-            this.updated = true;
+    watch: {
+        permissions: {
+            immediate: true,
+            handler(newVal, oldVal) {
+                this.rolePermissions = [];
+
+                this.roles.forEach(role => {
+
+                    // TODO: Get role permissions
+
+                    newVal.forEach(item => {
+
+                        // TODO: Identify selected permissions
+                        this.rolePermissions.push({
+                            roleId: role.roleId,
+                            permissionId: item.permissionId,
+                            description: item.description,
+                            selected: false,
+                        });
+                    });
+                });
+            }
+        },
+
+        permissions(newVal, oldVal) {
+            emitter.emit("showLoader", true);
+
+            this.rolePermissions = [];
+
+            this.roles.forEach(async (role) => {
+
+                const selectedPermissions = (await getAppRolePermissions(this.app.applicationId, role.roleId)).data;
+
+                newVal.forEach(item => {
+                    this.rolePermissions.push({
+                        roleId: role.roleId,
+                        permissionId: item.permissionId,
+                        description: item.description,
+                        selected: selectedPermissions.some(x => x.permissionId === item.permissionId),
+                    });
+                });
+            });
+
+            emitter.emit("showLoader", false);
+        },
+
+        roles(newVal, oldVal) {
+            emitter.emit("showLoader", true);
+
+            this.rolePermissions = [];
+
+            newVal.forEach(async (item) => {
+                const selectedPermissions = (await getAppRolePermissions(this.app.applicationId, item.roleId)).data;
+
+                this.permissions.forEach(permission => {
+                    this.rolePermissions.push({
+                        roleId: item.roleId,
+                        permissionId: permission.permissionId,
+                        description: permission.description,
+                        selected: selectedPermissions.some(x => x.permissionId === permission.permissionId),
+                    });
+                });
+            });
+
+            emitter.emit("showLoader", false);
         }
     },
     methods: {
@@ -65,11 +139,9 @@ export default {
 
             addAppRole(this.app.applicationId, this.appRole).then(
                 (r) => {
-                    getAppRoles(this.app.applicationId).then(res => {
-                        this.appRoles = res.data;
-                        this.appRole = new Object();
-                        emitter.emit("showLoader", false);
-                    });
+                    this.role = new Object();
+                    this.$emit("loadRoles");
+                    emitter.emit("showLoader", false);
                 },
                 (err) => {
                     alert('Failed to add record.');
@@ -83,6 +155,10 @@ export default {
                 emitter.emit("showLoader", true);
                 // TODO: Delete role
             }
+        },
+
+        getPermissions(roleId) {
+            return this.rolePermissions.filter(x => x.roleId === roleId);
         }
     }
 }

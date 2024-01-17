@@ -57,7 +57,7 @@ namespace SSO.Controllers
 
                 return Ok(res);
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
                 return Conflict();
             }

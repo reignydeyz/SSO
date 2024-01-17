@@ -58,15 +58,22 @@ export default {
 }
 
 .app-btn-outline-danger {
-    background: #fff;
+    /*background: #fff;*/
     color: crimson;
     border: 1px solid crimson
 }
 
 .app-btn-outline-danger:hover {
-    background: crimson;
+    background: crimson !important;
     color: white;
     border: 1px solid crimson
+}
+
+.app-btn-sm {
+    padding: 0.2rem 0.4rem; /* Adjust padding to make it smaller */
+    font-size: 0.75rem;    /* Adjust font size to make text smaller */
+    line-height: 1.3;      /* Set line height for better text alignment */
+    border-radius: 0.15rem; /* Add border-radius for rounded corners */
 }
 
 a:hover {

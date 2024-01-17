@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Linq.Expressions;
@@ -8,28 +9,30 @@ namespace SSO.Infrastructure.Management
 {
     public class ApplicationRoleRepository : IApplicationRoleRepository
     {
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        readonly RoleManager<ApplicationRole> _roleManager;
+        readonly AppDbContext _context;
 
-        public ApplicationRoleRepository(RoleManager<ApplicationRole> roleManager)
+        public ApplicationRoleRepository(RoleManager<ApplicationRole> roleManager, AppDbContext context)
         {
             _roleManager = roleManager;
+            _context = context;
         }
 
         public async Task<ApplicationRole> Add(ApplicationRole param, object? args)
         {
             param.Id = Guid.NewGuid().ToString();
+            param.NormalizedName = param.Name!.ToUpper();
 
-            var res = await _roleManager.CreateAsync(param);
+            _context.Roles.Add(param);
 
-            if (res.Succeeded)
-                return await _roleManager.FindByNameAsync(param.Name);
-            else
-                throw new ArgumentException(res.Errors.First().Description);
+            await _context.SaveChangesAsync();
+
+            return param;
         }
 
-        public Task<bool> Any(Expression<Func<ApplicationRole, bool>> predicate)
+        public async Task<bool> Any(Expression<Func<ApplicationRole, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.ApplicationRoles.AnyAsync(predicate);
         }
 
         public Task Delete(ApplicationRole param)
