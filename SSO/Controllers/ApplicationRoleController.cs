@@ -62,5 +62,28 @@ namespace SSO.Controllers
                 return Conflict();
             }
         }
+
+        /// <summary>
+        /// Removes app role
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form, [FromRoute] Guid id)
+        {
+            try
+            {
+                var param = new RemoveAppRoleCommand { ApplicationId = form.ApplicationId!.Value, RoleId = id };
+
+                var res = await _mediator.Send(param);
+
+                return Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
+        }
     }
 }

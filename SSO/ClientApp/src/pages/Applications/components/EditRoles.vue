@@ -29,7 +29,7 @@
         <div class="row g-4 settings-section">
             <div class="col-12 col-md-2">
                 <h3 class="section-title"><i>{{ i.name }}</i></h3>
-                <button type="button" class="btn app-btn-outline-danger app-btn-sm">Remove</button>
+                <button type="button" class="app-btn-sm app-btn-outline-danger" @click="onRemove(i.roleId)">Remove</button>
             </div>
             <div class="col-12 col-md-10" v-if="getPermissions(i.roleId).length > 0">
                 <div class="app-card app-card-settings shadow-sm p-4">
@@ -130,7 +130,10 @@ export default {
         onRemove(id) {
             if (confirm('Are you sure you want to delete this record?')) {
                 emitter.emit("showLoader", true);
-                // TODO: Delete role
+                removeAppRole(this.app.applicationId, id).then(r => {
+                    this.$emit("loadRoles");
+                    emitter.emit("showLoader", false);
+                });
             }
         },
 

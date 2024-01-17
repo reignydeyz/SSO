@@ -52,13 +52,13 @@ export default {
 }
 
 .app-btn-outline-primary:hover {
-    background: var(--primary-color);
+    background: #F8F8FF;
     color: white;
     border: 1px solid var(--primary-color);
 }
 
 .app-btn-outline-danger {
-    /*background: #fff;*/
+    background: #F8F8FF;
     color: crimson;
     border: 1px solid crimson
 }

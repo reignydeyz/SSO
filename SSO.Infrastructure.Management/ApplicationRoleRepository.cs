@@ -35,9 +35,11 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationRoles.AnyAsync(predicate);
         }
 
-        public Task Delete(ApplicationRole param)
+        public async Task Delete(ApplicationRole param)
         {
-            throw new NotImplementedException();
+            _context.Remove(param);
+
+            await _context.SaveChangesAsync();
         }
 
         public Task<IQueryable<ApplicationRole>> Find(Expression<Func<ApplicationRole, bool>>? predicate)
@@ -45,9 +47,9 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<ApplicationRole> FindOne(Expression<Func<ApplicationRole, bool>> predicate)
+        public async Task<ApplicationRole> FindOne(Expression<Func<ApplicationRole, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.ApplicationRoles.FirstOrDefaultAsync(predicate);
         }
 
         public Task<IEnumerable<Claim>> GetClaims(ApplicationRole role)
