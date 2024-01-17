@@ -67,29 +67,6 @@ export default {
         rolePermissions: []
     }),
     watch: {
-        permissions: {
-            immediate: true,
-            handler(newVal, oldVal) {
-                this.rolePermissions = [];
-
-                this.roles.forEach(role => {
-
-                    // TODO: Get role permissions
-
-                    newVal.forEach(item => {
-
-                        // TODO: Identify selected permissions
-                        this.rolePermissions.push({
-                            roleId: role.roleId,
-                            permissionId: item.permissionId,
-                            description: item.description,
-                            selected: false,
-                        });
-                    });
-                });
-            }
-        },
-
         permissions(newVal, oldVal) {
             emitter.emit("showLoader", true);
 
