@@ -14,11 +14,12 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public async Task<ApplicationCallback> Add(ApplicationCallback param, object? args = null)
+        public async Task<ApplicationCallback> Add(ApplicationCallback param, bool? saveChanges = true, object? args = null)
         {
             _context.Add(param);
 
-            await _context.SaveChangesAsync();
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
 
             return param;
         }
@@ -28,11 +29,12 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public async Task Delete(ApplicationCallback param)
+        public async Task Delete(ApplicationCallback param, bool? saveChanges = true)
         {
             _context.Remove(param);
 
-            await _context.SaveChangesAsync();
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public Task<IQueryable<ApplicationCallback>> Find(Expression<Func<ApplicationCallback, bool>>? predicate)
@@ -45,7 +47,7 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationCallbacks.FirstOrDefaultAsync(predicate);
         }
 
-        public Task<ApplicationCallback> Update(ApplicationCallback param, object? args = null)
+        public Task<ApplicationCallback> Update(ApplicationCallback param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
         }

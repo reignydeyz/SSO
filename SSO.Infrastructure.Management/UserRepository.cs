@@ -17,12 +17,12 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public Task<ApplicationUser> Add(ApplicationUser param, object? args = null)
+        public Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task Delete(ApplicationUser param)
+        public Task Delete(ApplicationUser param, bool? saveChanges = true)
         {
             throw new NotImplementedException();
         }
@@ -47,7 +47,7 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationUsers.FirstOrDefaultAsync(predicate);
         }
 
-        public Task<ApplicationUser> Update(ApplicationUser param, object? args = null)
+        public Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
         }

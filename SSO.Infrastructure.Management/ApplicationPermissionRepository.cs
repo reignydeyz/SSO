@@ -14,30 +14,35 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public async Task<ApplicationPermission> Add(ApplicationPermission param, object? args = null)
+        public async Task<ApplicationPermission> Add(ApplicationPermission param, bool? saveChanges = true, object? args = null)
         {
             _context.Add(param);
 
-            await _context.SaveChangesAsync();
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
 
             return param;
         }
 
-        public Task<bool> Any(Expression<Func<ApplicationPermission, bool>> predicate)
+        public async Task<bool> Any(Expression<Func<ApplicationPermission, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.ApplicationPermissions.AnyAsync(predicate);
         }
 
-        public async Task Delete(ApplicationPermission param)
+        public async Task Delete(ApplicationPermission param, bool? saveChanges = true)
         {
             _context.Remove(param);
 
-            await _context.SaveChangesAsync();
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
-        public Task<IQueryable<ApplicationPermission>> Find(Expression<Func<ApplicationPermission, bool>>? predicate)
+        public async Task<IQueryable<ApplicationPermission>> Find(Expression<Func<ApplicationPermission, bool>>? predicate)
         {
-            throw new NotImplementedException();
+            if (predicate is not null)
+                return await Task.Run(() => _context.ApplicationPermissions.Where(predicate).AsQueryable().AsNoTracking());
+            else
+                return _context.ApplicationPermissions.AsQueryable().AsNoTracking();
         }
 
         public async Task<ApplicationPermission> FindOne(Expression<Func<ApplicationPermission, bool>> predicate)
@@ -45,7 +50,7 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationPermissions.FirstOrDefaultAsync(predicate);
         }
 
-        public Task<ApplicationPermission> Update(ApplicationPermission param, object? args = null)
+        public Task<ApplicationPermission> Update(ApplicationPermission param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
         }

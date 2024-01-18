@@ -14,11 +14,12 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public async Task<Application> Add(Application param, object? args)
+        public async Task<Application> Add(Application param, bool? saveChanges = true, object? args = null)
         {
             _context.Add(param);
 
-            await _context.SaveChangesAsync();
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
 
             return param;
         }
@@ -28,7 +29,7 @@ namespace SSO.Infrastructure.Management
             return await _context.Applications.AnyAsync(predicate);
         }
 
-        public Task Delete(Application param)
+        public Task Delete(Application param, bool? saveChanges = true)
         {
             throw new NotImplementedException();
         }
@@ -74,7 +75,7 @@ namespace SSO.Infrastructure.Management
             return await res.ToListAsync();
         }
 
-        public async Task<Application> Update(Application param, object? args = null)
+        public async Task<Application> Update(Application param, bool? saveChanges = true, object? args = null)
         {
             var rec = await _context.Applications.FirstAsync(x => x.ApplicationId == param.ApplicationId);
 
@@ -85,7 +86,8 @@ namespace SSO.Infrastructure.Management
             rec.ModifiedBy = param.ModifiedBy;
             rec.DateModified = DateTime.Now;
 
-            _context.SaveChanges();
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
 
             return rec;
         }

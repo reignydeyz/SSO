@@ -8,23 +8,26 @@ namespace SSO.Domain.Interfaces
         /// Adds entity
         /// </summary>
         /// <param name="param"></param>
+        /// <param name="saveChanges"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task<T> Add(T param, object? args = null);
+        Task<T> Add(T param, bool? saveChanges = true, object? args = null);
 
         /// <summary>
         /// Updates entity
         /// </summary>
         /// <param name="param"></param>
+        /// <param name="saveChanges"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task<T> Update(T param, object? args = null);
+        Task<T> Update(T param, bool? saveChanges = true, object? args = null);
 
         /// <summary>
         /// Deletes entity
         /// </summary>
         /// <param name="param"></param>
-        Task Delete(T param);
+        /// <param name="saveChanges"></param>
+        Task Delete(T param, bool? saveChanges = true);
 
         /// <summary>
         /// Filters entities

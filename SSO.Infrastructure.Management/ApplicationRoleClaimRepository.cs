@@ -14,17 +14,25 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public Task<ApplicationRoleClaim> Add(ApplicationRoleClaim param, object? args = null)
+        public Task<ApplicationRoleClaim> Add(ApplicationRoleClaim param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> Any(Expression<Func<ApplicationRoleClaim, bool>> predicate)
+        public async Task AddRange(IEnumerable<ApplicationRoleClaim> param, bool? saveChanges = true, object? args = null)
         {
-            throw new NotImplementedException();
+            _context.AddRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
-        public Task Delete(ApplicationRoleClaim param)
+        public async Task<bool> Any(Expression<Func<ApplicationRoleClaim, bool>> predicate)
+        {
+            return await _context.ApplicationRoleClaims.AnyAsync(predicate);
+        }
+
+        public Task Delete(ApplicationRoleClaim param, bool? saveChanges = true)
         {
             throw new NotImplementedException();
         }
@@ -42,7 +50,15 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<ApplicationRoleClaim> Update(ApplicationRoleClaim param, object? args = null)
+        public async Task RemoveRange(IEnumerable<ApplicationRoleClaim> param, bool? saveChanges = true, object? args = null)
+        {
+            _context.RemoveRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
+        public Task<ApplicationRoleClaim> Update(ApplicationRoleClaim param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
         }

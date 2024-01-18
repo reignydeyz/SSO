@@ -18,14 +18,15 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public async Task<ApplicationRole> Add(ApplicationRole param, object? args)
+        public async Task<ApplicationRole> Add(ApplicationRole param, bool? saveChanges = true, object? args = null)
         {
             param.Id = Guid.NewGuid().ToString();
             param.NormalizedName = param.Name!.ToUpper();
 
             _context.Roles.Add(param);
 
-            await _context.SaveChangesAsync();
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
 
             return param;
         }
@@ -35,11 +36,12 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationRoles.AnyAsync(predicate);
         }
 
-        public async Task Delete(ApplicationRole param)
+        public async Task Delete(ApplicationRole param, bool? saveChanges = true)
         {
             _context.Remove(param);
 
-            await _context.SaveChangesAsync();
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public Task<IQueryable<ApplicationRole>> Find(Expression<Func<ApplicationRole, bool>>? predicate)
@@ -69,7 +71,7 @@ namespace SSO.Infrastructure.Management
             return await _roleManager.GetClaimsAsync(role);
         }
 
-        public Task<ApplicationRole> Update(ApplicationRole param, object? args)
+        public Task<ApplicationRole> Update(ApplicationRole param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
         }
