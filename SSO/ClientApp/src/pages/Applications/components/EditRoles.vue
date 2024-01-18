@@ -43,7 +43,7 @@
                             </label>
                         </div>
                         <br />
-                        <button type="button" class="btn app-btn-primary mt-3">
+                        <button type="button" class="btn app-btn-primary mt-3" @click="onUpdate(i.roleId, getPermissions(i.roleId))">
                             Save changes
                         </button>
                     </div>
@@ -57,7 +57,7 @@
 
 <script>
 import { addAppRole, removeAppRole } from "@/services/application-role.service";
-import { getAppRolePermissions } from "@/services/application-role-permission.service";
+import { getAppRolePermissions, updateAppRolePermissions } from "@/services/application-role-permission.service";
 import { emitter } from "@/services/emitter.service";
 export default {
     props: ["app", "roles", "permissions"],
@@ -139,6 +139,16 @@ export default {
 
         getPermissions(roleId) {
             return this.rolePermissions.filter(x => x.roleId === roleId);
+        },
+
+        onUpdate(roleId, permissions)
+        {
+            var selectedIds = permissions.filter(x => x.selected === true).map(x => x.permissionId);
+
+            emitter.emit("showLoader", true);
+            updateAppRolePermissions(this.app.applicationId, roleId, selectedIds).then(r => {
+                emitter.emit("showLoader", false);
+            });
         }
     }
 }

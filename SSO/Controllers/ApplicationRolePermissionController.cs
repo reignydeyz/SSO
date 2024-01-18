@@ -1,7 +1,9 @@
-﻿using MediatR;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.ApplicationPermissions;
+using SSO.Business.ApplicationRolePermissions.Commands;
 using SSO.Business.ApplicationRolePermissions.Queries;
 using SSO.Business.ApplicationRoles;
 using SSO.Filters;
@@ -36,6 +38,22 @@ namespace SSO.Controllers
             var res = await _mediator.Send(param);
 
             return Ok(res);
+        }
+
+        /// <summary>
+        /// Updates app role`s permissions
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="permissionIds"></param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> Update([FromRoute] AppRoleIdDto form, [FromBody, Required, MinLength(1)] List<Guid> permissionIds)
+        {
+            var param = new UpdateAppRolePermissionsCommand { ApplicationId = form.ApplicationId, RoleId = form.RoleId, PermissionIds = permissionIds };
+
+            await _mediator.Send(param);
+
+            return Ok();
         }
     }
 }
