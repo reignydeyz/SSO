@@ -7,30 +7,53 @@
 				<h2 class="auth-heading text-center mb-3">Change password</h2>
 				<div class="auth-form-container text-start">
 					<form class="auth-form login-form" @submit.prevent="submit()">
-						<div class="email mb-3">
+						<div class="mb-3">
 							<label>Current password</label>
-							<input type="password" class="form-control signin-password" placeholder="Password"
-								required="required" v-model="param.currentPassword" autocomplete="off"
-								ref="CurrentPassword">
-							<div class="invalid-feedback">
-								{{ errorMessage }}
+							<div class="input-group">
+								<input type="password" id="password" class="form-control signin-password"
+									placeholder="Password" required="required" v-model="param.currentPassword"
+									autocomplete="off" ref="CurrentPassword">
+								<button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+									@click="toggleViewKey('password')">
+									<i class="bi bi-eye"></i>
+								</button>
+								<div class="invalid-feedback">
+									{{ errorMessage }}
+								</div>
 							</div>
+
 						</div><!--//form-group-->
-						<div class="password mb-3">
+						<div class="mb-3">
 							<label>New password</label>
-							<input type="password" class="form-control signin-password" placeholder="New password"
-								required="required" v-model="param.newPassword" autocomplete="off" ref="NewPassword">
-							<div class="invalid-feedback">
-								{{ errorMessage }}
+							<div class="input-group">
+								<input type="password" id="new-password" class="form-control signin-password"
+									placeholder="New password" required="required" v-model="param.newPassword"
+									autocomplete="off" ref="NewPassword">
+								<button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+									@click="toggleViewKey('new-password')">
+									<i class="bi bi-eye"></i>
+								</button>
+								<div class="invalid-feedback">
+									{{ errorMessage }}
+								</div>
 							</div>
+
 						</div><!--//form-group-->
-						<div class="password mb-3">
+						<div class="mb-3">
 							<label>Repeat password</label>
-							<input type="password" class="form-control signin-password" placeholder="New password"
-								required="required" v-model="param.repeatPassword" autocomplete="off" ref="RepeatPassword">
-							<div class="invalid-feedback">
-								{{ errorMessage }}
+							<div class="input-group">
+								<input type="password" id="re-new-password" class="form-control signin-password"
+									placeholder="New password" required="required" v-model="param.repeatPassword"
+									autocomplete="off" ref="RepeatPassword">
+								<button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+									@click="toggleViewKey('re-new-password')">
+									<i class="bi bi-eye"></i>
+								</button>
+								<div class="invalid-feedback">
+									{{ errorMessage }}
+								</div>
 							</div>
+
 						</div><!--//form-group-->
 						<div class="text-center">
 							<button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">Submit</button>
@@ -87,7 +110,15 @@ export default {
 		},
 		back() {
 			history.back();
-		}
+		},
+		toggleViewKey(param) {
+			var e = document.getElementById(param);
+			if (e.type === "password") {
+				e.type = "text";
+			} else {
+				e.type = "password";
+			}
+		},
 	}
 }
 </script>

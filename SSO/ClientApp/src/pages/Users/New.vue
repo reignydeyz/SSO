@@ -54,8 +54,22 @@
                                             {{ errorMessage }}
                                         </div>
                                     </div>
-
                                 </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Repeat password*</label>
+                                    <div class="input-group">
+                                        <input type="password" id="re-password" class="form-control signin-password"
+                                            placeholder="Password" required="required" v-model="user.repeatPassword"
+                                            autocomplete="off" ref="RepeatPassword">
+                                        <button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+                                            @click="toggleViewKey('re-password')">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <div class="invalid-feedback">
+                                            {{ errorMessage }}
+                                        </div>
+                                    </div>
+                                </div><!--//form-group-->
 
                                 <button type="submit" class="btn app-btn-primary mt-3">
                                     Save Changes

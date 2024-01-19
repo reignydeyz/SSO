@@ -21,6 +21,9 @@ namespace SSO.Business.Users.Commands
                    ErrorMessage = "The password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character.")]
         public string Password { get; set; }
 
+        [Required, Compare("Password")]
+        public string RepeatPassword { get; set; }
+
         [JsonIgnore]
         public string? Author { get; set; }
     }
