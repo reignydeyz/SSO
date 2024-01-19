@@ -76,6 +76,15 @@ const routes = [
           }
     },
     {
+        path: "/users/new",
+        name: "New User",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Users/New.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate())
+          }
+    },
+    {
         path: "/users/edit/:id",
         name: "Update User",
         meta: { mustBeRoot: true },

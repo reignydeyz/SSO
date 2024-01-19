@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
+using SSO.Business.Applications;
 using SSO.Business.Users;
+using SSO.Business.Users.Commands;
 using SSO.Business.Users.Queries;
+using System.Security.Claims;
 
 namespace SSO.Controllers
 {
@@ -25,11 +29,37 @@ namespace SSO.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Policy = "RootPolicy")]
         [EnableQuery]
         public IQueryable<UserDto> Get()
         {
             return _mediator.Send(new GetUsersQuery { }).Result;
+        }
+
+        /// <summary>
+        /// Creates new user
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ProducesResponseType(typeof(UserDto), 200)]
+        public async Task<IActionResult> Create([FromBody] CreateUserCommand param)
+        {
+            try
+            {
+                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+
+                var res = await _mediator.Send(param);
+
+                return Ok(res);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

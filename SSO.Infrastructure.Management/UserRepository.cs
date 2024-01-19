@@ -17,9 +17,18 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
+        public async Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            throw new NotImplementedException();
+            var password = param.PasswordHash ?? Guid.NewGuid().ToString();
+            param.PasswordHash = null;
+            param.UserName = param.Email;
+
+            var res = await _userManager.CreateAsync(param, password);
+
+            if (!res.Succeeded && res.Errors.Any())
+                throw new ArgumentException(res.Errors.First().Description);
+
+            return await _userManager.FindByEmailAsync(param.Email);
         }
 
         public Task Delete(ApplicationUser param, bool? saveChanges = true)

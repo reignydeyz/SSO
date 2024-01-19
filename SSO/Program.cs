@@ -27,8 +27,6 @@ using VueCliMiddleware;
 var builder = WebApplication.CreateBuilder(args);
 
 var modelBuilder = new ODataConventionModelBuilder();
-modelBuilder.EntityType<WeatherForecast>();
-modelBuilder.EntitySet<WeatherForecast>("WeatherForecast");
 
 modelBuilder.EntityType<ApplicationDto>().HasKey(x => x.ApplicationId);
 modelBuilder.EntitySet<ApplicationDto>("Application");

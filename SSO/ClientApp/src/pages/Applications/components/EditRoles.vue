@@ -116,7 +116,7 @@ export default {
 
             addAppRole(this.app.applicationId, this.appRole).then(
                 (r) => {
-                    this.role = new Object();
+                    this.appRole = new Object();
                     this.$emit("loadRoles");
                     emitter.emit("showLoader", false);
                 },

@@ -45,15 +45,10 @@ export default {
     background-color: crimson;
 }
 
-.app-btn-outline-primary {
+.app-btn-outline-primary,
+.app-btn-outline-primary:hover {
     background: #fff;
     color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-}
-
-.app-btn-outline-primary:hover {
-    background: #F8F8FF;
-    color: white;
     border: 1px solid var(--primary-color);
 }
 
@@ -70,10 +65,14 @@ export default {
 }
 
 .app-btn-sm {
-    padding: 0.2rem 0.4rem; /* Adjust padding to make it smaller */
-    font-size: 0.75rem;    /* Adjust font size to make text smaller */
-    line-height: 1.3;      /* Set line height for better text alignment */
-    border-radius: 0.15rem; /* Add border-radius for rounded corners */
+    padding: 0.2rem 0.4rem;
+    /* Adjust padding to make it smaller */
+    font-size: 0.75rem;
+    /* Adjust font size to make text smaller */
+    line-height: 1.3;
+    /* Set line height for better text alignment */
+    border-radius: 0.15rem;
+    /* Add border-radius for rounded corners */
 }
 
 a:hover {
@@ -85,30 +84,31 @@ a:hover {
 }
 
 button.nav-link.active {
-  background-color: var(--primary-color) !important;
-  color: white;
+    background-color: var(--primary-color) !important;
+    color: white;
 }
 
 button.nav-link,
 button.nav-link:hover {
-  color: var(--primary-color);
+    color: var(--primary-color);
 }
 
 @media (max-width: 767px) {
-  .table-responsive .dropdown-menu {
-    transform: translate3d(0px, 3px, 0px) !important;
-    position: relative !important;
-  }
+    .table-responsive .dropdown-menu {
+        transform: translate3d(0px, 3px, 0px) !important;
+        position: relative !important;
+    }
 }
+
 @media (min-width: 768px) {
-  .table-responsive {
-    overflow: inherit;
-  }
+    .table-responsive {
+        overflow: inherit;
+    }
 }
 
 ::placeholder {
-  /* Chrome, Firefox, Opera, Safari 10.1+ */
-  color: silver !important;
-  opacity: 1; /* Firefox */
-}
-</style>
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: silver !important;
+    opacity: 1;
+    /* Firefox */
+}</style>
