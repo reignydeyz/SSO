@@ -17,6 +17,11 @@ namespace SSO.Business.Mappings
                 .ForMember(x => x.Id, from => from.MapFrom(x => Guid.NewGuid().ToString()))
                 .ForMember(x => x.PasswordHash, from => from.MapFrom(x => x.Password))
                 .IgnoreAllPropertiesWithAnInaccessibleSetter();
+
+            CreateMap<UpdateUserCommand, ApplicationUser>()
+                .ForMember(x => x.Id, from => from.MapFrom(x => x.UserId!))
+                .ForMember(x => x.PasswordHash, from => from.MapFrom(x => x.Password))
+                .IgnoreAllPropertiesWithAnInaccessibleSetter();
         }
     }
 }

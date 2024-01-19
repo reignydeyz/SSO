@@ -35,7 +35,7 @@
             </ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-                    // General info
+                    <EditBasic :user="user"/>
                 </div>
                 <div class="tab-pane fade" id="pills-apps" role="tabpanel" aria-labelledby="pills-apps-tab">
                     // Applications
@@ -47,10 +47,24 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
-
+import { getUserById } from "@/services/user.service";
+import { emitter } from "@/services/emitter.service";
+import EditBasic from "@/pages/Users/components/EditBasic.vue";
 export default {
+    components: {
+        EditBasic
+    },
+    data: () => ({
+        user: new Object(),
+    }),
     mounted() {
         navbar.init(this.$route);
+
+        emitter.emit("showLoader", true);
+        getUserById(this.$route.params.id).then(async (r) => {
+            this.user = r.data;
+            emitter.emit("showLoader", false);
+        });
     }
 }
 </script>

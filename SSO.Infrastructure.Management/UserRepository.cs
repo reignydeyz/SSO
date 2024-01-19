@@ -56,14 +56,24 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationUsers.FirstOrDefaultAsync(predicate);
         }
 
-        public Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
+        public async Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            throw new NotImplementedException();
+            var rec = _context.ApplicationUsers.First(x => x.Id == param.Id);
+            rec.FirstName = param.FirstName;
+            rec.LastName = param.LastName;
+            rec.Email = param.Email;
+
+            await _context.SaveChangesAsync();
+
+            if (param.PasswordHash is not null)
+                await ChangePassword(rec, param.PasswordHash, default);
+
+            return await _userManager.FindByEmailAsync(param.Email);
         }
 
-        public Task<bool> Any(Expression<Func<ApplicationUser, bool>> predicate)
+        public async Task<bool> Any(Expression<Func<ApplicationUser, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.ApplicationUsers.AnyAsync(predicate);
         }
 
         public async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author)

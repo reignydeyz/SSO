@@ -35,6 +35,27 @@ namespace SSO.Controllers
         }
 
         /// <summary>
+        /// Gets user by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(UserDto), 200)]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            try
+            {
+                var res = await _mediator.Send(new GetUserByIdQuery { UserId = id.ToString() });
+
+                return Ok(res);
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
         /// Creates new user
         /// </summary>
         /// <param name="param"></param>
@@ -45,6 +66,35 @@ namespace SSO.Controllers
         {
             try
             {
+                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+
+                var res = await _mediator.Send(param);
+
+                return Ok(res);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Updates user
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(UserDto), 200)]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserCommand param)
+        {
+            try
+            {
+                param.UserId = id.ToString();
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
                 var res = await _mediator.Send(param);
