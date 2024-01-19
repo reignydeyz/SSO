@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.EntityFrameworkCore;
-using SSO.Business.Applications;
 using SSO.Business.Users;
 using SSO.Business.Users.Commands;
 using SSO.Business.Users.Queries;
