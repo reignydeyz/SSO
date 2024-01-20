@@ -1,16 +1,16 @@
 <template>
     <div class="app-content pt-3 p-md-3 p-lg-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <router-link to="../../">Main</router-link>
-                </li>
-                <li class="breadcrumb-item">
-                    <router-link to="../../users">Users</router-link>
-                </li>
-            </ol>
-        </nav>
         <div class="container-xl pt-5">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <router-link to="../main">Main</router-link>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <router-link to="../users">Users</router-link>
+                    </li>
+                </ol>
+            </nav>
             <div class="row g-3 mb-4 align-items-center justify-content-between">
                 <div class="col-auto">
                     <h1 class="app-page-title mb-0">Create New User</h1>
@@ -56,7 +56,7 @@
                                         <input v-model="user.password" id="password" type="password" class="form-control"
                                             minlength="7" placeholder="Password" required autocomplete="off"
                                             ref="Password" />
-                                        <button class="btn app-btn-outline-secondary" type="button" id="button-addon2"
+                                        <button class="btn app-btn-outline-secondary" type="button"
                                             @click="toggleViewKey('password')">
                                             <i class="bi bi-eye"></i>
                                         </button>
@@ -71,7 +71,7 @@
                                         <input type="password" id="re-password" class="form-control signin-password"
                                             placeholder="Password" required="required" v-model="user.repeatPassword"
                                             autocomplete="off" ref="RepeatPassword">
-                                        <button class="btn app-btn-outline-secondary" type="button" id="button-addon2"
+                                        <button class="btn app-btn-outline-secondary" type="button"
                                             @click="toggleViewKey('re-password')">
                                             <i class="bi bi-eye"></i>
                                         </button>

@@ -1,6 +1,16 @@
 <template>
   <div class="app-content pt-3 p-md-3 p-lg-4">
     <div class="container-xl pt-5">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <router-link to="../main">Main</router-link>
+          </li>
+          <li class="breadcrumb-item">
+            <router-link to="../applications">Applications</router-link>
+          </li>
+        </ol>
+      </nav>
       <div class="row g-3 mb-4 align-items-center justify-content-between">
         <div class="col-auto">
           <h1 class="app-page-title mb-0">Create New Application</h1>
@@ -17,7 +27,7 @@
                 <div class="mb-3">
                   <label for="setting-input-2" class="form-label">Name*</label>
                   <input v-model="application.name" type="text" class="form-control" id="setting-input-2" maxlength="200"
-                    placeholder="Name" required autocomplete="off"/>
+                    placeholder="Name" required autocomplete="off" />
                 </div>
 
                 <button type="submit" class="btn app-btn-primary mt-3">

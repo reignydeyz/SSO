@@ -4,7 +4,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <router-link to="../../">Main</router-link>
+                        <router-link to="../../main">Main</router-link>
                     </li>
                     <li class="breadcrumb-item">
                         <router-link to="../../users">Users</router-link>
