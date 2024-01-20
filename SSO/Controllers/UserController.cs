@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SSO.Business.Users;
 using SSO.Business.Users.Commands;
 using SSO.Business.Users.Queries;
+using SSO.Filters;
 using System.Security.Claims;
 
 namespace SSO.Controllers
@@ -28,10 +29,15 @@ namespace SSO.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [EnableQuery]
+        [EnableQuery(MaxTop = 1000)]
         public IQueryable<UserDto> Get()
         {
-            return _mediator.Send(new GetUsersQuery { }).Result;
+            var res = _mediator.Send(new GetUsersQuery { }).Result;
+
+            if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
+                return res;
+
+            return res.Take(1000);
         }
 
         /// <summary>
@@ -85,16 +91,17 @@ namespace SSO.Controllers
         /// <summary>
         /// Updates user
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="form"></param>
         /// <param name="param"></param>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [HttpPut("{userId}")]
+        [UserIdValidator(Relevant = false)]
         [ProducesResponseType(typeof(UserDto), 200)]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserCommand param)
+        public async Task<IActionResult> Update([FromRoute] UserIdDto form, [FromBody] UpdateUserCommand param)
         {
             try
             {
-                param.UserId = id.ToString();
+                param.UserId = form.UserId.ToString();
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
                 var res = await _mediator.Send(param);

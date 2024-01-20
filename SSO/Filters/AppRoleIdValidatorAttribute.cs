@@ -7,24 +7,28 @@ namespace SSO.Filters
 {
     public class AppRoleIdValidatorAttribute : ActionFilterAttribute, IAsyncActionFilter
     {
-        readonly string _paramName;
+        /// <summary>
+        /// The name(parameter) used in the Action.
+        /// </summary>
+        public string ParameterName { get; set; } = "form";
 
-        public AppRoleIdValidatorAttribute(string? paramName = "form")
-        {
-            _paramName = paramName;
-        }
+        /// <summary>
+        /// When set to true, validations will be applied, and errors relevant to the status may be triggered.
+        /// Default is true.
+        /// </summary>
+        public bool Relevant { get; set; } = true;
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var repo = context.HttpContext.RequestServices.GetService<IApplicationRoleRepository>();
+            var form = context.ActionArguments[ParameterName] as AppRoleIdDto;
 
-            var form = context.ActionArguments[_paramName] as AppRoleIdDto;
+            bool condition = Relevant
+                ? await repo.Any(x => x.ApplicationId == form.ApplicationId! && x.Id == form.RoleId.ToString() && x.Application.DateInactive == null)
+                : await repo.Any(x => x.ApplicationId == form.ApplicationId! && x.Id == form.RoleId.ToString());
 
-            if (!(await repo.Any(x => x.ApplicationId == form.ApplicationId && x.Id == form.RoleId.ToString() && x.Application.DateInactive == null)))
-                context.Result = new StatusCodeResult(404);
-
-            if (context.Result is null)
-                await next();
+            if (!condition) context.Result = new StatusCodeResult(404);
+            else await next();
         }
     }
 }

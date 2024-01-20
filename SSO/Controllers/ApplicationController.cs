@@ -30,10 +30,15 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize(Policy = "RootPolicy")]
-        [EnableQuery]
+        [EnableQuery(MaxTop = 1000)]
         public IQueryable<ApplicationDto> Get()
         {
-            return _mediator.Send(new GetApplicationsQuery { }).Result;
+            var res = _mediator.Send(new GetApplicationsQuery { }).Result;
+
+            if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
+                return res;
+
+            return res.Take(1000);
         }
 
         /// <summary>
@@ -90,7 +95,7 @@ namespace SSO.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPut("{applicationId}")]
-        [AppIdValidator]
+        [AppIdValidator(Relevant = false)]
         [Authorize(Policy = "RootPolicy")]
         public async Task<IActionResult> Update([FromRoute] ApplicationIdDto form, [FromBody] UpdateAppCommand param)
         {

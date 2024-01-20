@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SSO.Business.Applications;
+using SSO.Business.Users;
 using SSO.Domain.Management.Interfaces;
 
 namespace SSO.Filters
 {
-    public class AppIdValidatorAttribute : ActionFilterAttribute, IAsyncActionFilter
+    public class UserIdValidatorAttribute : ActionFilterAttribute, IAsyncActionFilter
     {
         /// <summary>
         /// The name(parameter) used in the Action.
@@ -20,12 +20,12 @@ namespace SSO.Filters
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var repo = context.HttpContext.RequestServices.GetService<IApplicationRepository>();
-            var form = context.ActionArguments[ParameterName] as ApplicationIdDto;
+            var repo = context.HttpContext.RequestServices.GetService<IUserRepository>();
+            var form = context.ActionArguments[ParameterName] as UserIdDto;
 
             bool condition = Relevant
-                ? await repo.Any(x => x.ApplicationId == form.ApplicationId! && x.DateInactive == null)
-                : await repo.Any(x => x.ApplicationId == form.ApplicationId!);
+                ? await repo.Any(x => x.Id == form.UserId.ToString() && x.DateInactive == null)
+                : await repo.Any(x => x.Id == form.UserId.ToString());
 
             if (!condition) context.Result = new StatusCodeResult(404);
             else await next();
