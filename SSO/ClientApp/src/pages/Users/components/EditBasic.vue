@@ -1,68 +1,74 @@
 <template>
-    <div class="app-card app-card-settings shadow-sm p-4">
-        <div class="app-card-body">
-            <form class="settings-form" @submit.prevent="onSubmit">
-                <div class="mb-3">
-                    <label class="form-label">First name*</label>
-                    <input v-model="user.firstName" type="text" class="form-control" minlength="3" maxlength="200"
-                        placeholder="First name" required autocomplete="off" ref="FirstName" />
-                    <div class="invalid-feedback">
-                        {{ errorMessage }}
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Last name*</label>
-                    <input v-model="user.lastName" type="text" class="form-control" minlength="2" maxlength="200"
-                        placeholder="Last name" required autocomplete="off" ref="LastName" />
-                    <div class="invalid-feedback">
-                        {{ errorMessage }}
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Email*</label>
-                    <input v-model="user.email" type="email" class="form-control" placeholder="Email" required
-                        autocomplete="off" ref="Email" />
-                    <div class="invalid-feedback">
-                        {{ errorMessage }}
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">New password</label>
-                    <div class="input-group">
-                        <input v-model="user.password" id="password" type="password" class="form-control" minlength="7"
-                            placeholder="Password" autocomplete="off" ref="Password" />
-                        <button class="btn app-btn-outline-primary" type="button" id="button-addon2"
-                            @click="toggleViewKey('password')">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        <div class="invalid-feedback">
-                            {{ errorMessage }}
+    <div class="d-flex justify-content-center row g-4 settings-section">
+        <div class="col-12 col-md-6">
+            <div class="app-card app-card-settings shadow-sm p-4">
+                <div class="app-card-body">
+                    <form class="settings-form" @submit.prevent="onSubmit">
+                        <div class="mb-3">
+                            <label class="form-label">First name*</label>
+                            <input v-model="user.firstName" type="text" class="form-control" minlength="3" maxlength="200"
+                                placeholder="First name" required autocomplete="off" ref="FirstName" />
+                            <div class="invalid-feedback">
+                                {{ errorMessage }}
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Repeat password</label>
-                    <div class="input-group">
-                        <input type="password" id="re-password" class="form-control signin-password" placeholder="Password"
-                            v-model="user.repeatPassword" autocomplete="off" ref="RepeatPassword">
-                        <button class="btn app-btn-outline-primary" type="button" id="button-addon2"
-                            @click="toggleViewKey('re-password')">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        <div class="invalid-feedback">
-                            {{ errorMessage }}
+                        <div class="mb-3">
+                            <label class="form-label">Last name*</label>
+                            <input v-model="user.lastName" type="text" class="form-control" minlength="2" maxlength="200"
+                                placeholder="Last name" required autocomplete="off" ref="LastName" />
+                            <div class="invalid-feedback">
+                                {{ errorMessage }}
+                            </div>
                         </div>
-                    </div>
-                </div><!--//form-group-->
+                        <div class="mb-3">
+                            <label class="form-label">Email*</label>
+                            <input v-model="user.email" type="email" class="form-control" placeholder="Email" required
+                                autocomplete="off" ref="Email" />
+                            <div class="invalid-feedback">
+                                {{ errorMessage }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">New password</label>
+                            <div class="input-group">
+                                <input v-model="user.password" id="password" type="password" class="form-control"
+                                    minlength="7" placeholder="Password" autocomplete="off" ref="Password" />
+                                <button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+                                    @click="toggleViewKey('password')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    {{ errorMessage }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Repeat password</label>
+                            <div class="input-group">
+                                <input type="password" id="re-password" class="form-control signin-password"
+                                    placeholder="Password" v-model="user.repeatPassword" autocomplete="off"
+                                    ref="RepeatPassword">
+                                <button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+                                    @click="toggleViewKey('re-password')">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <div class="invalid-feedback">
+                                    {{ errorMessage }}
+                                </div>
+                            </div>
+                        </div><!--//form-group-->
 
-                <button type="submit" class="btn app-btn-primary mt-3">
-                    Save Changes
-                </button>
-            </form>
+                        <button type="submit" class="btn app-btn-primary mt-3">
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+                <!--//app-card-body-->
+            </div>
+            <!--//app-card-->
         </div>
-        <!--//app-card-body-->
+
     </div>
-    <!--//app-card-->
 </template>
 
 <script>

@@ -10,7 +10,7 @@
       </div>
       <hr class="mb-4" />
       <div class="d-flex justify-content-center row g-4 settings-section">
-        <div class="col-12 col-md-8">
+        <div class="col-12 col-md-6">
           <div class="app-card app-card-settings shadow-sm p-4">
             <div class="app-card-body">
               <form class="settings-form" @submit.prevent="onSubmit">

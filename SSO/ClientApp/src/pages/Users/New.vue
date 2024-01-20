@@ -1,5 +1,15 @@
 <template>
     <div class="app-content pt-3 p-md-3 p-lg-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <router-link to="../../">Main</router-link>
+                </li>
+                <li class="breadcrumb-item">
+                    <router-link to="../../users">Users</router-link>
+                </li>
+            </ol>
+        </nav>
         <div class="container-xl pt-5">
             <div class="row g-3 mb-4 align-items-center justify-content-between">
                 <div class="col-auto">

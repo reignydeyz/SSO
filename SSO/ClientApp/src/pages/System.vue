@@ -8,16 +8,18 @@
 				<p class="mb-4">Login to SSO to continue to system.</p>
 				<div class="auth-form-container text-start">
 					<form class="auth-form login-form" @submit.prevent="submit()">
-						<div class="email mb-3">
-							<label class="sr-only" for="signin-email">Username</label>
+						<div class="mb-3">
 							<input class="form-control signin-email" placeholder="Username" required="required"
 								v-model="param.userName" autocomplete="off">
 						</div><!--//form-group-->
-						<div class="password mb-3">
-							<label class="sr-only" for="signin-password">Password</label>
-							<input type="password" class="form-control signin-password" placeholder="Password"
-								required="required" v-model="param.password" autocomplete="off">
-
+						<div class="input-group mb-4">
+							<input type="password" id="password" class="form-control signin-password" placeholder="Password"
+								required="required" v-model="param.currentPassword" autocomplete="off"
+								ref="CurrentPassword">
+							<button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+								@click="toggleViewKey('password')">
+								<i class="bi bi-eye"></i>
+							</button>
 						</div><!--//form-group-->
 						<div class="text-center">
 							<button type="submit" class="btn app-btn-primary w-100 theme-btn mx-auto">Log In</button>
@@ -61,7 +63,15 @@ export default {
 				emitter.emit('showLoader', false);
 				alert('Access denied.');
 			});
-		}
+		},
+		toggleViewKey(param) {
+			var e = document.getElementById(param);
+			if (e.type === "password") {
+				e.type = "text";
+			} else {
+				e.type = "password";
+			}
+		},
 	}
 }
 </script>
