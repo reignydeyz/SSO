@@ -52,6 +52,13 @@ export default {
     border: 1px solid var(--primary-color);
 }
 
+.app-btn-outline-secondary,
+.app-btn-outline-secondary:hover {
+    background: #fff;
+    color: silver;
+    border: 1px solid #e7e9ed;
+}
+
 .app-btn-outline-danger {
     background: #F8F8FF;
     color: crimson;

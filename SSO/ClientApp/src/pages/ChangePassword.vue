@@ -13,7 +13,7 @@
 								<input type="password" id="password" class="form-control signin-password"
 									placeholder="Password" required="required" v-model="param.currentPassword"
 									autocomplete="off" ref="CurrentPassword">
-								<button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+								<button class="btn app-btn-outline-secondary" type="button" id="button-addon2"
 									@click="toggleViewKey('password')">
 									<i class="bi bi-eye"></i>
 								</button>
@@ -29,7 +29,7 @@
 								<input type="password" id="new-password" class="form-control signin-password"
 									placeholder="New password" required="required" v-model="param.newPassword"
 									autocomplete="off" ref="NewPassword">
-								<button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+								<button class="btn app-btn-outline-secondary" type="button" id="button-addon2"
 									@click="toggleViewKey('new-password')">
 									<i class="bi bi-eye"></i>
 								</button>
@@ -45,7 +45,7 @@
 								<input type="password" id="re-new-password" class="form-control signin-password"
 									placeholder="New password" required="required" v-model="param.repeatPassword"
 									autocomplete="off" ref="RepeatPassword">
-								<button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+								<button class="btn app-btn-outline-secondary" type="button" id="button-addon2"
 									@click="toggleViewKey('re-new-password')">
 									<i class="bi bi-eye"></i>
 								</button>

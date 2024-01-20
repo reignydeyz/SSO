@@ -33,7 +33,7 @@
                             <div class="input-group">
                                 <input v-model="user.password" id="password" type="password" class="form-control"
                                     minlength="7" placeholder="Password" autocomplete="off" ref="Password" />
-                                <button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+                                <button class="btn app-btn-outline-secondary" type="button" id="button-addon2"
                                     @click="toggleViewKey('password')">
                                     <i class="bi bi-eye"></i>
                                 </button>
@@ -48,7 +48,7 @@
                                 <input type="password" id="re-password" class="form-control signin-password"
                                     placeholder="Password" v-model="user.repeatPassword" autocomplete="off"
                                     ref="RepeatPassword">
-                                <button class="btn app-btn-outline-primary" type="button" id="button-addon2"
+                                <button class="btn app-btn-outline-secondary" type="button" id="button-addon2"
                                     @click="toggleViewKey('re-password')">
                                     <i class="bi bi-eye"></i>
                                 </button>
