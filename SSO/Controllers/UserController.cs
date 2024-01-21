@@ -117,5 +117,21 @@ namespace SSO.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Removes user
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpDelete("{userId}")]
+        [UserIdValidator]
+        public async Task<IActionResult> Delete([FromRoute] UserIdDto form)
+        {
+            var param = new RemoveUserCommand { UserId = form.UserId.ToString() };
+
+            var res = await _mediator.Send(param);
+
+            return Ok();
+        }
     }
 }

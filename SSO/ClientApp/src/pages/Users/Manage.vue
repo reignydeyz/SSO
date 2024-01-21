@@ -102,7 +102,7 @@
                                                     </li>
                                                     <li>
                                                         <hr class="dropdown-divider" />
-                                                    </li>                                                    
+                                                    </li>
                                                     <li>
                                                         <a class="dropdown-item" href="#"
                                                             @click="onDelete(i.userId)">Remove</a>
@@ -153,7 +153,7 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
-import { searchUser } from "@/services/user.service";
+import { searchUser, deleteUser } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import { pagination } from "@/services/pagination.service";
 export default {
@@ -214,6 +214,17 @@ export default {
             this.sort = field;
             this.search(1);
         },
+
+        onDelete(id) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                emitter.emit("showLoader", true);
+                deleteUser(id).then(r => {
+                    this.search();
+                }, err => {
+                    emitter.emit("showLoader", true);
+                });
+            }
+        }
     }
 }
 </script>

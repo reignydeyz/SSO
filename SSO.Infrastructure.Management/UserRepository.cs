@@ -31,9 +31,9 @@ namespace SSO.Infrastructure.Management
             return await _userManager.FindByEmailAsync(param.Email);
         }
 
-        public Task Delete(ApplicationUser param, bool? saveChanges = true)
+        public async Task Delete(ApplicationUser param, bool? saveChanges = true)
         {
-            throw new NotImplementedException();
+            await _userManager.DeleteAsync(param);
         }
 
         public async Task<IQueryable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
