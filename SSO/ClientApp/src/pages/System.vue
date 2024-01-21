@@ -13,7 +13,7 @@
 								v-model="param.userName" autocomplete="off">
 						</div><!--//form-group-->
 						<div class="input-group mb-4">
-							<input type="password" class="form-control" placeholder="Password"
+							<input type="password" id="password" class="form-control" placeholder="Password"
 								required="required" v-model="param.password" autocomplete="off">
 							<button class="btn app-btn-outline-secondary" type="button" id="button-addon2"
 								@click="toggleViewKey('password')">
