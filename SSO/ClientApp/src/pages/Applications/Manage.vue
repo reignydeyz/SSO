@@ -137,7 +137,7 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
-import { searchApp } from "@/services/application.service";
+import { searchApp, deleteApp } from "@/services/application.service";
 import { emitter } from "@/services/emitter.service";
 import { pagination } from "@/services/pagination.service";
 export default {
@@ -198,6 +198,17 @@ export default {
             this.sort = field;
             this.search(1);
         },
+
+        onDelete(id) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                emitter.emit("showLoader", true);
+                deleteApp(id).then(r => {
+                    this.search();
+                }, err => {
+                    emitter.emit("showLoader", true);
+                });
+            }
+        }
     }
 }
 </script>

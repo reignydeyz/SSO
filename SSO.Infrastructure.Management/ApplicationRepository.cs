@@ -29,9 +29,12 @@ namespace SSO.Infrastructure.Management
             return await _context.Applications.AnyAsync(predicate);
         }
 
-        public Task Delete(Application param, bool? saveChanges = true)
+        public async Task Delete(Application param, bool? saveChanges = true)
         {
-            throw new NotImplementedException();
+            _context.Remove(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public async Task<IQueryable<Application>> Find(Expression<Func<Application, bool>>? predicate)

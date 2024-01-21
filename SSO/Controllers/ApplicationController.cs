@@ -113,5 +113,29 @@ namespace SSO.Controllers
                 return Conflict();
             }
         }
+
+        /// <summary>
+        /// Removes app
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpDelete("{applicationId}")]
+        [AppIdValidator]
+        [Authorize(Policy = "RootPolicy")]
+        public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form)
+        {
+            try
+            {
+                var param = new RemoveAppCommand { ApplicationId = form.ApplicationId!.Value };
+
+                var res = await _mediator.Send(param);
+
+                return Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
+        }
     }
 }

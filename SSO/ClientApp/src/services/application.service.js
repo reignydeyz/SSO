@@ -18,9 +18,12 @@ const addApp = async (param) => await axios.post("/api/application/", param);
 
 const updateApp = async (param) => await axios.put(`/api/application/${param.applicationId}`, param);
 
+const deleteApp = async (id) => await axios.delete(`/api/application/${id}`);
+
 export {
     getAppById,
     addApp,
     searchApp,
-    updateApp
+    updateApp,
+    deleteApp
 }
