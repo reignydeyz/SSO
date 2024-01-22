@@ -20,7 +20,7 @@ namespace SSO.Business.ApplicationPermissions.Handlers
         {
             var res = await _appRepository.GetPermissions(request.ApplicationId);
 
-            return _mapper.Map<IEnumerable<AppPermissionDto>>(res);
+            return _mapper.Map<IEnumerable<AppPermissionDto>>(res.OrderBy(x => x.Name));
         }
     }
 }

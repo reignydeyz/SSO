@@ -21,7 +21,7 @@ namespace SSO.Business.ApplicationRolePermissions.Handlers
         {
             var res = await _applicationRoleClaimRepository.Find(x => x.RoleId == request.RoleId.ToString());
 
-            return _mapper.Map<IEnumerable<AppPermissionDto>>(res);
+            return _mapper.Map<IEnumerable<AppPermissionDto>>(res.OrderBy(x => x.Permission.Name));
         }
     }
 }

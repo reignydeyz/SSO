@@ -42,7 +42,7 @@ export default {
 .btn-danger,
 .btn-danger:hover {
     color: white;
-    background-color: crimson;
+    background-color: #ff534d;
 }
 
 .app-btn-outline-primary,
@@ -59,16 +59,12 @@ export default {
     border: 1px solid #e7e9ed;
 }
 
-.app-btn-outline-danger {
+.app-btn-outline-danger,
+.app-btn-outline-danger:hover
+ {
     background: #F8F8FF;
-    color: crimson;
-    border: 1px solid crimson
-}
-
-.app-btn-outline-danger:hover {
-    background: crimson !important;
-    color: white;
-    border: 1px solid crimson
+    color: #ff534d;
+    border: 1px solid #ff534d
 }
 
 .app-btn-sm {

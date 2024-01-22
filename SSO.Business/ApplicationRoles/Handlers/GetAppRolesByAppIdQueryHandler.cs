@@ -20,7 +20,7 @@ namespace SSO.Business.ApplicationRoles.Handlers
         {
             var res = await _applicationRepository.GetRoles(request.ApplicationId);
 
-            return _mapper.Map<IEnumerable<AppRoleDto>>(res);
+            return _mapper.Map<IEnumerable<AppRoleDto>>(res.OrderBy(x => x.Name));
         }
     }
 }

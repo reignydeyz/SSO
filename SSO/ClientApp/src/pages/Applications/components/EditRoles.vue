@@ -27,14 +27,11 @@
     <div v-for="i in roles" :key="i.roleId">
         <hr class="mb-4" />
         <div class="row g-4 settings-section">
-            <div class="col-12 col-md-2">
-                <h3 class="section-title"><i>{{ i.name }}</i></h3>
-                <button type="button" class="app-btn-sm app-btn-outline-danger" @click="onRemove(i.roleId)">Remove</button>
-            </div>
-            <div class="col-12 col-md-10" v-if="getPermissions(i.roleId).length > 0">
+
+            <div class="col-12">
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
-                        <p>Select the permissions for this role</p>
+                        <h3 class="section-title"><i>{{ i.name }}</i></h3>
                         <div class="form-check form-check-inline" v-for="p in getPermissions(i.roleId)"
                             :key="p.permissionId">
                             <label>
@@ -42,10 +39,15 @@
                                 <span>{{ p.description }}</span>
                             </label>
                         </div>
-                        <br />
-                        <button type="button" class="btn app-btn-primary mt-3" @click="onUpdate(i.roleId, getPermissions(i.roleId))">
-                            Save changes
-                        </button>
+                        <div class="mt-3">
+                            <button type="button" class="btn app-btn-primary me-2"
+                                @click="onUpdate(i.roleId, getPermissions(i.roleId))">
+                                Save changes
+                            </button>
+                            <button type="button" class="btn app-btn-outline-danger bg-white"
+                                @click="onRemove(i.roleId)">Remove</button>
+                        </div>
+
                     </div>
                     <!--//app-card-body-->
                 </div>
@@ -141,8 +143,7 @@ export default {
             return this.rolePermissions.filter(x => x.roleId === roleId);
         },
 
-        onUpdate(roleId, permissions)
-        {
+        onUpdate(roleId, permissions) {
             var selectedIds = permissions.filter(x => x.selected === true).map(x => x.permissionId);
 
             emitter.emit("showLoader", true);

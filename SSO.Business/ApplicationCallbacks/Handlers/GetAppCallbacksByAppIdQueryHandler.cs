@@ -17,7 +17,7 @@ namespace SSO.Business.ApplicationCallbacks.Handlers
         {
             var res = await _applicationRepository.GetCallbacks(request.ApplicationId);
 
-            return res.Select(x => x.Url);
+            return res.Select(x => x.Url).OrderBy(x => x);
         }
     }
 }

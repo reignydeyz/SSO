@@ -9,10 +9,10 @@ namespace SSO.Business.ApplicationPermissions.Commands
         [JsonIgnore]
         public Guid ApplicationId { get; set; }
 
-        [Required, MinLength(6), StringLength(100)]
+        [Required, MinLength(3), StringLength(100)]
         public string Name { get; set; }
 
-        [Required, MinLength(6), StringLength(200)]
+        [Required, MinLength(3), StringLength(200)]
         public string Description { get; set; }
     }
 }
