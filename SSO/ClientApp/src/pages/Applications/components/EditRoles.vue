@@ -23,10 +23,10 @@
             </div>
             <!--//app-card-->
         </div>
-    </div>
+    </div>    
+    <hr class="mb-4" v-if="roles.length > 0"/>
     <div v-for="i in roles" :key="i.roleId">
-        <hr class="mb-4" />
-        <div class="row g-4 settings-section">
+        <div class="row g-4 settings-section mb-4">
 
             <div class="col-12">
                 <div class="app-card app-card-settings shadow-sm p-4">

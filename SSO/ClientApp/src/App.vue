@@ -114,4 +114,18 @@ button.nav-link:hover {
     color: silver !important;
     opacity: 1;
     /* Firefox */
-}</style>
+}
+
+.autocomplete > div {
+    padding: 15px;
+}
+
+.autocomplete > div:hover:not(.group),
+.autocomplete > div.selected {
+    background: var(--primary-color);
+    opacity: 0.75;
+    color: white !important;
+    cursor: pointer;
+}
+
+</style>
