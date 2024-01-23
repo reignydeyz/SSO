@@ -32,7 +32,7 @@
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
                         <h3 class="section-title"><i>{{ i.name }}</i></h3>
-                        <div class="form-check form-check-inline" v-for="p in getPermissions(i.roleId)"
+                        <div class="form-check form-check-inline mt-2" v-for="p in getPermissions(i.roleId)"
                             :key="p.permissionId">
                             <label>
                                 <input class="form-check-input" type="checkbox" value="" v-model="p.selected" />
