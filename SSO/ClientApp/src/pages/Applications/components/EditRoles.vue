@@ -40,7 +40,7 @@
                             </label>
                         </div>
                         <div class="mt-3">
-                            <button type="button" class="btn app-btn-primary me-2"
+                            <button type="button" class="btn app-btn-primary me-2" v-show="getPermissions(i.roleId).length > 0"
                                 @click="onUpdate(i.roleId, getPermissions(i.roleId))">
                                 Save changes
                             </button>
@@ -145,6 +145,11 @@ export default {
 
         onUpdate(roleId, permissions) {
             var selectedIds = permissions.filter(x => x.selected === true).map(x => x.permissionId);
+
+            if (selectedIds.length <= 0) {
+                alert('Please select at least 1 entry.');
+                return false;
+            }
 
             emitter.emit("showLoader", true);
             updateAppRolePermissions(this.app.applicationId, roleId, selectedIds).then(r => {

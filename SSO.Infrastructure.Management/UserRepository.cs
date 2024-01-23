@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
@@ -38,7 +39,10 @@ namespace SSO.Infrastructure.Management
 
         public async Task<IQueryable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
         {
-            return _context.ApplicationUsers.AsNoTracking();
+            if (predicate is not null)
+                return await Task.Run(() => _context.ApplicationUsers.Where(predicate).AsQueryable().AsNoTracking());
+            else
+                return _context.ApplicationUsers.AsQueryable().AsNoTracking();
         }
 
         public async Task<ApplicationUser> GetByEmail(string email)
