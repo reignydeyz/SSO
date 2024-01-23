@@ -78,6 +78,16 @@ namespace SSO.Infrastructure.Management
             return await res.ToListAsync();
         }
 
+        public async Task<IQueryable<ApplicationUser>> GetUsers(Guid applicationId)
+        {
+            var res = from r in _context.Roles.Where(x => x.ApplicationId == applicationId)
+                      join ur in _context.UserRoles on r.Id equals ur.RoleId
+                      join u in _context.Users on ur.UserId equals u.Id
+                      select u;
+
+            return await Task.FromResult(res);
+        }
+
         public async Task<Application> Update(Application param, bool? saveChanges = true, object? args = null)
         {
             var rec = await _context.Applications.FirstAsync(x => x.ApplicationId == param.ApplicationId);

@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
-using SSO;
 using SSO.Business.Applications;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Mappings;
@@ -33,6 +32,9 @@ modelBuilder.EntitySet<ApplicationDto>("Application");
 
 modelBuilder.EntityType<UserDto>().HasKey(x => x.UserId);
 modelBuilder.EntitySet<UserDto>("User");
+
+modelBuilder.EntityType<UserDto>().HasKey(x => x.UserId);
+modelBuilder.EntitySet<UserDto>("ApplicationUser");
 
 modelBuilder.EnableLowerCamelCase();
 

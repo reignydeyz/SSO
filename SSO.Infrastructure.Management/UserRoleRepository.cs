@@ -15,6 +15,42 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
+        public async Task AddRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        {
+            var user = await _userManager.FindByEmailAsync(username);
+
+            if (user is null)
+                throw new ArgumentNullException();
+
+            await _context.UserRoles.AddRangeAsync(roles.Select(x => new IdentityUserRole<string> { UserId = user.Id, RoleId = x.Id }));
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
+        public Task AddRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task RemoveRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        {
+            var user = await _userManager.FindByEmailAsync(username);
+
+            if (user is null)
+                throw new ArgumentNullException();
+
+            _context.UserRoles.RemoveRange(roles.Select(x => new IdentityUserRole<string> { UserId = user.Id, RoleId = x.Id }));
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
+        public Task RemoveRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IEnumerable<ApplicationRole>> Roles(Guid userId, Guid applicationId)
         {
             throw new NotImplementedException();
