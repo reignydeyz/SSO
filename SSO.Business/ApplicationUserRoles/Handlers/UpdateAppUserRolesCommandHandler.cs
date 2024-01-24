@@ -22,7 +22,9 @@ namespace SSO.Business.ApplicationUserRoles.Handlers
             if (!request.RoleIds.Distinct().All(x => roles.Select(y => y.Id).Contains(x.ToString())))
                 throw new ArgumentException(message: "Some of the roles are invalid.", paramName: "InvalidRole");
 
-            await _userRoleRepository.RemoveRoles(request.UserId, roles, false);
+            var toBeDeleted = await _userRoleRepository.Roles(request.UserId, request.ApplicationId);
+
+            await _userRoleRepository.RemoveRoles(request.UserId, toBeDeleted, false);
 
             // TODO: Handle user claims
 

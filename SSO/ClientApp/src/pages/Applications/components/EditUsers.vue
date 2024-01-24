@@ -31,7 +31,18 @@
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
                         <h3 class="section-title"><i>{{ i.name }}</i></h3>
-                        // TBD
+                        <div class="form-check form-check-inline mt-3" v-for="r in i.roles" :key="r.roleId">
+                            <label>
+                                <input class="form-check-input" type="checkbox" value="" v-model="r.selected" />
+                                <span>{{ r.name }}</span>
+                            </label>
+                        </div>
+                        <div class="mt-3">
+                            <button type="button" class="btn app-btn-primary me-2">
+                                Save changes
+                            </button>
+                            <button type="button" class="btn app-btn-outline-danger bg-white">Remove</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,7 +67,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn app-btn-primary">Add</button>
+                    <button type="button" class="btn app-btn-primary" @click="onAdd">Add</button>
                 </div>
             </div>
         </div>
@@ -66,15 +77,33 @@
 <script>
 import autocomplete from 'autocompleter';
 import { searchUser } from "@/services/user.service";
+import { getAppUserRoles, updateAppUserRoles } from "@/services/application-user-role.service";
+import { searchAppUser } from "@/services/application-user.service";
+import { emitter } from "@/services/emitter.service";
+import { pagination } from "@/services/pagination.service";
 export default {
     props: ["app", "roles"],
     data: () => ({
         user: new Object(),
         users: [],
+        modal: null,
+        query: "",
+        sort: "firstName",
+        sortDirection: "asc",
+        pagination: new Object(),
     }),
+    watch: {
+        roles(newVal, oldVal) {
+            this.search();
+        }
+    },
     mounted() {
+        this.pagination.currentPage = 1;
+        this.pagination.pageSize = 15;
+
         // Listen for the hidden.bs.modal event and call onModalClose method
-        new bootstrap.Modal(this.$refs.modal)._element.addEventListener('hidden.bs.modal', this.onModalClose);
+        this.modal = new bootstrap.Modal(this.$refs.modal);
+        this.modal._element.addEventListener('hidden.bs.modal', this.onModalClose);
 
         autocomplete({
             input: this.$refs.user,
@@ -102,14 +131,75 @@ export default {
                     name: item.label,
                     roles: this.roles.map(role => ({ ...role, selected: false })),
                 };
-                
-                new bootstrap.Modal(this.$refs.modal).show();
+
+                this.modal.show();
             }
         });
     },
     methods: {
         onModalClose() {
             this.user = new Object();
+        },
+
+        onAdd() {
+            var selectedIds = this.user.roles.filter(x => x.selected === true).map(x => x.roleId);
+
+            if (selectedIds.length <= 0) {
+                alert('Please select at least 1 entry.');
+                return false;
+            }
+
+            emitter.emit("showLoader", true);
+            updateAppUserRoles(this.app.applicationId, this.user.id, selectedIds).then(r => {
+                
+                this.search();
+                this.user = new Object();
+                this.modal.hide();
+
+                emitter.emit("showLoader", false);
+            });
+        },
+
+        search(p) {
+            emitter.emit("showLoader", true);
+            this.pagination.currentPage = p ?? this.pagination.currentPage;
+
+            searchAppUser(this.app.applicationId, { firstName: this.query, lastName: this.query, email: this.query },
+                this.sort,
+                this.sortDirection,
+                this.pagination.currentPage,
+                this.pagination.pageSize).then(async r => {
+
+                    const userPromises = r.data.value.map(async obj => {
+                        const userRoles = await Promise.all(
+                            this.roles.map(async role => {
+                                const appUserRoles = await getAppUserRoles(this.app.applicationId, obj.userId);
+                                const selected = appUserRoles.data.some(x => x.roleId === role.roleId);
+                                return { ...role, selected };
+                            })
+                        );
+
+                        return {
+                            name: `${obj.firstName} ${obj.lastName} (${obj.email})`,
+                            id: obj.userId,
+                            roles: userRoles
+                        }
+                    });
+
+                    // Wait for all userPromises to resolve
+                    this.users = await Promise.all(userPromises);
+
+                    this.pagination = pagination(
+                        Object.values(r.data)[1], // Gets the @odata.count which is the 2nd property
+                        this.pagination.currentPage,
+                        this.pagination.pageSize
+                    );
+
+                    emitter.emit("showLoader", false);
+                }, err => {
+                    console.log(err);
+                    emitter.emit("showLoader", false);
+                });
         }
     }
 }

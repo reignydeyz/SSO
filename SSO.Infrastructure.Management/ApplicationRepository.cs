@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
@@ -89,7 +88,7 @@ namespace SSO.Infrastructure.Management
                       join u in _context.Users on ur.UserId equals u.Id
                       select u;
 
-            return await Task.FromResult(res);
+            return await Task.FromResult(res.Distinct());
         }
 
         public async Task<Application> Update(Application param, bool? saveChanges = true, object? args = null)
