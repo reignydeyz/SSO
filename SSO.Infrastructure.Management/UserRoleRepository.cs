@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
+using System.Data;
 
 namespace SSO.Infrastructure.Management
 {
@@ -22,15 +23,19 @@ namespace SSO.Infrastructure.Management
             if (user is null)
                 throw new ArgumentNullException();
 
-            await _context.UserRoles.AddRangeAsync(roles.Select(x => new IdentityUserRole<string> { UserId = user.Id, RoleId = x.Id }));
+            var toBeAdded = roles.Select(x => new IdentityUserRole<string> { UserId = user.Id, RoleId = x.Id }).ToList();
+
+            await _context.UserRoles.AddRangeAsync(toBeAdded);
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();
         }
 
-        public Task AddRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        public async Task AddRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            await AddRoles(user.UserName, roles, saveChanges);
         }
 
         public async Task RemoveRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
@@ -40,20 +45,26 @@ namespace SSO.Infrastructure.Management
             if (user is null)
                 throw new ArgumentNullException();
 
-            _context.UserRoles.RemoveRange(roles.Select(x => new IdentityUserRole<string> { UserId = user.Id, RoleId = x.Id }));
+            var toBeDeleted = _context.UserRoles.Where(x => roles.Select(x => x.Id).Contains(x.RoleId.ToString()));
+
+            _context.UserRoles.RemoveRange(toBeDeleted);
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();
         }
 
-        public Task RemoveRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        public async Task RemoveRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            await RemoveRoles(user.UserName, roles, saveChanges);
         }
 
-        public Task<IEnumerable<ApplicationRole>> Roles(Guid userId, Guid applicationId)
+        public async Task<IEnumerable<ApplicationRole>> Roles(Guid userId, Guid applicationId)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            return await Roles(user.UserName, applicationId);
         }
 
         public async Task<IEnumerable<ApplicationRole>> Roles(string username, Guid applicationId)

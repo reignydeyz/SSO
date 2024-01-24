@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -44,9 +45,12 @@ namespace SSO.Infrastructure.Management
                 await _context.SaveChangesAsync();
         }
 
-        public Task<IQueryable<ApplicationRole>> Find(Expression<Func<ApplicationRole, bool>>? predicate)
+        public async Task<IQueryable<ApplicationRole>> Find(Expression<Func<ApplicationRole, bool>>? predicate)
         {
-            throw new NotImplementedException();
+            if (predicate is not null)
+                return await Task.Run(() => _context.ApplicationRoles.Where(predicate).AsQueryable().AsNoTracking());
+            else
+                return _context.ApplicationRoles.AsQueryable().AsNoTracking();
         }
 
         public async Task<ApplicationRole> FindOne(Expression<Func<ApplicationRole, bool>> predicate)
