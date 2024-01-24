@@ -23,35 +23,40 @@
             </div>
             <!--//app-card-->
         </div>
-    </div>    
-    <hr class="mb-4" v-if="roles.length > 0"/>
-    <div v-for="i in roles" :key="i.roleId">
-        <div class="row g-4 settings-section mb-4">
+    </div>
 
-            <div class="col-12">
-                <div class="app-card app-card-settings shadow-sm p-4">
-                    <div class="app-card-body">
-                        <h3 class="section-title"><i>{{ i.name }}</i></h3>
-                        <div class="form-check form-check-inline mt-2" v-for="p in getPermissions(i.roleId)"
-                            :key="p.permissionId">
-                            <label>
-                                <input class="form-check-input" type="checkbox" value="" v-model="p.selected" />
-                                <span>{{ p.description }}</span>
-                            </label>
-                        </div>
-                        <div class="mt-3">
-                            <button type="button" class="btn app-btn-primary me-2" v-show="getPermissions(i.roleId).length > 0"
-                                @click="onUpdate(i.roleId, getPermissions(i.roleId))">
-                                Save changes
-                            </button>
-                            <button type="button" class="btn app-btn-outline-danger bg-white"
-                                @click="onRemove(i.roleId)">Remove</button>
-                        </div>
+    <div v-if="roles.length > 0" >
+        <hr class="mb-4"/>
+        <h5 class="section-title mb-3">Added roles</h5>
+        <div v-for="i in roles" :key="i.roleId">
+            <div class="row g-4 settings-section mb-4">
 
+                <div class="col-12">
+                    <div class="app-card app-card-settings shadow-sm p-4">
+                        <div class="app-card-body">
+                            <h3 class="section-title"><i>{{ i.name }}</i></h3>
+                            <div class="form-check form-check-inline mt-2" v-for="p in getPermissions(i.roleId)"
+                                :key="p.permissionId">
+                                <label>
+                                    <input class="form-check-input" type="checkbox" value="" v-model="p.selected" />
+                                    <span>{{ p.description }}</span>
+                                </label>
+                            </div>
+                            <div class="mt-3">
+                                <button type="button" class="btn app-btn-primary me-2"
+                                    v-show="getPermissions(i.roleId).length > 0"
+                                    @click="onUpdate(i.roleId, getPermissions(i.roleId))">
+                                    Save changes
+                                </button>
+                                <button type="button" class="btn app-btn-outline-danger bg-white"
+                                    @click="onRemove(i.roleId)">Remove</button>
+                            </div>
+
+                        </div>
+                        <!--//app-card-body-->
                     </div>
-                    <!--//app-card-body-->
+                    <!--//app-card-->
                 </div>
-                <!--//app-card-->
             </div>
         </div>
     </div>

@@ -45,7 +45,7 @@ namespace SSO.Infrastructure.Management
             if (user is null)
                 throw new ArgumentNullException();
 
-            var toBeDeleted = _context.UserRoles.Where(x => roles.Select(x => x.Id).Contains(x.RoleId.ToString()));
+            var toBeDeleted = _context.UserRoles.Where(x => x.UserId == user.Id && roles.Select(x => x.Id).Contains(x.RoleId.ToString()));
 
             _context.UserRoles.RemoveRange(toBeDeleted);
 

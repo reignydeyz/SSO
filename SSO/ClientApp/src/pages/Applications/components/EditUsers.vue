@@ -2,51 +2,67 @@
     <div class="alert alert-danger" role="alert" v-show="roles.length <= 0">
         It seems like roles haven't been set up yet. Unfortunately, adding a user is currently not possible.
     </div>
-
-    <div class="row g-4 settings-section" v-show="roles.length > 0">
-        <div class="col-12 col-md-2">
-            <h3 class="section-title">Add user</h3>
-            <div class="section-intro">
-                Assign user to the application.
-            </div>
-        </div>
-        <div class="col-12 col-md-10">
-            <div class="app-card app-card-settings shadow-sm p-4">
-                <div class="app-card-body">
-                    <div class="col-md-8">
-                        <input v-model="user.name" type="text" class="form-control" placeholder="Name or email" required
-                            autocomplete="off" ref="user">
-                        <small class="ms-1 text-muted">(typeahead)</small>
-                    </div>
+    <div v-show="roles.length > 0">
+        <div class="row g-4 settings-section">
+            <div class="col-12 col-md-2">
+                <h3 class="section-title">Add user</h3>
+                <div class="section-intro">
+                    Assign user to the application.
                 </div>
-                <!--//app-card-body-->
             </div>
-            <!--//app-card-->
-        </div>
-    </div>
-    <hr class="mb-4" v-if="users.length > 0" />
-    <div v-for="i in users" :key="i.userId">
-        <div class="row g-4 settings-section mb-4">
-            <div class="col-12">
+            <div class="col-12 col-md-10">
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
-                        <h3 class="section-title"><i>{{ i.name }}</i></h3>
-                        <div class="form-check form-check-inline mt-3" v-for="r in i.roles" :key="r.roleId">
-                            <label>
-                                <input class="form-check-input" type="checkbox" value="" v-model="r.selected" />
-                                <span>{{ r.name }}</span>
-                            </label>
+                        <div class="col-md-8">
+                            <input v-model="user.name" type="text" class="form-control" placeholder="Name or email" required
+                                autocomplete="off" ref="user">
+                            <small class="ms-1 text-muted">(typeahead)</small>
                         </div>
-                        <div class="mt-3">
-                            <button type="button" class="btn app-btn-primary me-2">
-                                Save changes
-                            </button>
-                            <button type="button" class="btn app-btn-outline-danger bg-white">Remove</button>
+                    </div>
+                    <!--//app-card-body-->
+                </div>
+                <!--//app-card-->
+            </div>
+        </div>
+        
+        <hr class="mb-4" />
+        <h5 class="section-title mb-3">Assigned users</h5>
+        <form @submit.prevent="search(1)">
+            <div class="row g-2 align-items-start mb-4">
+                <div class="col-8 col-md-6">
+                    <input v-model="query" type="text" class="form-control" placeholder="Name or email" autocomplete="off">
+                    <small class="ms-1">Found: {{ pagination.totalRecords ?? 0 }}</small>
+                </div>
+                <div class="col-auto d-flex align-top">
+                    <button class="btn app-btn-primary" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <div v-for="i in users" :key="i.userId">
+            <div class="row g-4 settings-section mb-4">
+                <div class="col-12">
+                    <div class="app-card app-card-settings shadow-sm p-4">
+                        <div class="app-card-body">
+                            <h3 class="section-title"><i>{{ i.name }}</i></h3>
+                            <div class="form-check form-check-inline mt-3" v-for="r in i.roles" :key="r.roleId">
+                                <label>
+                                    <input class="form-check-input" type="checkbox" value="" v-model="r.selected" />
+                                    <span>{{ r.name }}</span>
+                                </label>
+                            </div>
+                            <div class="mt-3">
+                                <button type="button" class="btn app-btn-primary me-2">
+                                    Save changes
+                                </button>
+                                <button type="button" class="btn app-btn-outline-danger bg-white">Remove</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <div class="modal" id="myModal" tabindex="-1" data-bs-backdrop="static" ref="modal">
@@ -151,9 +167,10 @@ export default {
 
             emitter.emit("showLoader", true);
             updateAppUserRoles(this.app.applicationId, this.user.id, selectedIds).then(r => {
-                
-                this.search();
                 this.user = new Object();
+                this.query = '';
+                this.search();
+
                 this.modal.hide();
 
                 emitter.emit("showLoader", false);
