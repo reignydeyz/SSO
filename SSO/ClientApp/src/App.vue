@@ -2,6 +2,7 @@
     <Navbar v-if="showNav" />
     <div v-bind:class="showNav ? 'app-wrapper' : 'row g-0 app-auth-wrapper'">
         <router-view />
+        <Footer />
     </div>
     <Loader v-show="loading" />
 </template>
@@ -9,11 +10,12 @@
 <script>
 import Navbar from "@/components/Navbar.vue";
 import Loader from "@/components/Loader.vue";
+import Footer from "@/components/Footer.vue";
 import { emitter } from '@/services/emitter.service';
 
 export default {
     components: {
-        Navbar, Loader,
+        Navbar, Loader, Footer
     },
     watch: {
         '$route'(to, from) {
