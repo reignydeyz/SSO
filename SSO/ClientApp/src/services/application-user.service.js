@@ -14,6 +14,9 @@ const searchAppUser = async (appId, b, sort, sortDirection, page = 1, pageSize =
     return axios.get(url);
 }
 
+const removeAppUser = async (appId, userId) => await axios.delete(`/api/application/${appId}/user/${userId}`);
+
 export {
-    searchAppUser
+    searchAppUser,
+    removeAppUser
 }

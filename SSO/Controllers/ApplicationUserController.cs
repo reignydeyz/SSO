@@ -4,6 +4,9 @@ using MediatR;
 using Microsoft.AspNetCore.OData.Query;
 using SSO.Business.ApplicationUsers.Queries;
 using Microsoft.AspNetCore.Authorization;
+using SSO.Filters;
+using SSO.Business.ApplicationUserRoles;
+using SSO.Business.ApplicationUsers.Commands;
 
 namespace SSO.Controllers
 {
@@ -49,6 +52,22 @@ namespace SSO.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        /// <summary>
+        /// Removes user from app
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpDelete("{userId}")]
+        [AppUserIdValidator]
+        public async Task<IActionResult> Delete([FromRoute] AppUserIdDto form)
+        {
+            var param = new RemoveAppUserCommand { UserId = form.UserId, ApplicationId = form.ApplicationId };
+
+            await _mediator.Send(param);
+
+            return Ok();
         }
     }
 }

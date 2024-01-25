@@ -18,11 +18,62 @@ namespace SSO.Infrastructure.Management
 
         public async Task AddRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
         {
-            var user = await _userManager.FindByEmailAsync(username);
+            var user = await _userManager.FindByEmailAsync(username) ?? throw new ArgumentNullException();
 
-            if (user is null)
-                throw new ArgumentNullException();
+            await AddRoles(user, roles, saveChanges);
+        }
 
+        public async Task AddRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new ArgumentNullException();
+
+            await AddRoles(user, roles, saveChanges);
+        }
+
+        public async Task RemoveRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        {
+            var user = await _userManager.FindByEmailAsync(username) ?? throw new ArgumentNullException();
+
+            await RemoveRoles(user, roles, saveChanges);
+        }
+
+        public async Task RemoveRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new ArgumentNullException();
+
+            await RemoveRoles(user, roles, saveChanges);
+        }
+
+        public async Task RemoveUser(Guid userId, Guid applicationId, bool? saveChanges = true)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new ArgumentNullException();
+
+            await RemoveUser(user, applicationId, saveChanges);
+        }
+
+        public async Task RemoveUser(string username, Guid applicationId, bool? saveChanges = true)
+        {
+            var user = await _userManager.FindByEmailAsync(username) ?? throw new ArgumentNullException();
+
+            await RemoveUser(user, applicationId, saveChanges);
+        }
+
+        public async Task<IEnumerable<ApplicationRole>> Roles(Guid userId, Guid applicationId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString()) ?? throw new ArgumentNullException();
+
+            return await Roles(user, applicationId);
+        }
+
+        public async Task<IEnumerable<ApplicationRole>> Roles(string username, Guid applicationId)
+        {
+            var user = await _userManager.FindByEmailAsync(username) ?? throw new ArgumentNullException();
+
+            return await Roles(user, applicationId);
+        }
+
+        private async Task AddRoles(ApplicationUser user, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        {
             var toBeAdded = roles.Select(x => new IdentityUserRole<string> { UserId = user.Id, RoleId = x.Id }).ToList();
 
             await _context.UserRoles.AddRangeAsync(toBeAdded);
@@ -31,20 +82,8 @@ namespace SSO.Infrastructure.Management
                 await _context.SaveChangesAsync();
         }
 
-        public async Task AddRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        private async Task RemoveRoles(ApplicationUser user, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-
-            await AddRoles(user.UserName, roles, saveChanges);
-        }
-
-        public async Task RemoveRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
-        {
-            var user = await _userManager.FindByEmailAsync(username);
-
-            if (user is null)
-                throw new ArgumentNullException();
-
             var toBeDeleted = _context.UserRoles.Where(x => x.UserId == user.Id && roles.Select(x => x.Id).Contains(x.RoleId.ToString()));
 
             _context.UserRoles.RemoveRange(toBeDeleted);
@@ -53,30 +92,20 @@ namespace SSO.Infrastructure.Management
                 await _context.SaveChangesAsync();
         }
 
-        public async Task RemoveRoles(Guid userId, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
+        private async Task RemoveUser(ApplicationUser user, Guid applicationId, bool? saveChanges = true)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var toBeDeleted = _context.UserRoles.Where(x => x.UserId == user.Id && _context.Roles.Any(y => y.ApplicationId == applicationId && y.Id == x.RoleId));
 
-            await RemoveRoles(user.UserName, roles, saveChanges);
+            _context.UserRoles.RemoveRange(toBeDeleted);
+
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ApplicationRole>> Roles(Guid userId, Guid applicationId)
+        private async Task<IEnumerable<ApplicationRole>> Roles(ApplicationUser user, Guid applicationId)
         {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-
-            return await Roles(user.UserName, applicationId);
-        }
-
-        public async Task<IEnumerable<ApplicationRole>> Roles(string username, Guid applicationId)
-        {
-            var user = await _userManager.FindByEmailAsync(username);
-
-            if (user is null)
-                throw new ArgumentNullException();
-
             var roles = from r in _context.Roles.Where(x => x.ApplicationId == applicationId)
-                      join ur in _context.UserRoles.Where(x => x.UserId == user.Id) on r.Id equals ur.RoleId
-                      select r;
+                        join ur in _context.UserRoles.Where(x => x.UserId == user.Id) on r.Id equals ur.RoleId
+                        select r;
 
             return roles;
         }

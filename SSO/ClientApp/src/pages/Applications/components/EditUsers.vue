@@ -24,7 +24,7 @@
                 <!--//app-card-->
             </div>
         </div>
-        
+
         <hr class="mb-4" />
         <h5 class="section-title mb-3">Assigned users</h5>
         <form @submit.prevent="search(1)">
@@ -39,7 +39,7 @@
             </div>
         </form>
 
-        <div v-for="i in users" :key="i.userId">
+        <div v-for="i in users" :key="i.id">
             <div class="row g-4 settings-section mb-4">
                 <div class="col-12">
                     <div class="app-card app-card-settings shadow-sm p-4">
@@ -52,10 +52,11 @@
                                 </label>
                             </div>
                             <div class="mt-3">
-                                <button type="button" class="btn app-btn-primary me-2">
+                                <button type="button" class="btn app-btn-primary me-2" @click="onUpdate(i)">
                                     Save changes
                                 </button>
-                                <button type="button" class="btn app-btn-outline-danger bg-white">Remove</button>
+                                <button type="button" class="btn app-btn-outline-danger bg-white"
+                                    @click="remove(i.id)">Remove</button>
                             </div>
                         </div>
                     </div>
@@ -63,6 +64,27 @@
             </div>
         </div>
 
+        <nav aria-label="..." v-if="pagination.endPage > 1" class="app-pagination">
+            <ul class="pagination flex-wrap">
+                <li class="page-item" v-if="pagination.currentPage > 1">
+                    <a class="page-link" tabindex="-1" aria-disabled="true" style="cursor: pointer"
+                        @click="paginate(1)">First</a>
+                </li>
+                <li class="page-item" v-if="pagination.currentPage > 1">
+                    <a class="page-link" style="cursor: pointer" @click="paginate(pagination.currentPage - 1)">Previous</a>
+                </li>
+                <li class="page-item" v-bind:class="{ active: pagination.currentPage == p }"
+                    v-for="p in pagination.pageIndices" :key="p">
+                    <a class="page-link" style="cursor: pointer" @click="paginate(p)">{{ p }}</a>
+                </li>
+                <li class="page-item" v-if="pagination.currentPage < pagination.totalPages">
+                    <a class="page-link" style="cursor: pointer" @click="paginate(pagination.currentPage + 1)">Next</a>
+                </li>
+                <li class="page-item" v-if="pagination.currentPage < pagination.totalPages">
+                    <a class="page-link" style="cursor: pointer" @click="paginate(pagination.totalPages)">Last</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 
     <div class="modal" id="myModal" tabindex="-1" data-bs-backdrop="static" ref="modal">
@@ -82,8 +104,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn app-btn-primary" @click="onAdd">Add</button>
+                    <button type="button" class="btn app-btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
@@ -94,7 +116,7 @@
 import autocomplete from 'autocompleter';
 import { searchUser } from "@/services/user.service";
 import { getAppUserRoles, updateAppUserRoles } from "@/services/application-user-role.service";
-import { searchAppUser } from "@/services/application-user.service";
+import { searchAppUser, removeAppUser } from "@/services/application-user.service";
 import { emitter } from "@/services/emitter.service";
 import { pagination } from "@/services/pagination.service";
 export default {
@@ -177,6 +199,20 @@ export default {
             });
         },
 
+        onUpdate(user) {
+            var selectedIds = user.roles.filter(x => x.selected === true).map(x => x.roleId);
+
+            if (selectedIds.length <= 0) {
+                alert('Please select at least 1 entry.');
+                return false;
+            }
+
+            emitter.emit("showLoader", true);
+            updateAppUserRoles(this.app.applicationId, user.id, selectedIds).then(r => {
+                emitter.emit("showLoader", false);
+            });
+        },
+
         search(p) {
             emitter.emit("showLoader", true);
             this.pagination.currentPage = p ?? this.pagination.currentPage;
@@ -217,7 +253,22 @@ export default {
                     console.log(err);
                     emitter.emit("showLoader", false);
                 });
-        }
+        },
+
+        remove(userId) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                emitter.emit("showLoader", true);
+                removeAppUser(this.app.applicationId, userId).then(r => {
+                    this.search();
+                    emitter.emit("showLoader", false);
+                });
+            }
+        },
+
+        paginate(page) {
+            this.pagination.currentPage = page;
+            this.search();
+        },
     }
 }
 </script>

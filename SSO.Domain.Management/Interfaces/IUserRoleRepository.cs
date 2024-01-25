@@ -55,5 +55,9 @@ namespace SSO.Domain.Management.Interfaces
         /// <param name="applicationId"
         /// <returns></returns>
         Task<IEnumerable<ApplicationRole>> Roles(string username, Guid applicationId);
+
+        Task RemoveUser(Guid userId, Guid applicationId, bool? saveChanges = true);
+
+        Task RemoveUser(string username, Guid applicationId, bool? saveChanges = true);
     }
 }
