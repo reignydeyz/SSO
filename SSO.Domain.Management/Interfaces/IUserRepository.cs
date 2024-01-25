@@ -8,5 +8,7 @@ namespace SSO.Domain.Management.Interfaces
         Task<ApplicationUser> GetByEmail(string email);
 
         Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null);
+
+        Task<IEnumerable<Application>> GetApplications(Guid userId);
     }
 }

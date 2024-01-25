@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
@@ -95,6 +94,16 @@ namespace SSO.Infrastructure.Management
             rec.ModifiedBy = author == null ? $"{applicationUser.FirstName} {applicationUser.LastName}" : $"{author.FirstName} {author.LastName}";
 
             _context.SaveChanges();
+        }
+
+        public async Task<IEnumerable<Application>> GetApplications(Guid userId)
+        {
+            var apps = from ur in _context.UserRoles.Where(x => x.UserId == userId.ToString())
+                        join r in _context.Roles on ur.RoleId equals r.Id
+                        join a in _context.Applications on r.ApplicationId equals a.ApplicationId
+                        select a;
+
+            return await apps.Distinct().ToListAsync();
         }
     }
 }
