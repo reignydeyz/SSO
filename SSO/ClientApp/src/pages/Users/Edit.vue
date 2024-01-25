@@ -39,7 +39,8 @@
                     <EditBasic :user="user"/>
                 </div>
                 <div class="tab-pane fade" id="pills-apps" role="tabpanel" aria-labelledby="pills-apps-tab">
-                    // Applications
+                    <hr class="mb-4" />
+                    <EditApplications :user="user"/>
                 </div>
             </div>
         </div>
@@ -51,9 +52,10 @@ import * as navbar from "@/services/navbar.service";
 import { getUserById } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import EditBasic from "@/pages/Users/components/EditBasic.vue";
+import EditApplications from "@/pages/Users/components/EditApplications.vue";
 export default {
     components: {
-        EditBasic
+        EditBasic, EditApplications
     },
     data: () => ({
         user: new Object(),

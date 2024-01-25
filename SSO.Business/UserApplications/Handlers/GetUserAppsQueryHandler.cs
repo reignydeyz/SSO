@@ -21,7 +21,7 @@ namespace SSO.Business.UserApplications.Handlers
         {
             var res = await _userRepository.GetApplications(request.UserId);
 
-            return _mapper.Map<IEnumerable<ApplicationDto>>(res);
+            return _mapper.Map<IEnumerable<ApplicationDto>>(res.OrderBy(x => x.Name));
         }
     }
 }
