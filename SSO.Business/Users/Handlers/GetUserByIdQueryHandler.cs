@@ -5,7 +5,7 @@ using SSO.Domain.Management.Interfaces;
 
 namespace SSO.Business.Users.Handlers
 {
-    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto>
+    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDetailDto>
     {
         readonly IUserRepository _userRepository;
         readonly IMapper _mapper;
@@ -16,14 +16,14 @@ namespace SSO.Business.Users.Handlers
             _mapper = mapper;
         }
 
-        public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public async Task<UserDetailDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             var rec = await _userRepository.FindOne(x => x.Id == request.UserId.ToString());
 
             if (rec is null)
                 throw new ArgumentNullException();
 
-            return _mapper.Map<UserDto>(rec);
+            return _mapper.Map<UserDetailDto>(rec);
         }
     }
 }

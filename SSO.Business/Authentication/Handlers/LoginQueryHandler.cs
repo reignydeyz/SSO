@@ -35,14 +35,16 @@ namespace SSO.Business.Authentication.Handlers
 
             await _authenticationService.Login(request.Username, request.Password, app);
 
-            var user = await _userRepo.GetByEmail(request.Username);
+            var user = await _userRepo.GetByUsername(request.Username);
             var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId.Value);
 
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
-                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.Email, user.Email)
+                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
             };
+
+            if (user.Email is not null)
+                claims.Add(new Claim(ClaimTypes.Email, user.Email));
 
             if (!roles.Any())
                 throw new UnauthorizedAccessException();

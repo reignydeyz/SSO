@@ -18,7 +18,7 @@ namespace SSO.Infrastructure.Management
 
         public async Task AddRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
         {
-            var user = await _userManager.FindByEmailAsync(username) ?? throw new ArgumentNullException();
+            var user = await _userManager.FindByNameAsync(username) ?? throw new ArgumentNullException();
 
             await AddRoles(user, roles, saveChanges);
         }
@@ -32,7 +32,7 @@ namespace SSO.Infrastructure.Management
 
         public async Task RemoveRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
         {
-            var user = await _userManager.FindByEmailAsync(username) ?? throw new ArgumentNullException();
+            var user = await _userManager.FindByNameAsync(username) ?? throw new ArgumentNullException();
 
             await RemoveRoles(user, roles, saveChanges);
         }
@@ -53,7 +53,7 @@ namespace SSO.Infrastructure.Management
 
         public async Task RemoveUser(string username, Guid applicationId, bool? saveChanges = true)
         {
-            var user = await _userManager.FindByEmailAsync(username) ?? throw new ArgumentNullException();
+            var user = await _userManager.FindByNameAsync(username) ?? throw new ArgumentNullException();
 
             await RemoveUser(user, applicationId, saveChanges);
         }
@@ -67,7 +67,7 @@ namespace SSO.Infrastructure.Management
 
         public async Task<IEnumerable<ApplicationRole>> Roles(string username, Guid applicationId)
         {
-            var user = await _userManager.FindByEmailAsync(username) ?? throw new ArgumentNullException();
+            var user = await _userManager.FindByNameAsync(username) ?? throw new ArgumentNullException();
 
             return await Roles(user, applicationId);
         }

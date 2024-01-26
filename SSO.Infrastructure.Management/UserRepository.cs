@@ -21,14 +21,13 @@ namespace SSO.Infrastructure.Management
         {
             var password = param.PasswordHash ?? Guid.NewGuid().ToString();
             param.PasswordHash = null;
-            param.UserName = param.Email;
 
             var res = await _userManager.CreateAsync(param, password);
 
             if (!res.Succeeded && res.Errors.Any())
                 throw new ArgumentException(res.Errors.First().Description);
 
-            return await _userManager.FindByEmailAsync(param.Email);
+            return await _userManager.FindByNameAsync(param.UserName);
         }
 
         public async Task Delete(ApplicationUser param, bool? saveChanges = true)
@@ -44,9 +43,9 @@ namespace SSO.Infrastructure.Management
                 return _context.ApplicationUsers.AsQueryable().AsNoTracking();
         }
 
-        public async Task<ApplicationUser> GetByEmail(string email)
+        public async Task<ApplicationUser> GetByUsername(string username)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(username);
 
             if (user is null)
                 throw new ArgumentNullException();
@@ -64,6 +63,8 @@ namespace SSO.Infrastructure.Management
             var rec = _context.ApplicationUsers.First(x => x.Id == param.Id);
             rec.FirstName = param.FirstName;
             rec.LastName = param.LastName;
+            rec.UserName = param.UserName;
+            rec.NormalizedUserName = param.UserName.ToUpper();
             rec.Email = param.Email;
 
             await _context.SaveChangesAsync();
@@ -71,7 +72,7 @@ namespace SSO.Infrastructure.Management
             if (param.PasswordHash is not null)
                 await ChangePassword(rec, param.PasswordHash, default);
 
-            return await _userManager.FindByEmailAsync(param.Email);
+            return await _userManager.FindByNameAsync(param.UserName);
         }
 
         public async Task<bool> Any(Expression<Func<ApplicationUser, bool>> predicate)

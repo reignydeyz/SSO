@@ -43,9 +43,17 @@
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Email*</label>
+                                    <label class="form-label">Email</label>
                                     <input v-model="user.email" type="email" class="form-control" placeholder="Email"
-                                        required autocomplete="off" ref="Email" />
+                                        autocomplete="off" ref="Email" />
+                                    <div class="invalid-feedback">
+                                        {{ errorMessage }}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Username*</label>
+                                    <input v-model="user.username" class="form-control" minlength="1" maxlength="20"
+                                        placeholder="Username" required autocomplete="off" ref="Username" />
                                     <div class="invalid-feedback">
                                         {{ errorMessage }}
                                     </div>
@@ -126,6 +134,8 @@ export default {
             allInputs.forEach((input) => {
                 input.classList.remove('is-invalid');
             });
+
+            this.user.email = this.user.email === '' ? null : this.user.email;
 
             emitter.emit("showLoader", true);
             addUser(this.user).then(r => {
