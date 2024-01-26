@@ -21,10 +21,12 @@ These instructions will get you a copy of the project up and running on your loc
 - [EntityFramework Core](https://docs.microsoft.com/en-us/ef/core/)
 - [ASP.Net Identity](https://www.asp.net/identity)
 - [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle)
+- [Bootstrap 5.3](https://getbootstrap.com)
 
 ### Prerequisites
 
 - [Visual Studio](https://www.visualstudio.com/)
+- [VS Code](https://code.visualstudio.com) - optional but recommended
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-2022)
 - [SQL Server Management Studio](https://msdn.microsoft.com/en-us/library/mt238290.aspx)
 - [Node.js](https://nodejs.org)
@@ -32,6 +34,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Debugging
 
+#### Back-end
 - Make sure the **Startup project** is `SSO`.
 - From `SSO`, open `appsettings.json` and change the **connection string** accordingly...
   ```json
@@ -45,6 +48,26 @@ These instructions will get you a copy of the project up and running on your loc
 - Run by pressing **F5**. Login page should be launched.
   - For credentials, see [sample data](SSO.Infrastructure/Migrations/20231216130229_Seed.cs).
 - For **Swagger**, go to `{URL}/swagger`
+
+#### Front-end
+`SSO` project also contains the front-end that uses **Vue 3**. It is located in `SSO\ClientApp`.
+
+**Note:** `npm` commands will be automatically executed upon launching the solution, ensuring both back-end and front-end are running on a single host.
+
+However, it can be challenging to debug both front-end and back-end, so it is recommended to create a front-end (debug) instance.
+- Open `SSO\ClientApp` in **VS Code**
+- Ensure dependencies are installed, run...
+  ```bash
+  npm install
+  ```
+- Check `package.json` for port configuration and environment. Run either...
+  ```bash
+  npm run serve-dev
+  ```
+  or
+  ```bash
+  npm run serve-dev1
+  ```
 
 ## Documentations
 // TBD
