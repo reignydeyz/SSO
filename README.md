@@ -43,7 +43,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 - Database that includes the tables and sample data will be automatically generated.
 - Run by pressing **F5**. Login page should be launched.
-  - For credentials, see sample data in `SSO.Infrastructure\Migrations\xxxxxxxxxxxxxx_Seed.cs`
+  - For credentials, see [sample data](SSO.Infrastructure/Migrations/20231216130229_Seed.cs).
 - For **Swagger**, go to `{URL}/swagger`
 
 ## Documentations
