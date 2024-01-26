@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -78,6 +77,16 @@ namespace SSO.Infrastructure.Management
         public Task<ApplicationRole> Update(ApplicationRole param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<ApplicationUser>> GetUsers(Guid roleId)
+        {
+            var users = from r in _context.Roles.Where(x => x.Id == roleId.ToString())
+                        join ur in _context.UserRoles on r.Id equals ur.RoleId
+                        join u in _context.Users on ur.UserId equals u.Id
+                        select u;
+
+            return await users.Distinct().ToListAsync();
         }
     }
 }

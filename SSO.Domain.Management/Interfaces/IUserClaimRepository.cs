@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using SSO.Domain.Models;
+using System.Security.Claims;
 
 namespace SSO.Domain.Management.Interfaces
 {
@@ -19,5 +20,13 @@ namespace SSO.Domain.Management.Interfaces
         /// <param name="applicationId"></param>
         /// <returns></returns>
         Task<IEnumerable<Claim>> GetClaims(Guid userId, Guid applicationId);
+
+        Task AddClaims(Guid userId, IEnumerable<ApplicationPermission> claims, bool? saveChanges = true);
+
+        Task AddClaims(IEnumerable<ApplicationUser> users, IEnumerable<ApplicationPermission> claims, bool? saveChanges = true);
+
+        Task RemoveClaims(Guid userId, IEnumerable<ApplicationPermission> claims, bool? saveChanges = true);
+
+        Task RemoveClaims(IEnumerable<ApplicationUser> users, IEnumerable<ApplicationPermission> claims, bool? saveChanges = true);
     }
 }
