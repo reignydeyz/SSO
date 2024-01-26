@@ -20,6 +20,7 @@ These instructions will get you a copy of the project up and running on your loc
 - [Vue 3](https://vuejs.org/guide/introduction.html)
 - [EntityFramework Core](https://docs.microsoft.com/en-us/ef/core/)
 - [ASP.Net Identity](https://www.asp.net/identity)
+- [OData 8](https://learn.microsoft.com/en-us/odata/webapi-8/overview)
 - [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle)
 - [Bootstrap 5.3](https://getbootstrap.com)
 
