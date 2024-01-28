@@ -71,7 +71,8 @@ However, it can be challenging to debug both front-end and back-end, so it is re
   ```
 
 ## Documentations
-// TBD
+
+Please visit [wiki page](./wiki/BRD.md)
 
 
 ## People to blame

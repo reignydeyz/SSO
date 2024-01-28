@@ -188,8 +188,4 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint("/swagger/System/swagger.json", "System");
 });
 
-#if DEBUG
-app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-#endif
-
 app.Run();
