@@ -72,7 +72,7 @@ However, it can be challenging to debug both front-end and back-end, so it is re
 
 ## Documentations
 
-Please visit [wiki page](./wiki/BRD.md)
+Please visit [wiki page](https://github.com/reignydeyz/SSO/wiki)
 
 
 ## People to blame
