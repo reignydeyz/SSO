@@ -116,6 +116,11 @@ builder.Services.AddScoped<IApplicationCallbackRepository, ApplicationCallbackRe
 builder.Services.AddScoped<IApplicationPermissionRepository, ApplicationPermissionRepository>();
 builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaimRepository>();
 
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "ClientApp/dist";
+});
+
 builder.Services.AddSwaggerGen(x =>
 {
     x.SwaggerDoc("Client", new OpenApiInfo { Title = "Client", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
@@ -160,12 +165,16 @@ builder.Services.AddCors(options => {
 
 var app = builder.Build();
 
+// Obtain an instance of IWebHostEnvironment through dependency injection
+var env = app.Services.GetRequiredService<IWebHostEnvironment>();
+
 // Configure the HTTP request pipeline.
 
 #if DEBUG
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 #endif
 
+app.UseSpaStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();
@@ -176,8 +185,11 @@ app.MapWhen(r => !prefixes.Any(p => r.Request.Path.Value.StartsWith(p)), builder
 {
     builder.UseSpa(spa =>
     {
-        spa.Options.SourcePath = "ClientApp/";
-        spa.UseVueCli(npmScript: "serve");
+        if (env.IsDevelopment())
+        {
+            spa.Options.SourcePath = "ClientApp/";
+            spa.UseVueCli(npmScript: "serve");
+        }
     });
 });
 
