@@ -172,6 +172,8 @@ var env = app.Services.GetRequiredService<IWebHostEnvironment>();
 
 #if DEBUG
 app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+#else
+app.UseCors();
 #endif
 
 app.UseSpaStaticFiles();
