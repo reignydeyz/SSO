@@ -26,7 +26,7 @@ export default {
     },
     created() {
 		if (hasRootAccess()) {
-			window.location.href = "main";
+			window.location.replace("main");
 		}
         this.account = getAccount();
     },

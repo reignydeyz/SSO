@@ -56,9 +56,6 @@ export default {
 			document.title = 'Login | ' + r.data.name;
 		});
 	},
-	beforeUnmount() {
-		this.param = new Object();
-	},
 	mounted() {
 		this.param.appId = this.urlParams.get('appId');
 
@@ -76,7 +73,7 @@ export default {
 				emitter.emit('showLoader', false);
 
 				if (this.urlParams.get('callbackUrl')) {
-					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
+					window.location.replace = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
 				}
 			}, err => {
 				emitter.emit('showLoader', false);

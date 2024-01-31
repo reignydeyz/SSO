@@ -48,9 +48,6 @@ export default {
 			window.location.href = 'init';
 		}
 	},
-	beforeUnmount() {
-		this.param = new Object();
-	},
 	methods: {
 		submit() {
 			emitter.emit('showLoader', true);
@@ -60,7 +57,7 @@ export default {
 
 				Cookies.set('system', r.data.access_token, { expires: 1 });
 
-				window.location.href = 'init';
+				this.$router.replace({ name: 'Init' });
 			}, err => {
 				emitter.emit('showLoader', false);
 				alert('Access denied.');
