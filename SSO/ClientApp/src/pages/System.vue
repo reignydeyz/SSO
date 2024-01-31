@@ -48,6 +48,9 @@ export default {
 			window.location.href = 'init';
 		}
 	},
+	beforeUnmount() {
+		this.param = new Object();
+	},
 	methods: {
 		submit() {
 			emitter.emit('showLoader', true);

@@ -56,6 +56,9 @@ export default {
 			document.title = 'Login | ' + r.data.name;
 		});
 	},
+	beforeUnmount() {
+		this.param = new Object();
+	},
 	mounted() {
 		this.param.appId = this.urlParams.get('appId');
 
