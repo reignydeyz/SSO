@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,13 +16,16 @@ using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure;
 using SSO.Infrastructure.Authentication;
+using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
+using SSO.Infrastructure.Settings.Enums;
 using SSO.Infrastructure.Settings.Services;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using VueCliMiddleware;
+using LDAP = SSO.Infrastructure.LDAP;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,8 +105,8 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-// Register the JwtSecret as a singleton service
 builder.Services.AddSingleton(_ => new JwtSecretService(jwtSecret));
+builder.Services.AddSingleton(_ => new RealmService(Realm.Default));
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -115,6 +119,18 @@ builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IApplicationCallbackRepository, ApplicationCallbackRepository>();
 builder.Services.AddScoped<IApplicationPermissionRepository, ApplicationPermissionRepository>();
 builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaimRepository>();
+
+var ldapSettings = builder.Configuration.GetSection("LDAPSettings").Get<LDAPSettings>();
+
+if (ldapSettings != null)
+{
+    builder.Services.AddSingleton(_ => new RealmService(Realm.LDAP));
+
+    builder.Services.AddScoped<IAuthenticationService, LDAP.AuthenticationService>();
+    builder.Services.AddScoped<IUserRepository, LDAP.UserRepository>();
+
+    builder.Services.Configure<LDAPSettings>(builder.Configuration.GetSection("LDAPSettings"));
+}
 
 builder.Services.AddSpaStaticFiles(configuration =>
 {
@@ -163,6 +179,8 @@ builder.Services.AddCors(options => {
     });
 });
 
+builder.Services.AddHangfire(x => x.UseSqlServerStorage((builder.Configuration.GetConnectionString("DefaultConnection"))));
+
 var app = builder.Build();
 
 // Obtain an instance of IWebHostEnvironment through dependency injection
@@ -181,7 +199,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-string[] prefixes = { "/swagger", "/api", "/odata" };
+string[] prefixes = { "/swagger", "/api", "/odata", "/hangfire" };
 
 app.MapWhen(r => !prefixes.Any(p => r.Request.Path.Value.StartsWith(p)), builder =>
 {
@@ -201,5 +219,10 @@ app.UseSwaggerUI(options =>
     options.SwaggerEndpoint("/swagger/Client/swagger.json", "Client");
     options.SwaggerEndpoint("/swagger/System/swagger.json", "System");
 });
+
+#pragma warning disable CS0618 // Type or member is obsolete
+app.UseHangfireServer();
+#pragma warning restore CS0618 // Type or member is obsolete
+app.UseHangfireDashboard();
 
 app.Run();

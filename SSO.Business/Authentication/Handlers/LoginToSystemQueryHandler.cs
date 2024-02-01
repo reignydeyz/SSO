@@ -3,12 +3,15 @@ using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
+using SSO.Infrastructure.Settings.Enums;
+using SSO.Infrastructure.Settings.Services;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
 {
     public class LoginToSystemQueryHandler : IRequestHandler<LoginToSystemQuery, TokenDto>
     {
+        readonly Realm _realm;
         readonly IAuthenticationService _authenticationService;
         readonly ITokenService _tokenService;
         readonly IUserRepository _userRepo;
@@ -16,10 +19,12 @@ namespace SSO.Business.Authentication.Handlers
         readonly IUserClaimRepository _userClaimRepository;
         readonly Application _root;
 
-        public LoginToSystemQueryHandler(IAuthenticationService authenticationService, ITokenService tokenService,
+        public LoginToSystemQueryHandler(RealmService realmService,
+            IAuthenticationService authenticationService, ITokenService tokenService,
             IApplicationRepository applicationRepository,
             IUserRepository userRepo, IUserRoleRepository userRoleRepo, IUserClaimRepository userClaimRepository)
         {
+            _realm = realmService.Realm;
             _authenticationService = authenticationService;
             _tokenService = tokenService;
             _userRepo = userRepo;
@@ -38,6 +43,7 @@ namespace SSO.Business.Authentication.Handlers
             var roles = await _userRoleRepo.Roles(request.Username, _root.ApplicationId);
 
             var claims = new List<Claim>() {
+                new Claim(ClaimTypes.AuthenticationMethod, _realm.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
             };

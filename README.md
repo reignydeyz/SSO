@@ -23,6 +23,7 @@ These instructions will get you a copy of the project up and running on your loc
 - [OData 8](https://learn.microsoft.com/en-us/odata/webapi-8/overview)
 - [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle)
 - [Bootstrap 5.3](https://getbootstrap.com)
+- [Hangfire](https://www.hangfire.io/)
 
 ### Prerequisites
 
@@ -39,9 +40,21 @@ These instructions will get you a copy of the project up and running on your loc
 - Make sure the **Startup project** is `SSO`.
 - From `SSO`, open `appsettings.json` and change the **connection string** accordingly...
   ```json
-  {
   "ConnectionStrings": {
     "DefaultConnection": "[CONNECTION_STRING]"
+  }
+  ```
+  LDAP settings ~ If present, will use LDAP modules instead of the default ones...
+  ```json
+  "LDAPSettings": 
+  {
+    "Server": "your-ldap-server",
+    "Port": 389, // or the appropriate port for your LDAP server
+    "Username": "your-ldap-username",
+    "Password": "your-ldap-password",
+    "SearchBase": "ou=users,dc=example,dc=com",
+    "SearchFilter": "(sAMAccountName={0})", // or an appropriate LDAP filter for your system
+    "UseSSL": false // set to true if using LDAPS (LDAP over SSL)
   }
   ```
 

@@ -5,7 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<Version>0.0.0.4</Version>
+		<Version>0.0.1.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -14,6 +14,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.9" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.9" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.9" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.4" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
@@ -36,6 +39,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\SSO.Business\SSO.Business.csproj" />
 		<ProjectReference Include="..\SSO.Infrastructure.Authentication\SSO.Infrastructure.Authentication.csproj" />
+		<ProjectReference Include="..\SSO.Infrastructure.LDAP\SSO.Infrastructure.LDAP.csproj" />
 		<ProjectReference Include="..\SSO.Infrastructure.Management\SSO.Infrastructure.Management.csproj" />
 		<ProjectReference Include="..\SSO.Infrastructure\SSO.Infrastructure.csproj" />
 	</ItemGroup>
