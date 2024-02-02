@@ -23,10 +23,13 @@
                             </div>
                             <!--//col-->
 
-                            <div class="col-auto">
+                            <div class="col-auto" v-if="isInRealm('Default')">
                                 <router-link to="/users/new" class="btn app-btn-primary"><i
                                         class="bi bi-plus-lg"></i>&nbsp;Create
                                     New</router-link>
+                            </div>
+                            <div class="col-auto" v-if="isInRealm('LDAP')">
+                                <button class="btn app-btn-primary" @click="syncUsers"><i class="fa fa-refresh"></i>&nbsp;Sync</button>
                             </div>
                         </div>
                         <!--//row-->
@@ -103,7 +106,7 @@
                                                     <li>
                                                         <hr class="dropdown-divider" />
                                                     </li>
-                                                    <li>
+                                                    <li v-if="isInRealm('Default')">
                                                         <a class="dropdown-item" href="#"
                                                             @click="onDelete(i.userId)">Remove</a>
                                                     </li>
@@ -153,9 +156,11 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
+import { getAccount } from '@/services/account.service';
 import { searchUser, deleteUser } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import { pagination } from "@/services/pagination.service";
+import { sync } from "@/services/ldap.service";
 export default {
     data: () => ({
         query: "",
@@ -224,6 +229,20 @@ export default {
                     emitter.emit("showLoader", true);
                 });
             }
+        },
+
+        isInRealm(realm) {
+            return getAccount().authmethod === realm;
+        },
+
+        syncUsers() {
+            sync().then(r => {
+                if (r.status === 202) {
+                    alert('Sync in progress. Please wait.');
+                }
+
+                location.reload();
+            });
         }
     }
 }

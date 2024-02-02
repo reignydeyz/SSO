@@ -3,7 +3,7 @@
         <div class="col-12 col-md-6">
             <div class="app-card app-card-settings shadow-sm p-4">
                 <div class="app-card-body">
-                    <form class="settings-form" @submit.prevent="onSubmit">
+                    <form class="settings-form" @submit.prevent="isInRealm('Default') && onSubmit">
                         <div class="mb-3">
                             <label class="form-label">First name*</label>
                             <input v-model="user.firstName" type="text" class="form-control" minlength="3" maxlength="200"
@@ -66,7 +66,7 @@
                             </div>
                         </div><!--//form-group-->
 
-                        <button type="submit" class="btn app-btn-primary mt-3">
+                        <button type="submit" class="btn app-btn-primary mt-3" v-if="isInRealm('Default')">
                             Save Changes
                         </button>
                     </form>
@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import { getAccount } from '@/services/account.service';
 import { updateUser } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import * as navbar from "@/services/navbar.service";
@@ -102,7 +103,6 @@ export default {
         },
 
         onSubmit() {
-            // C, getUserByIdlear error messages
             const allInputs = document.querySelectorAll('.is-invalid');
 
             allInputs.forEach((input) => {
@@ -130,13 +130,17 @@ export default {
                     }
                 }
                 else {
-                    alert('Failed to add new user.');
+                    alert('Failed to update user.');
                 }
 
                 emitter.emit("showLoader", false);
                 return false;
             });
-        }
+        },
+
+        isInRealm(realm) {
+			return getAccount().authmethod === realm;
+		}
     }
 }
 </script>

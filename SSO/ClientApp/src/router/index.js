@@ -24,9 +24,10 @@ const routes = [
     {
         path: "/changepassword",
         name: "ChangePassword",
+        meta: { realm: 'Default' },
         component: () => import('@/pages/ChangePassword.vue'),
         beforeEnter: (to, from, next) => {
-            next(canActivate())
+            next(canActivate(to))
           }
     },
     {
@@ -35,7 +36,7 @@ const routes = [
         meta: { mustBeRoot: true },
         component: () => import('@/pages/Main.vue'),
         beforeEnter: (to, from, next) => {
-            next(canActivate())
+            next(canActivate(to))
           }
     },
     {
@@ -44,7 +45,7 @@ const routes = [
         meta: { mustBeRoot: true },
         component: () => import('@/pages/Applications/Manage.vue'),
         beforeEnter: (to, from, next) => {
-            next(canActivate())
+            next(canActivate(to))
           }
     },
     {
@@ -53,7 +54,7 @@ const routes = [
         meta: { mustBeRoot: true },
         component: () => import('@/pages/Applications/New.vue'),
         beforeEnter: (to, from, next) => {
-            next(canActivate())
+            next(canActivate(to))
           }
     },
     {
@@ -62,7 +63,7 @@ const routes = [
         meta: { mustBeRoot: true },
         component: () => import('@/pages/Applications/Edit.vue'),
         beforeEnter: (to, from, next) => {
-            next(canActivate())
+            next(canActivate(to))
           }
     },
     {
@@ -71,16 +72,16 @@ const routes = [
         meta: { mustBeRoot: true },
         component: () => import('@/pages/Users/Manage.vue'),
         beforeEnter: (to, from, next) => {
-            next(canActivate())
+            next(canActivate(to))
           }
     },
     {
         path: "/users/new",
         name: "New User",
-        meta: { mustBeRoot: true },
+        meta: { mustBeRoot: true, realm: 'Default' },
         component: () => import('@/pages/Users/New.vue'),
         beforeEnter: (to, from, next) => {
-            next(canActivate())
+            next(canActivate(to))
           }
     },
     {
@@ -89,7 +90,7 @@ const routes = [
         meta: { mustBeRoot: true },
         component: () => import('@/pages/Users/Edit.vue'),
         beforeEnter: (to, from, next) => {
-            next(canActivate())
+            next(canActivate(to))
           }
     },
 ];

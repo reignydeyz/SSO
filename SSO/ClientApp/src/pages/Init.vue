@@ -7,7 +7,7 @@
 				<h2 class="auth-heading text-center mb-3">Hi!</h2>
 				<p class="mb-4">{{account.given_name}}</p>
 				<div class="auth-form-container text-start">
-                    <div class="auth-option text-center pt-3"><router-link to="/changepassword" class="text-link">Change password</router-link></div>
+                    <div class="auth-option text-center pt-3" v-if="isInRealm('Default')"><router-link to="/changepassword" class="text-link">Change password</router-link></div>
 					<div class="auth-option text-center pt-3"><a class="text-link" href="#" @click="signout">Logout</a></div>
 				</div><!--//auth-form-container-->
 
@@ -37,6 +37,9 @@ export default {
                 location.reload();
             })
         },
+		isInRealm(realm) {
+			return this.account.authmethod === realm;
+		}
 	}
 }
 </script>
