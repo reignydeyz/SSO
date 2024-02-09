@@ -14,17 +14,17 @@ namespace SSO.Infrastructure.LDAP
         public SynchronizeUsersService(IOptions<LDAPSettings> ldapSettings, AppDbContext context)
         {
             _ldapSettings = ldapSettings.Value;
-            _ldapConnectionString = $"LDAP://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
+            _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
             _context = context;
         }
 
         public async Task Begin()
         {
-            using (DirectoryEntry root = new DirectoryEntry(_ldapConnectionString, _ldapSettings.Username, _ldapSettings.Password, AuthenticationTypes.Secure))
+            using (DirectoryEntry root = new DirectoryEntry(_ldapConnectionString, _ldapSettings.Username, _ldapSettings.Password))
             {
                 using (var searcher = new DirectorySearcher(root))
                 {
-                    searcher.Filter = "(&(objectClass=user)(objectCategory=person))";
+                    searcher.Filter = _ldapSettings.SearchFilter;
 
                     // Handle referrals explicitly
                     searcher.ReferralChasing = ReferralChasingOption.All;
