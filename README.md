@@ -58,9 +58,17 @@ These instructions will get you a copy of the project up and running on your loc
   }
   ```
 
-- Database that includes the tables and sample data will be automatically generated.
+- Database that includes the tables...
+  - From **Package Manager Console**, choose `SSO.Infrastructure` as Default project.
+  - Generate the tables and data, run... (EF)
+    ```
+    update-database
+    ```
 - Run by pressing **F5**. Login page should be launched.
-  - For credentials, see [sample data](SSO.Infrastructure/Migrations/20231216130229_Seed.cs).
+  - username: `admin@example.com`
+  - password: `Password123#`
+  
+    (Username modifications are required due to the removal of special characters and the disallowance of email formats. Please make the necessary adjustments.)
 - For **Swagger**, go to `{URL}/swagger`
 
 #### Front-end
