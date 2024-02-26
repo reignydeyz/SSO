@@ -17,7 +17,7 @@ namespace SSO.Infrastructure.LDAP
         {
             _userManager = userManager;
             _ldapSettings = ldapSettings.Value;
-            _ldapConnectionString = $"LDAP://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
+            _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
         }
 
         public async Task Login(string username, string password, Application app)
