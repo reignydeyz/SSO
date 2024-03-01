@@ -60,7 +60,7 @@ export default {
 				this.$router.replace({ name: 'Init' });
 			}, err => {
 				emitter.emit('showLoader', false);
-				alert('Access denied.');
+				alert(err.response.data);
 			});
 		},
 		toggleViewKey(param) {
