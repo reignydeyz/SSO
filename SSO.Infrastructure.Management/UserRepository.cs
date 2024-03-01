@@ -46,6 +46,10 @@ namespace SSO.Infrastructure.Management
             if (param.PasswordHash is not null)
                 await ChangePassword(rec, param.PasswordHash, default);
 
+            // Unlock the user
+            await _userManager.ResetAccessFailedCountAsync(rec);
+            await _userManager.SetLockoutEndDateAsync(rec, DateTimeOffset.MinValue);
+
             return await _userManager.FindByNameAsync(param.UserName);
         }
 
