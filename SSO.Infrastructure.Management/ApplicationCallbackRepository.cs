@@ -24,6 +24,14 @@ namespace SSO.Infrastructure.Management
             return param;
         }
 
+        public async Task AddRange(IEnumerable<ApplicationCallback> param, bool? saveChanges = true, object? args = null)
+        {
+            _context.AddRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
         public Task<bool> Any(Expression<Func<ApplicationCallback, bool>> predicate)
         {
             throw new NotImplementedException();
@@ -45,6 +53,11 @@ namespace SSO.Infrastructure.Management
         public async Task<ApplicationCallback> FindOne(Expression<Func<ApplicationCallback, bool>> predicate)
         {
             return await _context.ApplicationCallbacks.FirstOrDefaultAsync(predicate);
+        }
+
+        public Task RemoveRange(IEnumerable<ApplicationCallback> param, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<ApplicationCallback> Update(ApplicationCallback param, bool? saveChanges = true, object? args = null)

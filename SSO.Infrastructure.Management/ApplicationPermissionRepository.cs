@@ -24,6 +24,14 @@ namespace SSO.Infrastructure.Management
             return param;
         }
 
+        public async Task AddRange(IEnumerable<ApplicationPermission> param, bool? saveChanges = true, object? args = null)
+        {
+            _context.AddRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
         public async Task<bool> Any(Expression<Func<ApplicationPermission, bool>> predicate)
         {
             return await _context.ApplicationPermissions.AnyAsync(predicate);
@@ -50,6 +58,11 @@ namespace SSO.Infrastructure.Management
         public async Task<ApplicationPermission> FindOne(Expression<Func<ApplicationPermission, bool>> predicate)
         {
             return await _context.ApplicationPermissions.FirstOrDefaultAsync(predicate);
+        }
+
+        public Task RemoveRange(IEnumerable<ApplicationPermission> param, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<ApplicationPermission> Update(ApplicationPermission param, bool? saveChanges = true, object? args = null)

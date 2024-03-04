@@ -3,7 +3,7 @@ using SSO.Domain.Models;
 
 namespace SSO.Domain.Management.Interfaces
 {
-    public interface IApplicationPermissionRepository : IRepository<ApplicationPermission>
+    public interface IApplicationPermissionRepository : IRepository<ApplicationPermission>, IRangeRepository<ApplicationPermission>
     {
     }
 }

@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace SSO.Domain.Management.Interfaces
 {
-    public interface IApplicationRoleRepository : IRepository<ApplicationRole>
+    public interface IApplicationRoleRepository : IRepository<ApplicationRole>, IRangeRepository<ApplicationRole>
     {
         /// <summary>
         /// Gets role claims

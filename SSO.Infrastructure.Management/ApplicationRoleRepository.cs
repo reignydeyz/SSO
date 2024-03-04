@@ -88,5 +88,18 @@ namespace SSO.Infrastructure.Management
 
             return await users.Distinct().ToListAsync();
         }
+
+        public async Task AddRange(IEnumerable<ApplicationRole> param, bool? saveChanges = true, object? args = null)
+        {
+            _context.AddRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
+        public Task RemoveRange(IEnumerable<ApplicationRole> param, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

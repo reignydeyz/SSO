@@ -137,5 +137,30 @@ namespace SSO.Controllers
                 return NotFound();
             }
         }
+
+        /// <summary>
+        /// Creates copy of app
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
+        [HttpPost("{applicationId}")]
+        [AppIdValidator]
+        [Authorize(Policy = "RootPolicy")]
+        public async Task<IActionResult> Copy([FromRoute] ApplicationIdDto form, [FromBody] CopyAppCommand param)
+        {
+            try
+            {
+                param.ApplicationId = form.ApplicationId.Value;
+                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+
+                var res = await _mediator.Send(param);
+
+                return Ok(res);
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
+        }
     }
 }
