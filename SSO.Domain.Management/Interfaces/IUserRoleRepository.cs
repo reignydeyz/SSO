@@ -59,5 +59,9 @@ namespace SSO.Domain.Management.Interfaces
         Task RemoveUser(Guid userId, Guid applicationId, bool? saveChanges = true);
 
         Task RemoveUser(string username, Guid applicationId, bool? saveChanges = true);
+
+        Task Clear(Guid userId, bool? saveChanges = true);
+
+        Task Clear(string username, bool? saveChanges = true);
     }
 }

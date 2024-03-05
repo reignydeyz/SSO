@@ -119,6 +119,36 @@ namespace SSO.Controllers
         }
 
         /// <summary>
+        /// Copies user
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost("{userId}")]
+        [UserIdValidator(Relevant = false)]
+        [ProducesResponseType(typeof(UserDto), 200)]
+        public async Task<IActionResult> Copy([FromRoute] UserIdDto form, [FromBody] CopyUserCommand param)
+        {
+            try
+            {
+                param.UserId = form.UserId.ToString();
+                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+
+                var res = await _mediator.Send(param);
+
+                return Ok(res);
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Removes user
         /// </summary>
         /// <param name="form"></param>
