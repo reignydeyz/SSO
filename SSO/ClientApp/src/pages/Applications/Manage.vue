@@ -87,6 +87,10 @@
                                                             class="dropdown-item">Edit/View</router-link>
                                                     </li>
                                                     <li>
+                                                        <router-link :to="'/applications/copy/' + i.applicationId"
+                                                            class="dropdown-item">Copy</router-link>
+                                                    </li>
+                                                    <li>
                                                         <hr class="dropdown-divider" />
                                                     </li>                                                    
                                                     <li>

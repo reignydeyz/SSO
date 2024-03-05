@@ -49,14 +49,14 @@ export default {
 
 .app-btn-outline-primary,
 .app-btn-outline-primary:hover {
-    background: #fff;
+    background-color: transparent !important;
     color: var(--primary-color);
     border: 1px solid var(--primary-color);
 }
 
 .app-btn-outline-secondary,
 .app-btn-outline-secondary:hover {
-    background: #fff;
+    background-color: transparent !important;
     color: silver;
     border: 1px solid #e7e9ed;
 }
@@ -64,7 +64,7 @@ export default {
 .app-btn-outline-danger,
 .app-btn-outline-danger:hover
  {
-    background: #F8F8FF;
+    background-color: transparent !important;
     color: #ff534d;
     border: 1px solid #ff534d
 }

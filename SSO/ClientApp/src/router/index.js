@@ -67,6 +67,15 @@ const routes = [
           }
     },
     {
+        path: "/applications/copy/:id",
+        name: "Copy Application",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Applications/Copy.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate(to))
+          }
+    },
+    {
         path: "/users",
         name: "Users",
         meta: { mustBeRoot: true },

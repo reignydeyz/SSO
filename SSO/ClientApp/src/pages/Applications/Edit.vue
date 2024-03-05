@@ -18,17 +18,23 @@
                 <div class="col-auto">
                     <h1 class="app-page-title mb-0">Update</h1>
                 </div>
+                <div class="col-auto">
+                    <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
+                        <router-link :to="'../../applications/copy/' + this.$route.params.id" class="btn app-btn-outline-primary">Copy</router-link>
+                    </div>
+                </div>
             </div>
             <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home"
-                        type="button" role="tab" aria-controls="pills-home" aria-selected="true">
+                    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                        aria-selected="true">
                         General Info
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="pills-permissions-tab" data-bs-toggle="pill" data-bs-target="#pills-permissions"
-                        type="button" role="tab" aria-controls="pills-permissions">
+                    <button class="nav-link" id="pills-permissions-tab" data-bs-toggle="pill"
+                        data-bs-target="#pills-permissions" type="button" role="tab" aria-controls="pills-permissions">
                         Permissions
                     </button>
                 </li>
@@ -46,6 +52,8 @@
                 </li>
             </ul>
             <div class="tab-content" id="pills-tabContent">
+
+
                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                     <hr class="mb-4" />
                     <EditBasic :app="app" />
@@ -53,7 +61,8 @@
                     <hr class="mb-4" />
                     <EditCallbacks :app="app" />
                 </div>
-                <div class="tab-pane fade" id="pills-permissions" role="tabpanel" aria-labelledby="pills-permissions-tab">
+                <div class="tab-pane fade" id="pills-permissions" role="tabpanel"
+                    aria-labelledby="pills-permissions-tab">
                     <hr class="mb-4" />
                     <EditPermissions :app="app" :permissions="permissions" @load-permissions="loadPermissions" />
                 </div>

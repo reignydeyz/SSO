@@ -16,6 +16,8 @@ const searchApp = async (b, sort, sortDirection, page = 1, pageSize = 10) => {
 
 const addApp = async (param) => await axios.post("/api/application/", param);
 
+const copyApp = async (id, param) => await axios.post(`/api/application/${id}`, param);
+
 const updateApp = async (param) => await axios.put(`/api/application/${param.applicationId}`, param);
 
 const deleteApp = async (id) => await axios.delete(`/api/application/${id}`);
@@ -23,6 +25,7 @@ const deleteApp = async (id) => await axios.delete(`/api/application/${id}`);
 export {
     getAppById,
     addApp,
+    copyApp,
     searchApp,
     updateApp,
     deleteApp
