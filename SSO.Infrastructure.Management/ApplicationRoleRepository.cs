@@ -97,9 +97,12 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ApplicationPermission>> GetPermissions(Guid roleId)
+        public async Task<IEnumerable<ApplicationPermission>> GetPermissions(Guid roleId)
         {
-            throw new NotImplementedException();
+            var idStr = roleId.ToString();
+            var res = _context.RoleClaims.Where(x => x.RoleId == idStr).Select(x => x.Permission);
+
+            return res.ToList();
         }
 
         public Task<IEnumerable<ApplicationPermission>> GetPermissions(string roleName)

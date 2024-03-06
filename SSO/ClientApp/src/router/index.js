@@ -102,6 +102,15 @@ const routes = [
             next(canActivate(to))
           }
     },
+    {
+        path: "/users/copy/:id",
+        name: "Copy User",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Users/Copy.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate(to))
+          }
+    },
 ];
 
 const router = createRouter({

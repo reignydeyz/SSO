@@ -17,12 +17,14 @@ const searchUser = async (b, sort, sortDirection, page = 1, pageSize = 10) => {
 }
 
 const addUser = async (param) => await axios.post("/api/user/", param);
+const copyUser = async (id, param) => await axios.post(`/api/user/${id}`, param);
 const updateUser = async (id, param) => await axios.put(`/api/user/${id}`, param);
 const deleteUser = async (id) => await axios.delete(`/api/user/${id}`);
 
 export {
     getUserById,
     addUser,
+    copyUser,
     searchUser,
     updateUser,
     deleteUser

@@ -104,6 +104,10 @@
                                                             class="dropdown-item">Edit/View</router-link>
                                                     </li>
                                                     <li>
+                                                        <router-link :to="'/users/copy/' + i.userId"
+                                                            class="dropdown-item">Copy</router-link>
+                                                    </li>
+                                                    <li>
                                                         <hr class="dropdown-divider" />
                                                     </li>
                                                     <li v-if="isInRealm('Default')">

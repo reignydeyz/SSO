@@ -82,7 +82,7 @@ export default {
                     this.$router.push("../../applications");
                 },
                 (err) => {
-                    alert('Failed to add new record.');
+                    alert(err.response.data);
                     emitter.emit("showLoader", false);
                 }
             );

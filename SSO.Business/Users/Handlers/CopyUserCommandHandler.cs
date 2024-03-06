@@ -66,6 +66,18 @@ namespace SSO.Business.Users.Handlers
             // Apps
             var apps = await _userRepository.GetApplications(new Guid(srcUser.Id));
 
+            // Clear apps associated to the user being updated (existing user)
+            if (existingUser != null)
+            {
+                var exApps = await _userRepository.GetApplications(new Guid(existingUser.Id));
+
+                foreach (var app in exApps)
+                {
+                    var roles = await _userRoleRepository.Roles(new Guid(existingUser.Id), app.ApplicationId);
+                    await _userRoleRepository.RemoveRoles(new Guid(existingUser.Id), roles);
+                }
+            }
+
             // User roles
             var newRoles = new List<ApplicationRole>();
             foreach (var app in apps)
@@ -79,7 +91,16 @@ namespace SSO.Business.Users.Handlers
             }
             await _userRoleRepository.AddRoles(new Guid(newUser.Id), newRoles);
 
-            // TODO: User claims
+            // User claims
+            foreach (var role in newRoles)
+            {
+                var claims = await _applicationRoleRepository.GetPermissions(new Guid(role.Id));
+
+                if (existingUser != null)
+                    await _userClaimRepository.RemoveClaims(new Guid(existingUser.Id), claims);
+
+                await _userClaimRepository.AddClaims(new Guid(newUser.Id), claims);
+            }
 
             return _mapper.Map<UserDto>(newUser);
         }

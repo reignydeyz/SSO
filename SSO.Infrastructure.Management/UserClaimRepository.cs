@@ -68,7 +68,8 @@ namespace SSO.Infrastructure.Management
 
         public async Task RemoveClaims(Guid userId, IEnumerable<ApplicationPermission> claims, bool? saveChanges = true)
         {
-            var entries = _context.ApplicationUserClaims.Where(x => claims.Any(y => y.PermissionId == x.PermissionId));
+            var ids = claims.Select(x => x.PermissionId);
+            var entries = _context.ApplicationUserClaims.Where(x => ids.Contains(x.PermissionId));
 
             _context.ApplicationUserClaims.RemoveRange(entries);
 

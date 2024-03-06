@@ -44,7 +44,7 @@
                 <div class="col-12">
                     <div class="app-card app-card-settings shadow-sm p-4">
                         <div class="app-card-body">
-                            <h3 class="section-title"><i>{{ i.name }}</i></h3>
+                            <router-link :to="'../../users/edit/' + i.id"><h3 class="section-title"><i>{{ i.name }}</i></h3></router-link>
                             <div class="form-check form-check-inline mt-3" v-for="r in i.roles" :key="r.roleId">
                                 <label>
                                     <input class="form-check-input" type="checkbox" value="" v-model="r.selected" />
