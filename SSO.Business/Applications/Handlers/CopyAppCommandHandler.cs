@@ -15,6 +15,7 @@ namespace SSO.Business.Applications.Handlers
         readonly IApplicationRoleRepository _applicationRoleRepository;
         readonly IApplicationRoleClaimRepository _applicationRoleClaimRepository;
         readonly IUserRoleRepository _userRoleRepository;
+        readonly IUserClaimRepository _userClaimRepository;
         readonly IMapper _mapper;
 
         public CopyAppCommandHandler(IApplicationRepository applicationRepository,
@@ -23,6 +24,7 @@ namespace SSO.Business.Applications.Handlers
             IApplicationRoleRepository applicationRoleRepository,
             IApplicationRoleClaimRepository applicationRoleClaimRepository,
             IUserRoleRepository userRoleRepository,
+            IUserClaimRepository userClaimRepository,
             IMapper mapper)
         {
             _applicationRepository = applicationRepository;
@@ -31,6 +33,7 @@ namespace SSO.Business.Applications.Handlers
             _applicationRoleRepository = applicationRoleRepository;
             _applicationRoleClaimRepository = applicationRoleClaimRepository;
             _userRoleRepository = userRoleRepository;
+            _userClaimRepository = userClaimRepository;
             _mapper = mapper;
         }
 
@@ -107,9 +110,10 @@ namespace SSO.Business.Applications.Handlers
                 });
 
                 await _userRoleRepository.AddRoles(new Guid(user.Id), newUserRoles, false);
-            }
 
-            // TODO: User claims
+                var claims = roleClaims.Select(x => x.Permission);
+                await _userClaimRepository.AddClaims(new Guid(user.Id), claims, false);
+            }
 
             await _applicationRepository.Add(newApp);
 
