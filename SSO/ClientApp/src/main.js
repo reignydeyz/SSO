@@ -28,8 +28,10 @@ axios.interceptors.response.use(response => {
 }, error => {
     // Go back to login page when not authenticated
     if (error.response.status === 401) {
-        Cookies.remove("system");
-        window.location.href = "/";
+        if (window.location.pathname != '/login') {
+            Cookies.remove("system");
+            window.location.href = "/";
+        }
     }
     else if (error.response.status === 403) {
         alert("You don`t have permission to perform this action.");
