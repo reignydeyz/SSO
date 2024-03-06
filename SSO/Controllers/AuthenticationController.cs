@@ -51,6 +51,9 @@ namespace SSO.Controllers
             }
             catch (UnauthorizedAccessException)
             {
+                // Delete cookie
+                Response.Cookies.Append("token", Guid.NewGuid().ToString(), new CookieOptions { Expires = DateTime.Now.AddDays(-1), HttpOnly = false });
+
                 return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.ApplicationId}&callbackUrl={form.CallbackUrl}");
             }
         }

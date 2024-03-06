@@ -40,6 +40,10 @@ namespace SSO.Business.Authentication.Handlers
             if (user is null)
                 throw new UnauthorizedAccessException("User not found.");
 
+            var apps = await _userRepo.GetApplications(new Guid(userId));
+            if (!apps.Any(x => x.ApplicationId == request.ApplicationId))
+                throw new UnauthorizedAccessException("User doesn't have access to the app.");
+
             if (user.DateInactive != null)
                 throw new UnauthorizedAccessException("Account is inactive");
 
