@@ -70,7 +70,7 @@
                                         {{ errorMessage }}
                                     </div>
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-3" v-if="isInRealm('Default')">
                                     <label class="form-label">Password</label>
                                     <div class="input-group">
                                         <input v-model="user.password" id="password" type="password"
@@ -85,7 +85,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-3" v-if="isInRealm('Default')">
                                     <label class="form-label">Repeat password</label>
                                     <div class="input-group">
                                         <input type="password" id="re-password" class="form-control signin-password"
@@ -120,6 +120,7 @@
 </template>
 
 <script>
+import { getAccount } from '@/services/account.service';
 import { copyUser } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import * as navbar from "@/services/navbar.service";
@@ -176,6 +177,10 @@ export default {
                 emitter.emit("showLoader", false);
                 return false;
             });
+        },
+
+        isInRealm(realm) {
+            return getAccount().authmethod === realm;
         }
     }
 }
