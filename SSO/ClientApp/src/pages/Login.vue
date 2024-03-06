@@ -57,7 +57,7 @@ export default {
 		});
 	},
 	mounted() {
-		this.param.appId = this.urlParams.get('appId');
+		this.param.applicationId = this.urlParams.get('appId');
 
 		if (Cookies.get('token')) {
 			var token = Cookies.get('token');
@@ -73,11 +73,11 @@ export default {
 				emitter.emit('showLoader', false);
 
 				if (this.urlParams.get('callbackUrl')) {
-					window.location.replace = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
+					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
 				}
 			}, err => {
 				emitter.emit('showLoader', false);
-				alert('Access denied.');
+				alert(err.response.data);
 			});
 		},
 		toggleViewKey(param) {
