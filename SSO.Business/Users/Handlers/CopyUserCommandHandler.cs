@@ -5,25 +5,30 @@ using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.Settings.Enums;
 using SSO.Infrastructure.Settings.Services;
-using System.Data;
 
 namespace SSO.Business.Users.Handlers
 {
     public class CopyUserCommandHandler : IRequestHandler<CopyUserCommand, UserDto>
     {
         readonly Realm _realm;
+        readonly IApplicationRoleRepository _applicationRoleRepository;
         readonly IUserRepository _userRepository;
         readonly IUserRoleRepository _userRoleRepository;
+        readonly IUserClaimRepository _userClaimRepository;
         readonly IMapper _mapper;
 
         public CopyUserCommandHandler(RealmService realmService,
+            IApplicationRoleRepository applicationRoleRepository,
             IUserRepository userRepository, 
             IUserRoleRepository userRoleRepository,
+            IUserClaimRepository userClaimRepository,
             IMapper mapper)
         {
             _realm = realmService.Realm;
+            _applicationRoleRepository = applicationRoleRepository;
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
+            _userClaimRepository = userClaimRepository;
             _mapper = mapper;
         }
 
@@ -62,13 +67,14 @@ namespace SSO.Business.Users.Handlers
             var apps = await _userRepository.GetApplications(new Guid(srcUser.Id));
 
             // User roles
-            if (existingUser != null)
-                await _userRoleRepository.Clear(new Guid(existingUser.Id));
-
             var newRoles = new List<ApplicationRole>();
             foreach (var app in apps)
             {
                 var roles = await _userRoleRepository.Roles(new Guid(srcUser.Id), app.ApplicationId);
+
+                if (existingUser != null)
+                    await _userRoleRepository.RemoveRoles(new Guid(existingUser.Id), roles);
+
                 newRoles.AddRange(roles);
             }
             await _userRoleRepository.AddRoles(new Guid(newUser.Id), newRoles);

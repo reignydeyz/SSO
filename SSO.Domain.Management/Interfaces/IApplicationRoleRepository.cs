@@ -26,5 +26,19 @@ namespace SSO.Domain.Management.Interfaces
         /// <param name="roleId"></param>
         /// <returns></returns>
         Task<IEnumerable<ApplicationUser>> GetUsers(Guid roleId);
+
+        /// <summary>
+        /// Gets app`s permissions
+        /// </summary>
+        /// <param name="roleId"></param>
+        /// <returns></returns>
+        Task<IEnumerable<ApplicationPermission>> GetPermissions(Guid roleId);
+
+        /// <summary>
+        /// Gets app`s permissions
+        /// </summary>
+        /// <param name="roleName"></param>
+        /// <returns></returns>
+        Task<IEnumerable<ApplicationPermission>> GetPermissions(string roleName);
     }
 }

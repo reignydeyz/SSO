@@ -30,21 +30,6 @@ namespace SSO.Infrastructure.Management
             await AddRoles(user, roles, saveChanges);
         }
 
-        public async Task Clear(Guid userId, bool? saveChanges = true)
-        {
-            var toBeDeleted = _context.UserRoles.Where(x => x.UserId == userId.ToString());
-
-            _context.UserRoles.RemoveRange(toBeDeleted);
-
-            if (saveChanges!.Value)
-                await _context.SaveChangesAsync();
-        }
-
-        public Task Clear(string username, bool? saveChanges = true)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task RemoveRoles(string username, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
         {
             var user = await _userManager.FindByNameAsync(username) ?? throw new ArgumentNullException();

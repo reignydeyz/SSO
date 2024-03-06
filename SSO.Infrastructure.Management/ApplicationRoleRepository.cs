@@ -57,11 +57,6 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationRoles.FirstOrDefaultAsync(predicate);
         }
 
-        public Task<IEnumerable<Claim>> GetClaims(ApplicationRole role)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<IEnumerable<Claim>> GetClaims(string roleName)
         {
             throw new NotImplementedException();
@@ -98,6 +93,16 @@ namespace SSO.Infrastructure.Management
         }
 
         public Task RemoveRange(IEnumerable<ApplicationRole> param, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<ApplicationPermission>> GetPermissions(Guid roleId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<ApplicationPermission>> GetPermissions(string roleName)
         {
             throw new NotImplementedException();
         }
