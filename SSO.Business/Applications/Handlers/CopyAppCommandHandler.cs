@@ -111,7 +111,8 @@ namespace SSO.Business.Applications.Handlers
 
                 await _userRoleRepository.AddRoles(new Guid(user.Id), newUserRoles, false);
 
-                var claims = roleClaims.Select(x => x.Permission);
+                // User claims
+                var claims = roleClaims.Where(x => newUserRoles.Select(y => y.Id).Contains(x.RoleId)).Select(x => x.Permission);
                 await _userClaimRepository.AddClaims(new Guid(user.Id), claims, false);
             }
 
