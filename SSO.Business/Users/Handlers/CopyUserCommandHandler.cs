@@ -52,10 +52,13 @@ namespace SSO.Business.Users.Handlers
             newUser.ModifiedBy = request.Author!;
             newUser.DateModified = DateTime.Now;
 
-            if (existingUser == null)
-                await _userRepository.Add(newUser);
-            else
-                await _userRepository.Update(newUser);
+            if (_realm == Realm.Default)
+            {
+                if (existingUser == null)
+                    await _userRepository.Add(newUser);
+                else
+                    await _userRepository.Update(newUser);
+            }
 
             // Apps
             var apps = await _userRepository.GetApplications(new Guid(srcUser.Id));
