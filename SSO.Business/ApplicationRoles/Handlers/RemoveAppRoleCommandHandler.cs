@@ -5,7 +5,7 @@ using SSO.Domain.Management.Interfaces;
 namespace SSO.Business.ApplicationRoles.Handlers
 {
     public class RemoveAppRoleCommandHandler : IRequestHandler<RemoveAppRoleCommand, Unit>
-    {
+    {  
         readonly IApplicationRoleRepository _applicationRoleRepository;
 
         public RemoveAppRoleCommandHandler(IApplicationRoleRepository applicationRoleRepository)

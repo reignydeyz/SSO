@@ -11,24 +11,18 @@ namespace SSO.Business.Users.Handlers
     public class CopyUserCommandHandler : IRequestHandler<CopyUserCommand, UserDto>
     {
         readonly Realm _realm;
-        readonly IApplicationRoleRepository _applicationRoleRepository;
         readonly IUserRepository _userRepository;
         readonly IUserRoleRepository _userRoleRepository;
-        readonly IUserClaimRepository _userClaimRepository;
         readonly IMapper _mapper;
 
         public CopyUserCommandHandler(RealmService realmService,
-            IApplicationRoleRepository applicationRoleRepository,
             IUserRepository userRepository, 
             IUserRoleRepository userRoleRepository,
-            IUserClaimRepository userClaimRepository,
             IMapper mapper)
         {
             _realm = realmService.Realm;
-            _applicationRoleRepository = applicationRoleRepository;
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
-            _userClaimRepository = userClaimRepository;
             _mapper = mapper;
         }
 
@@ -90,17 +84,6 @@ namespace SSO.Business.Users.Handlers
                 newRoles.AddRange(roles);
             }
             await _userRoleRepository.AddRoles(new Guid(newUser.Id), newRoles);
-
-            // User claims
-            foreach (var role in newRoles)
-            {
-                var claims = await _applicationRoleRepository.GetPermissions(new Guid(role.Id));
-
-                if (existingUser != null)
-                    await _userClaimRepository.RemoveClaims(new Guid(existingUser.Id), claims);
-
-                await _userClaimRepository.AddClaims(new Guid(newUser.Id), claims);
-            }
 
             return _mapper.Map<UserDto>(newUser);
         }

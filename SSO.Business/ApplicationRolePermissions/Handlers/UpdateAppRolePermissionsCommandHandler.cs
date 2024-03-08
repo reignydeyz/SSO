@@ -10,17 +10,14 @@ namespace SSO.Business.ApplicationRolePermissions.Handlers
         readonly IApplicationPermissionRepository _applicationPermissionRepository;
         readonly IApplicationRoleRepository _applicationRoleRepository;
         readonly IApplicationRoleClaimRepository _applicationRoleClaimRepository;
-        readonly IUserClaimRepository _userClaimRepository;
 
         public UpdateAppRolePermissionsCommandHandler(IApplicationPermissionRepository applicationPermissionRepository, 
             IApplicationRoleRepository applicationRoleRepository,
-            IApplicationRoleClaimRepository applicationRoleClaimRepository,
-            IUserClaimRepository userClaimRepository)
+            IApplicationRoleClaimRepository applicationRoleClaimRepository)
         {
             _applicationPermissionRepository = applicationPermissionRepository;
             _applicationRoleRepository = applicationRoleRepository;
             _applicationRoleClaimRepository = applicationRoleClaimRepository;
-            _userClaimRepository = userClaimRepository;
         }
 
         public async Task<Unit> Handle(UpdateAppRolePermissionsCommand request, CancellationToken cancellationToken)
@@ -35,8 +32,6 @@ namespace SSO.Business.ApplicationRolePermissions.Handlers
 
             var users = await _applicationRoleRepository.GetUsers(request.RoleId);
 
-            await _userClaimRepository.RemoveClaims(users, permissions.ToList(), false);
-
             permissions = permissions.Where(x => request.PermissionIds.Contains(x.PermissionId));
             var toBeAdded = permissions
                 .Select(x => new ApplicationRoleClaim {
@@ -45,9 +40,7 @@ namespace SSO.Business.ApplicationRolePermissions.Handlers
                     ClaimType = "Permission",
                     ClaimValue = x.Name
                 });
-            await _applicationRoleClaimRepository.AddRange(toBeAdded, false);
-
-            await _userClaimRepository.AddClaims(users, permissions.ToList());
+            await _applicationRoleClaimRepository.AddRange(toBeAdded);
 
             return new Unit();
         }

@@ -14,22 +14,22 @@ namespace SSO.Business.Authentication.Handlers
         readonly Realm _realm;
         readonly IAuthenticationService _authenticationService;
         readonly ITokenService _tokenService;
+        readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
-        readonly IUserClaimRepository _userClaimRepository;
         readonly Application _root;
 
         public LoginToSystemQueryHandler(RealmService realmService,
             IAuthenticationService authenticationService, ITokenService tokenService,
-            IApplicationRepository applicationRepository,
-            IUserRepository userRepo, IUserRoleRepository userRoleRepo, IUserClaimRepository userClaimRepository)
+            IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo,
+            IUserRepository userRepo, IUserRoleRepository userRoleRepo)
         {
             _realm = realmService.Realm;
             _authenticationService = authenticationService;
             _tokenService = tokenService;
+            _roleRepo = roleRepo;
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
-            _userClaimRepository = userClaimRepository;
             _root = applicationRepository.FindOne(x => x.Name == "root").Result;
         }
 
@@ -56,10 +56,12 @@ namespace SSO.Business.Authentication.Handlers
             {
                 claims.Add(new Claim(ClaimTypes.System, _root.ApplicationId.ToString()));
 
-                foreach (var role in roles)
+                foreach (var role in roles.ToList())
+                {
                     claims.Add(new Claim(ClaimTypes.Role, role.Name!));
 
-                claims.AddRange((await _userClaimRepository.GetClaims(new Guid(user.Id), _root.ApplicationId)).ToList());
+                    claims.AddRange(await _roleRepo.GetClaims(new Guid(role.Id)));
+                }
             }
 
             var expires = DateTime.Now.AddMinutes(_root.TokenExpiration);

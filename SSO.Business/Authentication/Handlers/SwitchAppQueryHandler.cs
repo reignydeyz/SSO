@@ -12,19 +12,19 @@ namespace SSO.Business.Authentication.Handlers
     public class SwitchAppQueryHandler : IRequestHandler<SwitchAppQuery, TokenDto>
     {
         readonly ITokenService _tokenService;
+        readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
-        readonly IUserClaimRepository _userClaimRepo;
         readonly UserManager<ApplicationUser> _userManager;
 
         public SwitchAppQueryHandler(ITokenService tokenService,
-            IUserRepository userRepo, IUserRoleRepository userRoleRepo, IUserClaimRepository userClaimRepo,
+            IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo,
             UserManager<ApplicationUser> userManager)
         {
             _tokenService = tokenService;
+            _roleRepo = roleRepo;
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
-            _userClaimRepo = userClaimRepo;
             _userManager = userManager;
         }
 
@@ -63,10 +63,12 @@ namespace SSO.Business.Authentication.Handlers
             if (!roles.Any())
                 throw new UnauthorizedAccessException();
 
-            foreach (var role in roles)
+            foreach (var role in roles.ToList())
+            {
                 claims.Add(new Claim(ClaimTypes.Role, role.Name!));
 
-            claims.AddRange((await _userClaimRepo.GetClaims(new Guid(user.Id), request.ApplicationId.Value)).ToList());
+                claims.AddRange(await _roleRepo.GetClaims(new Guid(role.Id)));
+            }
 
             var expires = jsonToken.ValidTo;
             var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires);

@@ -1,12 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SSO.Business.ApplicationRoles;
 using SSO.Business.ApplicationUserRoles;
 using SSO.Business.ApplicationUserRoles.Commands;
+using SSO.Business.ApplicationUserRoles.Queries;
 using SSO.Filters;
 using System.ComponentModel.DataAnnotations;
-using SSO.Business.ApplicationRoles;
-using SSO.Business.ApplicationUserRoles.Queries;
 
 namespace SSO.Controllers
 {

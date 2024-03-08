@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SSO.Business.Users;
-using MediatR;
-using Microsoft.AspNetCore.OData.Query;
-using SSO.Business.ApplicationUsers.Queries;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using SSO.Filters;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using SSO.Business.ApplicationUserRoles;
 using SSO.Business.ApplicationUsers.Commands;
+using SSO.Business.ApplicationUsers.Queries;
+using SSO.Business.Users;
+using SSO.Filters;
 
 namespace SSO.Controllers
 {
