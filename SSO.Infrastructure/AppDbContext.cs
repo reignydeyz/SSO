@@ -22,6 +22,7 @@ namespace SSO.Infrastructure
         public DbSet<ApplicationUserClaim> ApplicationUserClaims { get; set; }
         public DbSet<ApplicationRoleClaim> ApplicationRoleClaims { get; set; }
         public DbSet<ApplicationCallback> ApplicationCallbacks { get; set; }
+        public DbSet<Group> Groups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -31,6 +32,7 @@ namespace SSO.Infrastructure
             builder.ApplyConfiguration(new ApplicationUserConfig());
             builder.ApplyConfiguration(new ApplicationRoleClaimConfig());
             builder.ApplyConfiguration(new ApplicationCallbackConfig());
+            builder.ApplyConfiguration(new GroupConfig());
 
             base.OnModelCreating(builder);
         }
