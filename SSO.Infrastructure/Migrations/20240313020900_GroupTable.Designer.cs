@@ -12,7 +12,7 @@ using SSO.Infrastructure;
 namespace SSO.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240312094931_GroupTable")]
+    [Migration("20240313020900_GroupTable")]
     partial class GroupTable
     {
         /// <inheritdoc />
@@ -415,14 +415,14 @@ namespace SSO.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTimeOffset>("DateCreated")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTimeOffset?>("DateInactive")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime?>("DateInactive")
+                        .HasColumnType("datetime2");
 
-                    b.Property<DateTimeOffset>("DateModified")
-                        .HasColumnType("datetimeoffset");
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)

@@ -17,5 +17,7 @@ namespace SSO.Domain.Models
         public DateTime DateModified { get; set; } = DateTime.Now;
         public string ModifiedBy { get; set; } = "admin";
         public DateTime? DateInactive { get; set; }
+
+        public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
     }
 }
