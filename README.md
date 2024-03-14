@@ -48,7 +48,7 @@ These instructions will get you a copy of the project up and running on your loc
   ```json
   "LDAPSettings": 
   {
-    "Server": "your-ldap-server",
+    "Server": "example.com", // provide only the domain
     "Port": 389, // or the appropriate port for your LDAP server
     "Username": "your-ldap-username",
     "Password": "your-ldap-password",
@@ -90,6 +90,32 @@ However, it can be challenging to debug both front-end and back-end, so it is re
   ```bash
   npm run serve-dev1
   ```
+
+## Deployment
+
+This tutorial shows how to host SSO on an IIS server.
+
+### Prerequisites
+
+The following must be installed on the server for SSO to work...
+- [ASP.NET Core 8.0 Runtime (v8.0.3) - Windows Hosting Bundle Installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.3-windows-hosting-bundle-installer)
+- [Node.js](https://nodejs.org)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-2022)
+
+### Publishing
+
+Create the artifact to be deployed...
+- From Visual Studio, right-click `SSO` project then click **Publish**
+- Choose **Folder** as the Target. It should now create a Publish Profile.
+- Click **Publish**. VS should compile and create the necessary binaries/libraries.
+- Click **Target Location** to open the root folder of the generated binaries/libraries.
+- Open `appsettings.json` and apply the necessary settings.
+  - (Database will be automatically generated based on the `connectionString`)
+
+## IIS 
+
+Please visit [this link](https://learn.microsoft.com/en-us/aspnet/core/tutorials/publish-to-iis?view=aspnetcore-8.0&tabs=visual-studio#install-the-net-core-hosting-bundle)
+
 
 ## Documentations
 
