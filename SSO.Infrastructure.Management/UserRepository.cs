@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SSO.Domain.Models;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
 {
@@ -68,6 +70,30 @@ namespace SSO.Infrastructure.Management
             rec.ModifiedBy = author == null ? $"{applicationUser.FirstName} {applicationUser.LastName}" : $"{author.FirstName} {author.LastName}";
 
             _context.SaveChanges();
+        }
+
+        public override async Task AddRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null)
+        {
+            _context.AddRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
+        public override async Task RemoveRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null)
+        {
+            _context.RemoveRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
+        public override async Task RemoveRange(Expression<Func<ApplicationUser, bool>> predicate, bool? saveChanges = true, object? args = null)
+        {
+            _context.RemoveRange(_context.ApplicationUsers.Where(predicate));
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
     }
 }

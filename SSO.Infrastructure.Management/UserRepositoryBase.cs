@@ -19,6 +19,8 @@ namespace SSO.Infrastructure.Management
 
         public abstract Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null);
 
+        public abstract Task AddRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null);
+
         public async Task<bool> Any(Expression<Func<ApplicationUser, bool>> predicate)
         {
             return await _context.ApplicationUsers.AnyAsync(predicate);
@@ -60,6 +62,10 @@ namespace SSO.Infrastructure.Management
 
             return user;
         }
+
+        public abstract Task RemoveRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null);
+
+        public abstract Task RemoveRange(Expression<Func<ApplicationUser, bool>> predicate, bool? saveChanges = true, object? args = null);
 
         public abstract Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null);
     }

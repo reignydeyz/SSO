@@ -3,7 +3,7 @@ using SSO.Domain.Models;
 
 namespace SSO.Domain.Management.Interfaces
 {
-    public interface IUserRepository : IRepository<ApplicationUser>
+    public interface IUserRepository : IRepository<ApplicationUser>, IRangeRepository<ApplicationUser>
     {
         Task<ApplicationUser> GetByUsername(string username);
 

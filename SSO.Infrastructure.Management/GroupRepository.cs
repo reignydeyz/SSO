@@ -58,14 +58,20 @@ namespace SSO.Infrastructure.Management
             return await _context.Groups.FirstOrDefaultAsync(predicate);
         }
 
-        public Task RemoveRange(IEnumerable<Group> param, bool? saveChanges = true, object? args = null)
+        public async Task RemoveRange(IEnumerable<Group> param, bool? saveChanges = true, object? args = null)
         {
-            throw new NotImplementedException();
+            _context.RemoveRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
-        public Task RemoveRange(Expression<Func<Group, bool>> predicate, bool? saveChanges = true, object? args = null)
+        public async Task RemoveRange(Expression<Func<Group, bool>> predicate, bool? saveChanges = true, object? args = null)
         {
-            throw new NotImplementedException();
+            _context.RemoveRange(_context.Groups.Where(predicate));
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public async Task<Group> Update(Group param, bool? saveChanges = true, object? args = null)
