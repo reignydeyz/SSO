@@ -109,5 +109,10 @@ namespace SSO.Infrastructure.Management
         {
             throw new NotImplementedException();
         }
+
+        public Task RemoveRange(Expression<Func<ApplicationRole, bool>> predicate, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

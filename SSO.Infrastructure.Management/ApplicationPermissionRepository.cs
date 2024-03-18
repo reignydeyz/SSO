@@ -65,6 +65,11 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
+        public Task RemoveRange(Expression<Func<ApplicationPermission, bool>> predicate, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ApplicationPermission> Update(ApplicationPermission param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();

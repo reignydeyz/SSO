@@ -58,6 +58,11 @@ namespace SSO.Infrastructure.Management
                 await _context.SaveChangesAsync();
         }
 
+        public Task RemoveRange(Expression<Func<ApplicationRoleClaim, bool>> predicate, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ApplicationRoleClaim> Update(ApplicationRoleClaim param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();

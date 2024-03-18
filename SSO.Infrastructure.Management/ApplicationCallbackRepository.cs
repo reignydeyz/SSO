@@ -60,6 +60,11 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
+        public Task RemoveRange(Expression<Func<ApplicationCallback, bool>> predicate, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ApplicationCallback> Update(ApplicationCallback param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();

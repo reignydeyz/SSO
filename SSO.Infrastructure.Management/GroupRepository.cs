@@ -63,6 +63,11 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
+        public Task RemoveRange(Expression<Func<Group, bool>> predicate, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Group> Update(Group param, bool? saveChanges = true, object? args = null)
         {
             var rec = await _context.Groups.FirstAsync(x => x.GroupId == param.GroupId);
