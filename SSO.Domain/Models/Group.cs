@@ -10,5 +10,7 @@
         public DateTime DateModified { get; set; } = DateTime.Now;
         public string ModifiedBy { get; set; } = "admin";
         public DateTime? DateInactive { get; set; }
+
+        public virtual ICollection<GroupUser> Users { get; set; } = new List<GroupUser>();
     }
 }

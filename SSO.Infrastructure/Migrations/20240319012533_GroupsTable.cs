@@ -6,16 +6,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SSO.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class GroupUserTable : Migration
+    public partial class GroupsTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "ApplicationUserId",
-                table: "Groups",
-                type: "nvarchar(450)",
-                nullable: true);
+            migrationBuilder.CreateTable(
+                name: "Groups",
+                columns: table => new
+                {
+                    GroupId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedBy = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    DateInactive = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Groups", x => x.GroupId);
+                });
 
             migrationBuilder.CreateTable(
                 name: "GroupUsers",
@@ -42,40 +54,25 @@ namespace SSO.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Groups_ApplicationUserId",
+                name: "IX_Groups_Name",
                 table: "Groups",
-                column: "ApplicationUserId");
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroupUsers_UserId",
                 table: "GroupUsers",
                 column: "UserId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Groups_AspNetUsers_ApplicationUserId",
-                table: "Groups",
-                column: "ApplicationUserId",
-                principalTable: "AspNetUsers",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Groups_AspNetUsers_ApplicationUserId",
-                table: "Groups");
-
             migrationBuilder.DropTable(
                 name: "GroupUsers");
 
-            migrationBuilder.DropIndex(
-                name: "IX_Groups_ApplicationUserId",
-                table: "Groups");
-
-            migrationBuilder.DropColumn(
-                name: "ApplicationUserId",
-                table: "Groups");
+            migrationBuilder.DropTable(
+                name: "Groups");
         }
     }
 }

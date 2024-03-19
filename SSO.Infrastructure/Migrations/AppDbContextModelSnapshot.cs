@@ -407,9 +407,6 @@ namespace SSO.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -439,8 +436,6 @@ namespace SSO.Infrastructure.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("GroupId");
-
-                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -563,23 +558,16 @@ namespace SSO.Infrastructure.Migrations
                     b.Navigation("Permission");
                 });
 
-            modelBuilder.Entity("SSO.Domain.Models.Group", b =>
-                {
-                    b.HasOne("SSO.Domain.Models.ApplicationUser", null)
-                        .WithMany("Groups")
-                        .HasForeignKey("ApplicationUserId");
-                });
-
             modelBuilder.Entity("SSO.Domain.Models.GroupUser", b =>
                 {
                     b.HasOne("SSO.Domain.Models.Group", "Group")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SSO.Domain.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Groups")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -599,6 +587,11 @@ namespace SSO.Infrastructure.Migrations
             modelBuilder.Entity("SSO.Domain.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Groups");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.Group", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

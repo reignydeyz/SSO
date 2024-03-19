@@ -12,8 +12,8 @@ using SSO.Infrastructure;
 namespace SSO.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240313020900_GroupTable")]
-    partial class GroupTable
+    [Migration("20240319012533_GroupsTable")]
+    partial class GroupsTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -446,6 +446,21 @@ namespace SSO.Infrastructure.Migrations
                     b.ToTable("Groups");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.GroupUser", b =>
+                {
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("GroupId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("GroupUsers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("SSO.Domain.Models.ApplicationUser", null)
@@ -546,11 +561,40 @@ namespace SSO.Infrastructure.Migrations
                     b.Navigation("Permission");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.GroupUser", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Group", "Group")
+                        .WithMany("Users")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", "User")
+                        .WithMany("Groups")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.Application", b =>
                 {
                     b.Navigation("Callbacks");
 
                     b.Navigation("Permissions");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Groups");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.Group", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

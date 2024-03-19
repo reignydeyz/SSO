@@ -18,6 +18,6 @@ namespace SSO.Domain.Models
         public string ModifiedBy { get; set; } = "admin";
         public DateTime? DateInactive { get; set; }
 
-        public virtual ICollection<Group> Groups { get; set; } = new List<Group>();
+        public virtual ICollection<GroupUser> Groups { get; set; } = new List<GroupUser>();
     }
 }
