@@ -1,5 +1,7 @@
-﻿using SSO.Domain.Management.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
@@ -13,12 +15,40 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
+        public Task<GroupUser> Add(GroupUser param, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task AddRange(IEnumerable<GroupUser> param, bool? saveChanges = true, object? args = null)
         {
             _context.AddRange(param);
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> Any(Expression<Func<GroupUser, bool>> predicate)
+        {
+            return await _context.GroupUsers.AnyAsync(predicate);
+        }
+
+        public Task Delete(GroupUser param, bool? saveChanges = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IQueryable<GroupUser>> Find(Expression<Func<GroupUser, bool>>? predicate)
+        {
+            if (predicate is not null)
+                return await Task.Run(() => _context.GroupUsers.Where(predicate).AsQueryable().AsNoTracking());
+            else
+                return _context.GroupUsers.AsQueryable().AsNoTracking();
+        }
+
+        public Task<GroupUser> FindOne(Expression<Func<GroupUser, bool>> predicate)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task RemoveRange(IEnumerable<GroupUser> param, bool? saveChanges = true, object? args = null)
@@ -35,6 +65,11 @@ namespace SSO.Infrastructure.Management
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();
+        }
+
+        public Task<GroupUser> Update(GroupUser param, bool? saveChanges = true, object? args = null)
+        {
+            throw new NotImplementedException();
         }
     }
 }
