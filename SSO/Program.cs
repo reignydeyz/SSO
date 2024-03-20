@@ -9,6 +9,7 @@ using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using SSO.Business.Applications;
 using SSO.Business.Authentication.Handlers;
+using SSO.Business.Groups;
 using SSO.Business.Mappings;
 using SSO.Business.Users;
 using SSO.Domain.Authentication.Interfaces;
@@ -39,6 +40,9 @@ modelBuilder.EntitySet<UserDto>("User");
 
 modelBuilder.EntityType<UserDto>().HasKey(x => x.UserId);
 modelBuilder.EntitySet<UserDto>("ApplicationUser");
+
+modelBuilder.EntityType<GroupDto>().HasKey(x => x.GroupId);
+modelBuilder.EntitySet<GroupDto>("Group");
 
 modelBuilder.EnableLowerCamelCase();
 
