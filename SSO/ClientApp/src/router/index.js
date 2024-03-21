@@ -111,6 +111,33 @@ const routes = [
             next(canActivate(to))
           }
     },
+    {
+        path: "/groups",
+        name: "Groups",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Groups/Manage.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate(to))
+          }
+    },
+    {
+        path: "/groups/new",
+        name: "New Group",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Groups/New.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate(to))
+          }
+    },
+    {
+        path: "/groups/edit/:id",
+        name: "Update Group",
+        meta: { mustBeRoot: true },
+        component: () => import('@/pages/Groups/Edit.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate(to))
+          }
+    },
 ];
 
 const router = createRouter({
