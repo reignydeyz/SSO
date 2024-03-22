@@ -73,7 +73,7 @@
                         <!--//app-card-header-->
                         <div class="app-card-body px-4">
                             <div class="intro">
-                                Manage users; assign apps.
+                                Manage users; assign apps and groups.
                             </div>
                         </div>
                         <!--//app-card-body-->
@@ -116,7 +116,7 @@
                         <!--//app-card-header-->
                         <div class="app-card-body px-4">
                             <div class="intro">
-                                Manage groups; assign apps.
+                                Manage groups; assign users.
                             </div>
                         </div>
                         <!--//app-card-body-->
