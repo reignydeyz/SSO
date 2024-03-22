@@ -1,0 +1,54 @@
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using SSO.Business.GroupUsers.Queries;
+using SSO.Business.Users;
+
+namespace SSO.Controllers
+{
+    [ApiExplorerSettings(GroupName = "System")]
+    [Route("api/group/{groupId}/user")]
+    [ApiController]
+    [Authorize(Policy = "RootPolicy")]
+    public class GroupUserController : ControllerBase
+    {
+        readonly IMediator _mediator;
+
+        public GroupUserController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        /// <summary>
+        /// Gets group`s members
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [EnableQuery(MaxTop = 1000)]
+        [ProducesResponseType(typeof(List<UserDto>), 200)]
+        public async Task<IActionResult> Get([FromRoute] Guid groupId, [FromQuery] Guid? group)
+        {
+            try
+            {
+                if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
+                {
+                    if (group is null)
+                        throw new ArgumentNullException();
+
+                    var res = await _mediator.Send(new GetUsersByGroupIdQuery { GroupId = group!.Value });
+
+                    return Ok(res);
+                }
+
+                var res1 = _mediator.Send(new GetUsersByGroupIdQuery { GroupId = groupId }).Result.Take(1000);
+
+                return Ok(res1);
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+        }
+    }
+}

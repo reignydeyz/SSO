@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
@@ -15,9 +14,14 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public Task<GroupUser> Add(GroupUser param, bool? saveChanges = true, object? args = null)
+        public async Task<GroupUser> Add(GroupUser param, bool? saveChanges = true, object? args = null)
         {
-            throw new NotImplementedException();
+            _context.Add(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+
+            return param;
         }
 
         public async Task AddRange(IEnumerable<GroupUser> param, bool? saveChanges = true, object? args = null)
@@ -33,9 +37,12 @@ namespace SSO.Infrastructure.Management
             return await _context.GroupUsers.AnyAsync(predicate);
         }
 
-        public Task Delete(GroupUser param, bool? saveChanges = true)
+        public async Task Delete(GroupUser param, bool? saveChanges = true)
         {
-            throw new NotImplementedException();
+            _context.Remove(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public async Task<IQueryable<GroupUser>> Find(Expression<Func<GroupUser, bool>>? predicate)
