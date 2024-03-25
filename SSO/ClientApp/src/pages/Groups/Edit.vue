@@ -42,7 +42,7 @@
                 
                 <div class="tab-pane fade" id="pills-users" role="tabpanel" aria-labelledby="pills-users-tab">
                     <hr class="mb-4" />
-                    // Users
+                    <EditUsers :group="group" />
                 </div>
             </div>
         </div>
@@ -54,10 +54,11 @@ import * as navbar from "@/services/navbar.service";
 import { getGroupById } from "@/services/group.service";
 import { emitter } from "@/services/emitter.service";
 import EditBasic from "@/pages/Groups/components/EditBasic.vue";
-
+import EditUsers from "@/pages/Groups/components/EditUsers.vue";
 export default {
     components: {
-        EditBasic
+        EditBasic,
+        EditUsers
     },
     data: () => ({
         group: new Object(),
