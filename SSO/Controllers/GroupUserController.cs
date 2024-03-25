@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.EntityFrameworkCore;
+using SSO.Business.GroupUsers.Commands;
 using SSO.Business.GroupUsers.Queries;
 using SSO.Business.Users;
 
@@ -48,6 +50,34 @@ namespace SSO.Controllers
             catch (ArgumentNullException)
             {
                 return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Adds user to group
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ProducesResponseType(typeof(OkResult), 200)]
+        public async Task<IActionResult> Create([FromRoute] Guid groupId, [FromBody] Guid userId)
+        {
+            try
+            {
+                var param = new CreateGroupUserCommand
+                {
+                    GroupId = groupId,
+                    UserId = userId
+                };
+
+                var res = await _mediator.Send(param);
+
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict();
             }
         }
     }

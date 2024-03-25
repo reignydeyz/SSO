@@ -20,6 +20,38 @@
             <!--//app-card-->
         </div>
     </div>
+
+    <hr class="mb-4" />
+    <h5 class="section-title mb-3">Assigned users</h5>
+    <form @submit.prevent="search(1)">
+        <div class="row g-2 align-items-start mb-4">
+            <div class="col-8 col-md-6">
+                <input v-model="query" type="text" class="form-control" placeholder="Name or email" autocomplete="off">
+                <small class="ms-1">Found: {{ pagination.totalRecords ?? 0 }}</small>
+            </div>
+            <div class="col-auto d-flex align-top">
+                <button class="btn app-btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    <div v-for="i in users" :key="i.id">
+        <div class="row g-4 settings-section mb-4">
+            <div class="col-md-4">
+                <div class="app-card app-card-settings shadow-sm p-4">
+                    <div class="app-card-body">
+                        <router-link :to="'../../users/edit/' + i.id">
+                            <h3 class="section-title"><i>{{ i.name }}</i></h3>
+                        </router-link>
+                        <div class="mt-3">
+                            <button type="button" class="btn app-btn-outline-danger bg-white"
+                                @click="remove(i.id)">Remove</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -84,8 +116,15 @@ export default {
                 this.sort,
                 this.sortDirection,
                 this.pagination.currentPage,
-                this.pagination.pageSize).then(r => {
-                    this.users = r.data.value;
+                this.pagination.pageSize).then(async r => {
+                    const userPromises = r.data.value.map(async obj => {
+                        return {
+                            name: `${obj.firstName} ${obj.lastName} (${obj.email})`,
+                            id: obj.userId
+                        }
+                    });
+
+                    this.users = await Promise.all(userPromises);
 
                     this.pagination = pagination(
                         Object.values(r.data)[1], // Gets the @odata.count which is the 2nd property
