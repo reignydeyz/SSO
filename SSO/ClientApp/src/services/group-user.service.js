@@ -14,9 +14,11 @@ const searchGroupUser = async (groupId, b, sort, sortDirection, page = 1, pageSi
     return axios.get(url);
 }
 
+const addGroupUser = async (groupId, userId) => await axios.post(`/api/group/${groupId}/user`, userId, { headers: { 'Content-Type': 'application/json' } });
 const removeGroupUser = async (groupId, userId) => await axios.delete(`/api/group/${groupId}/user/${userId}`);
 
 export {
     searchGroupUser,
+    addGroupUser,
     removeGroupUser
 }

@@ -53,9 +53,9 @@ namespace SSO.Infrastructure.Management
                 return _context.GroupUsers.AsQueryable().AsNoTracking();
         }
 
-        public Task<GroupUser> FindOne(Expression<Func<GroupUser, bool>> predicate)
+        public async Task<GroupUser> FindOne(Expression<Func<GroupUser, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.GroupUsers.FirstOrDefaultAsync(predicate);
         }
 
         public async Task RemoveRange(IEnumerable<GroupUser> param, bool? saveChanges = true, object? args = null)

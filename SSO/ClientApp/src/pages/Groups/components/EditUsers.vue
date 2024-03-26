@@ -35,18 +35,16 @@
         </div>
     </form>
 
-    <div v-for="i in users" :key="i.id">
-        <div class="row g-4 settings-section mb-4">
-            <div class="col-md-4">
-                <div class="app-card app-card-settings shadow-sm p-4">
-                    <div class="app-card-body">
-                        <router-link :to="'../../users/edit/' + i.id">
-                            <h3 class="section-title"><i>{{ i.name }}</i></h3>
-                        </router-link>
-                        <div class="mt-3">
-                            <button type="button" class="btn app-btn-outline-danger bg-white"
-                                @click="remove(i.id)">Remove</button>
-                        </div>
+    <div class="row g-4 settings-section mb-4">
+        <div class="col-md-4" v-for="i in users" :key="i.id">
+            <div class="app-card app-card-settings shadow-sm p-4">
+                <div class="app-card-body">
+                    <router-link :to="'../../users/edit/' + i.id">
+                        <h3 class="section-title"><i>{{ i.name }}</i></h3>
+                    </router-link>
+                    <div class="mt-3">
+                        <button type="button" class="btn app-btn-outline-danger bg-white"
+                            @click="remove(i.id)">Remove</button>
                     </div>
                 </div>
             </div>
@@ -57,7 +55,7 @@
 <script>
 import autocomplete from 'autocompleter';
 import { searchUser } from "@/services/user.service";
-import { searchGroupUser } from "@/services/group-user.service";
+import { searchGroupUser, addGroupUser, removeGroupUser } from "@/services/group-user.service";
 import { emitter } from "@/services/emitter.service";
 import { pagination } from "@/services/pagination.service";
 export default {
@@ -100,10 +98,13 @@ export default {
                 update(suggestions);
             },
             onSelect: (item) => {
-                this.user = {
-                    id: item.value,
-                    name: item.label
-                };
+                emitter.emit("showLoader", true);
+                addGroupUser(this.group.groupId, item.value).then(r => {
+                    this.user = new Object();
+                    this.query = '';
+                    this.search();
+                    emitter.emit("showLoader", false);
+                });
             }
         });
     },
@@ -134,7 +135,17 @@ export default {
 
                     emitter.emit("showLoader", false);
                 });
-        }
+        },
+
+        remove(userId) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                emitter.emit("showLoader", true);
+                removeGroupUser(this.group.groupId, userId).then(r => {
+                    this.search();
+                    emitter.emit("showLoader", false);
+                });
+            }
+        },
     }
 }
 </script>

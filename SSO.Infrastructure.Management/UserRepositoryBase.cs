@@ -63,6 +63,16 @@ namespace SSO.Infrastructure.Management
             return user;
         }
 
+        public async Task<IEnumerable<Group>> GetGroups(Guid userId)
+        {
+            var groups = _context.GroupUsers
+                            .Include(x => x.Group)
+                            .Where(x => x.UserId == userId.ToString())
+                            .Select(x => x.Group);
+
+            return await groups.Distinct().ToListAsync();
+        }
+
         public abstract Task RemoveRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null);
 
         public abstract Task RemoveRange(Expression<Func<ApplicationUser, bool>> predicate, bool? saveChanges = true, object? args = null);

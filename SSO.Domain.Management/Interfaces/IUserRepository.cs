@@ -10,5 +10,7 @@ namespace SSO.Domain.Management.Interfaces
         Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null);
 
         Task<IEnumerable<Application>> GetApplications(Guid userId);
+
+        Task<IEnumerable<Group>> GetGroups(Guid userId);
     }
 }

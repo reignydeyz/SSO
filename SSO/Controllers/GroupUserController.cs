@@ -80,5 +80,21 @@ namespace SSO.Controllers
                 return Conflict();
             }
         }
+
+        /// <summary>
+        /// Removes user from group
+        /// </summary>
+        /// <param name="groupId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> Delete(Guid groupId, Guid userId)
+        {
+            var param = new RemoveGroupUserCommand { UserId = userId, GroupId = groupId };
+
+            await _mediator.Send(param);
+
+            return Ok();
+        }
     }
 }

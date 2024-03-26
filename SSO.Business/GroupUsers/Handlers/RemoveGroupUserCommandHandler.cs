@@ -17,7 +17,7 @@ namespace SSO.Business.GroupUsers.Handlers
         {
             var rec = await _groupUserRepository.FindOne(x => x.GroupId == request.GroupId && x.UserId == request.UserId.ToString());
 
-            if (rec != null)
+            if (rec is null)
                 throw new ArgumentNullException();
 
             await _groupUserRepository.Delete(rec!);
