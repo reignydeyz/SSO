@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using SSO.Business.GroupUsers.Commands;
 using SSO.Business.GroupUsers.Queries;
 using SSO.Business.Users;
+using SSO.Filters;
+using SSO.Infrastructure.Settings.Enums;
 
 namespace SSO.Controllers
 {
@@ -13,6 +15,7 @@ namespace SSO.Controllers
     [Route("api/group/{groupId}/user")]
     [ApiController]
     [Authorize(Policy = "RootPolicy")]
+    [RealmValidator(Realm = Realm.Default)]
     public class GroupUserController : ControllerBase
     {
         readonly IMediator _mediator;

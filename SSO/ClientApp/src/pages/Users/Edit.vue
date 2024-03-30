@@ -37,6 +37,12 @@
                         Applications
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-groups-tab" data-bs-toggle="pill" data-bs-target="#pills-groups"
+                        type="button" role="tab" aria-controls="pills-groups">
+                        Groups
+                    </button>
+                </li>
             </ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
@@ -46,6 +52,10 @@
                 <div class="tab-pane fade" id="pills-apps" role="tabpanel" aria-labelledby="pills-apps-tab">
                     <hr class="mb-4" />
                     <EditApplications :user="user"/>
+                </div>
+                <div class="tab-pane fade" id="pills-groups" role="tabpanel" aria-labelledby="pills-groups-tab">
+                    <hr class="mb-4" />
+                    <EditGroups :user="user"/>
                 </div>
             </div>
         </div>
@@ -58,9 +68,10 @@ import { getUserById } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import EditBasic from "@/pages/Users/components/EditBasic.vue";
 import EditApplications from "@/pages/Users/components/EditApplications.vue";
+import EditGroups from "@/pages/Users/components/EditGroups.vue";
 export default {
     components: {
-        EditBasic, EditApplications
+        EditBasic, EditApplications, EditGroups
     },
     data: () => ({
         user: new Object(),

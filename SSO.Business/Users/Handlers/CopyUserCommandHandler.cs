@@ -88,6 +88,8 @@ namespace SSO.Business.Users.Handlers
             }
             await _userRoleRepository.AddRoles(new Guid(newUser.Id), newRoles);
 
+            // TODO: User groups
+
             return _mapper.Map<UserDto>(newUser);
         }
     }

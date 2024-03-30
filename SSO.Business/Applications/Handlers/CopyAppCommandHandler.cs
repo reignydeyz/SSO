@@ -109,6 +109,8 @@ namespace SSO.Business.Applications.Handlers
                 await _userRoleRepository.AddRoles(new Guid(user.Id), newUserRoles, false);
             }
 
+            // TODO: Groups
+
             await _applicationRepository.Add(newApp);
 
             return _mapper.Map<ApplicationDetailDto>(newApp);
