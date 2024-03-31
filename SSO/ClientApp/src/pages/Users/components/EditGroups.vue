@@ -52,7 +52,6 @@ import { emitter } from "@/services/emitter.service";
 export default {
     props: ["user"],
     data: () => ({
-        group: new Object(),
         groups: [],
     }),
     watch: {
@@ -82,7 +81,7 @@ export default {
                 update(suggestions);
             },
             onSelect: async (item) => {
-                this.group = new Object();
+                this.$refs.group.value = '';
 
                 await addGroupUser(item.value, this.user.userId);
 

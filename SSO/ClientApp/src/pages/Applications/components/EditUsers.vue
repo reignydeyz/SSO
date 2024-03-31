@@ -14,7 +14,7 @@
                 <div class="app-card app-card-settings shadow-sm p-4">
                     <div class="app-card-body">
                         <div class="col-md-8">
-                            <input v-model="user.name" type="text" class="form-control" placeholder="Name or email" required
+                            <input type="text" class="form-control" placeholder="Name or email" required
                                 autocomplete="off" ref="user">
                             <small class="ms-1 text-muted">(typeahead)</small>
                         </div>
@@ -176,7 +176,7 @@ export default {
     },
     methods: {
         onModalClose() {
-            this.user = new Object();
+            this.$refs.user.value = '';
         },
 
         onAdd() {
