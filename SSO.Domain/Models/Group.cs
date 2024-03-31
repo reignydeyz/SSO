@@ -12,5 +12,6 @@
         public DateTime? DateInactive { get; set; }
 
         public virtual ICollection<GroupUser> Users { get; set; } = new List<GroupUser>();
+        public virtual ICollection<GroupRole> Roles { get; set; } = new List<GroupRole>();
     }
 }
