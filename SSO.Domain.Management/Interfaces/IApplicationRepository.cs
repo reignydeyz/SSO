@@ -14,5 +14,7 @@ namespace SSO.Domain.Management.Interfaces
         public Task<IEnumerable<Application>> GetAppsByUserId(Guid userId);
 
         public Task<IQueryable<ApplicationUser>> GetUsers(Guid applicationId);
+
+        public Task<IQueryable<Group>> GetGroups(Guid applicationId);
     }
 }

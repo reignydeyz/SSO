@@ -67,6 +67,16 @@ namespace SSO.Infrastructure.Management
             return await res.ToListAsync();
         }
 
+        public async Task<IQueryable<Group>> GetGroups(Guid applicationId)
+        {
+            var res = from r in _context.Roles.Where(x => x.ApplicationId == applicationId)
+                      join gr in _context.GroupRoles on r.Id equals gr.RoleId
+                      join g in _context.Groups on gr.GroupId equals g.GroupId
+                      select g;
+
+            return await Task.FromResult(res.Distinct());
+        }
+
         public async Task<IEnumerable<ApplicationPermission>> GetPermissions(Guid applicationId)
         {
             var res = _context.ApplicationPermissions.Where(x => x.ApplicationId == applicationId);
