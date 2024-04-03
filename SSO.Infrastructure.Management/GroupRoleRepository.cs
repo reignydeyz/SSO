@@ -1,5 +1,6 @@
 ﻿using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
+using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
 {
@@ -12,17 +13,25 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public async Task Add(GroupUser param, bool? saveChanges = true, object? args = null)
+        public async Task AddRange(IEnumerable<GroupRole> param, bool? saveChanges = true, object? args = null)
         {
-            _context.Add(param);
+            _context.AddRange(param);
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(GroupUser param, bool? saveChanges = true, object? args = null)
+        public async Task RemoveRange(IEnumerable<GroupRole> param, bool? saveChanges = true, object? args = null)
         {
-            _context.Remove(param);
+            _context.RemoveRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveRange(Expression<Func<GroupRole, bool>> predicate, bool? saveChanges = true, object? args = null)
+        {
+            _context.RemoveRange(_context.GroupRoles.Where(predicate));
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();

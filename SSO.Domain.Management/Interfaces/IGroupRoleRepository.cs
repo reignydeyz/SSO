@@ -1,11 +1,9 @@
-﻿using SSO.Domain.Models;
+﻿using SSO.Domain.Interfaces;
+using SSO.Domain.Models;
 
 namespace SSO.Domain.Management.Interfaces
 {
-    public interface IGroupRoleRepository
+    public interface IGroupRoleRepository : IRangeRepository<GroupRole>
     {
-        Task Add(GroupUser param, bool? saveChanges = true, object? args = null);
-
-        Task Delete(GroupUser param, bool? saveChanges = true, object? args = null);
     }
 }
