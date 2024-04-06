@@ -80,7 +80,7 @@ However, it can be challenging to debug both front-end and back-end, so it is re
 - Open `SSO\ClientApp` in **VS Code**
 - Ensure dependencies are installed, run...
   ```bash
-  npm install
+  npm install --force
   ```
 - Check `package.json` for port configuration and environment. Run either...
   ```bash
@@ -112,7 +112,7 @@ Create the artifact to be deployed...
 - Open `appsettings.json` and apply the necessary settings.
   - (Database will be automatically generated based on the `connectionString`)
 
-## IIS 
+### IIS 
 
 Please visit [this link](https://learn.microsoft.com/en-us/aspnet/core/tutorials/publish-to-iis?view=aspnetcore-8.0&tabs=visual-studio#install-the-net-core-hosting-bundle)
 
