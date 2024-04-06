@@ -127,6 +127,7 @@ builder.Services.AddScoped<IApplicationPermissionRepository, ApplicationPermissi
 builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaimRepository>();
 builder.Services.AddScoped<IGroupRepository, GroupRepository>();
 builder.Services.AddScoped<IGroupUserRepository, GroupUserRepository>();
+builder.Services.AddScoped<IGroupRoleRepository, GroupRoleRepository>();
 
 var ldapSettings = builder.Configuration.GetSection("LDAPSettings").Get<LDAPSettings>();
 
