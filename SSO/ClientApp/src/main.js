@@ -2,6 +2,7 @@ import '@popperjs/core/lib/popper.js'
 import "bootstrap-icons/font/bootstrap-icons.css"
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
+import 'autocompleter/autocomplete.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
