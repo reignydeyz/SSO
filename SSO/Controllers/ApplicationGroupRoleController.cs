@@ -10,9 +10,9 @@ namespace SSO.Controllers
 {
     [ApiExplorerSettings(GroupName = "System")]
     [Route("api/application/{applicationId}/group/{groupId}/role")]
-    [ApiController]
-    [AppUserIdValidator]
+    [ApiController]    
     [Authorize(Policy = "RootPolicy")]
+    [GroupIdValidator<AppGroupIdDto>]
     public class ApplicationGroupRoleController : ControllerBase
     {
         readonly IMediator _mediator;
