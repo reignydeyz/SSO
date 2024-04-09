@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SSO.Business.ApplicationGroupRoles;
+using SSO.Business.ApplicationGroupRoles.Commands;
+using SSO.Business.ApplicationGroupRoles.Queries;
 using SSO.Business.ApplicationRoles;
 using SSO.Filters;
-using SSO.Business.ApplicationGroupRoles;
-using SSO.Business.ApplicationGroupRoles.Queries;
+using System.ComponentModel.DataAnnotations;
 
 namespace SSO.Controllers
 {
@@ -36,6 +38,22 @@ namespace SSO.Controllers
             var res = await _mediator.Send(param);
 
             return Ok(res);
+        }
+
+        /// <summary>
+        /// Updates app group`s roles
+        /// </summary>
+        /// <param name="form"></param>
+        /// <param name="roleIds"></param>
+        /// <returns></returns>
+        [HttpPut]
+        public async Task<IActionResult> Update([FromRoute] AppGroupIdDto form, [FromBody, Required, MinLength(1)] List<Guid> roleIds)
+        {
+            var param = new UpdateGroupRolesCommand { ApplicationId = form.ApplicationId, GroupId = form.GroupId, RoleIds = roleIds };
+
+            await _mediator.Send(param);
+
+            return Ok();
         }
     }
 }

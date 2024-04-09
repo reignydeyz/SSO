@@ -50,10 +50,14 @@
                         Users
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-group-tab" data-bs-toggle="pill" data-bs-target="#pills-groups"
+                        type="button" role="tab" aria-controls="pills-groups">
+                        Groups
+                    </button>
+                </li>
             </ul>
             <div class="tab-content" id="pills-tabContent">
-
-
                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                     <hr class="mb-4" />
                     <EditBasic :app="app" />
@@ -74,6 +78,10 @@
                     <hr class="mb-4" />
                     <EditUsers :app="app" :roles="roles" />
                 </div>
+                <div class="tab-pane fade" id="pills-users" role="tabpanel" aria-labelledby="pills-groups-tab">
+                    <hr class="mb-4" />
+                    <EditGroups :app="app" :roles="roles" />
+                </div>
             </div>
         </div>
     </div>
@@ -90,13 +98,15 @@ import EditCallbacks from "@/pages/Applications/components/EditCallbacks.vue";
 import EditPermissions from "@/pages/Applications/components/EditPermissions.vue";
 import EditRoles from "@/pages/Applications/components/EditRoles.vue";
 import EditUsers from "@/pages/Applications/components/EditUsers.vue";
+import EditGroups from "@/pages/Applications/components/EditGroups.vue";
 export default {
     components: {
         EditBasic,
         EditCallbacks,
         EditPermissions,
         EditRoles,
-        EditUsers
+        EditUsers,
+        EditGroups
     },
     data: () => ({
         app: new Object(),
