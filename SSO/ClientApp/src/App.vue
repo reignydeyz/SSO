@@ -118,8 +118,25 @@ button.nav-link:hover {
     /* Firefox */
 }
 
+.autocomplete {
+    background: white;
+    z-index: 1000;
+    font: 14px/22px "-apple-system", BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: auto;
+    box-sizing: border-box;
+    border: 1px solid rgba(50, 50, 50, 0.6);
+}
+
+.autocomplete * {
+    font: inherit;
+}
+
 .autocomplete > div {
     padding: 15px;
+}
+
+.autocomplete .group {
+    background: #eee;
 }
 
 .autocomplete > div:hover:not(.group),
