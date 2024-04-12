@@ -78,7 +78,7 @@
                     <hr class="mb-4" />
                     <EditUsers :app="app" :roles="roles" />
                 </div>
-                <div class="tab-pane fade" id="pills-users" role="tabpanel" aria-labelledby="pills-groups-tab">
+                <div class="tab-pane fade" id="pills-groups" role="tabpanel" aria-labelledby="pills-groups-tab">
                     <hr class="mb-4" />
                     <EditGroups :app="app" :roles="roles" />
                 </div>
