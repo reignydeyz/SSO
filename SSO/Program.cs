@@ -47,6 +47,9 @@ modelBuilder.EntitySet<GroupDto>("Group");
 modelBuilder.EntityType<UserDto>().HasKey(x => x.UserId);
 modelBuilder.EntitySet<UserDto>("GroupUser");
 
+modelBuilder.EntityType<GroupDto>().HasKey(x => x.GroupId);
+modelBuilder.EntitySet<GroupDto>("ApplicationGroup");
+
 modelBuilder.EnableLowerCamelCase();
 
 builder.Services.AddControllers().AddOData(

@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using MediatR;
-using SSO.Business.Groups.Queries;
+using SSO.Business.ApplicationGroups.Queries;
+using SSO.Business.Groups;
 using SSO.Domain.Management.Interfaces;
 
-namespace SSO.Business.Groups.Handlers
+namespace SSO.Business.ApplicationGroups.Handlers
 {
     public class GetGroupsByApplicationIdQueryHandler : IRequestHandler<GetGroupsByApplicationIdQuery, IQueryable<GroupDto>>
     {

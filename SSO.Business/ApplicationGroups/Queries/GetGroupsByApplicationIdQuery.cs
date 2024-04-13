@@ -1,6 +1,7 @@
 ﻿using MediatR;
+using SSO.Business.Groups;
 
-namespace SSO.Business.Groups.Queries
+namespace SSO.Business.ApplicationGroups.Queries
 {
     public class GetGroupsByApplicationIdQuery : IRequest<IQueryable<GroupDto>>
     {

@@ -32,6 +32,15 @@ namespace SSO.Infrastructure.Management
             return res.AsNoTracking();
         }
 
+        public async Task RemoveGroup(Guid groupId, Guid applicationId, bool? saveChanges = true)
+        {
+            var toBeDeleted = _context.GroupRoles.Where(x => x.GroupId == groupId && _context.Roles.Any(y => y.ApplicationId == applicationId && y.Id == x.RoleId));
+
+            _context.GroupRoles.RemoveRange(toBeDeleted);
+
+            await _context.SaveChangesAsync();
+        }
+
         public async Task RemoveRange(IEnumerable<GroupRole> param, bool? saveChanges = true, object? args = null)
         {
             _context.RemoveRange(param);

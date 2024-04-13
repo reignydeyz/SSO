@@ -14,5 +14,7 @@ namespace SSO.Domain.Management.Interfaces
         Task<IEnumerable<ApplicationRole>> Roles(Guid groupId, Guid applicationId);
 
         Task<IEnumerable<GroupRole>> GroupRoles(Guid groupId, Guid applicationId);
+
+        Task RemoveGroup(Guid groupId, Guid applicationId, bool? saveChanges = true);
     }
 }
