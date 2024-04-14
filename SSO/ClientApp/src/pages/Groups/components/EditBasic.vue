@@ -12,15 +12,15 @@
                     <form class="settings-form" @submit.prevent="onSubmit">
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Name*</label>
-                            <input v-model="group.name" type="text" class="form-control" id="setting-input-1" maxlength="200"
-                                placeholder="Name" required="" autocomplete="off" />
+                            <input v-model="group.name" type="text" class="form-control" id="setting-input-1"
+                                maxlength="200" placeholder="Name" required="" autocomplete="off" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-3" class="form-label">Description</label>
-                            <input v-model="group.description" type="text" class="form-control" id="setting-input-3" maxlength="500"
-                                placeholder="Description" autocomplete="off" />
+                            <input v-model="group.description" type="text" class="form-control" id="setting-input-3"
+                                maxlength="500" placeholder="Description" autocomplete="off" />
                         </div>
-                        <button type="submit" class="btn app-btn-primary">
+                        <button type="submit" class="btn app-btn-primary" v-if="isInRealm('Default')">
                             Save Changes
                         </button>
                     </form>
@@ -33,24 +33,31 @@
 </template>
 
 <script>
+import { getAccount } from '@/services/account.service';
 import { updateGroup } from "@/services/group.service";
 import { emitter } from "@/services/emitter.service";
 export default {
     props: ["group"],
     methods: {
         onSubmit() {
-            emitter.emit("showLoader", true);
+            if (this.isInRealm('Default')) {
+                emitter.emit("showLoader", true);
 
-            updateGroup(this.group).then(
-                (r) => {
-                    this.$router.push("../../groups");
-                },
-                (err) => {
-                    alert('Failed to update record.');
-                    emitter.emit("showLoader", false);
-                }
-            );
+                updateGroup(this.group).then(
+                    (r) => {
+                        this.$router.push("../../groups");
+                    },
+                    (err) => {
+                        alert('Failed to update record.');
+                        emitter.emit("showLoader", false);
+                    }
+                );
+            }
         },
+
+        isInRealm(realm) {
+            return getAccount().authmethod === realm;
+        }
     }
 }
 </script>

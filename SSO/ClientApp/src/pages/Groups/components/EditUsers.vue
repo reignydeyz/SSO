@@ -1,5 +1,5 @@
 <template>
-    <div class="row g-4 settings-section">
+    <div class="row g-4 settings-section" v-show="isInRealm('Default')">
         <div class="col-12 col-md-2">
             <h3 class="section-title">Add user</h3>
             <div class="section-intro">
@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <hr class="mb-4" />
+    <hr class="mb-4" v-show="isInRealm('Default')"/>
     <h5 class="section-title mb-3">Assigned users</h5>
     <form @submit.prevent="search(1)">
         <div class="row g-2 align-items-start mb-4">
@@ -42,7 +42,7 @@
                     <router-link :to="'../../users/edit/' + i.id">
                         <h3 class="section-title"><i>{{ i.name }}</i></h3>
                     </router-link>
-                    <div class="mt-3">
+                    <div class="mt-3" v-if="isInRealm('Default')">
                         <button type="button" class="btn app-btn-outline-danger bg-white"
                             @click="remove(i.id)">Remove</button>
                     </div>
@@ -54,6 +54,7 @@
 
 <script>
 import autocomplete from 'autocompleter';
+import { getAccount } from '@/services/account.service';
 import { searchUser } from "@/services/user.service";
 import { searchGroupUser, addGroupUser, removeGroupUser } from "@/services/group-user.service";
 import { emitter } from "@/services/emitter.service";
@@ -145,6 +146,10 @@ export default {
                 });
             }
         },
+
+        isInRealm(realm) {
+            return getAccount().authmethod === realm;
+        }
     }
 }
 </script>

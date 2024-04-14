@@ -105,7 +105,7 @@ const routes = [
     {
         path: "/users/copy/:id",
         name: "Copy User",
-        meta: { mustBeRoot: true },
+        meta: { mustBeRoot: true, realm: 'Default' },
         component: () => import('@/pages/Users/Copy.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -123,7 +123,7 @@ const routes = [
     {
         path: "/groups/new",
         name: "New Group",
-        meta: { mustBeRoot: true },
+        meta: { mustBeRoot: true, realm: 'Default' },
         component: () => import('@/pages/Groups/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))

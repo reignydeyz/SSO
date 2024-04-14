@@ -86,7 +86,7 @@
                                                         <router-link :to="'/groups/edit/' + i.groupId"
                                                             class="dropdown-item">Edit/View</router-link>
                                                     </li>                                         
-                                                    <li>
+                                                    <li v-if="isInRealm('Default')">
                                                         <a class="dropdown-item" href="#"
                                                             @click="onDelete(i.groupId)">Remove</a>
                                                     </li>
@@ -134,7 +134,8 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
-import { searchGroup, deletGroup } from "@/services/group.service";
+import { getAccount } from '@/services/account.service';
+import { searchGroup, deleteGroup } from "@/services/group.service";
 import { emitter } from "@/services/emitter.service";
 import { pagination } from "@/services/pagination.service";
 
@@ -206,7 +207,11 @@ export default {
                     emitter.emit("showLoader", true);
                 });
             }
-        }
+        },
+
+        isInRealm(realm) {
+            return getAccount().authmethod === realm;
+        },
     }
 }
 </script>
