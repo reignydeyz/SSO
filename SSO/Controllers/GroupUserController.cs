@@ -15,7 +15,6 @@ namespace SSO.Controllers
     [Route("api/group/{groupId}/user")]
     [ApiController]
     [Authorize(Policy = "RootPolicy")]
-    [RealmValidator(Realm = Realm.Default)]
     public class GroupUserController : ControllerBase
     {
         readonly IMediator _mediator;
@@ -64,6 +63,7 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(OkResult), 200)]
+        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Create([FromRoute] Guid groupId, [FromBody] Guid userId)
         {
             try
@@ -91,6 +91,7 @@ namespace SSO.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpDelete("{userId}")]
+        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Delete(Guid groupId, Guid userId)
         {
             var param = new RemoveGroupUserCommand { UserId = userId, GroupId = groupId };

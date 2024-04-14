@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Routing.Attributes;
 using Microsoft.EntityFrameworkCore;
 using SSO.Business.Groups;
 using SSO.Business.Groups.Commands;
+using SSO.Business.Groups.Queries;
 using SSO.Filters;
 using SSO.Infrastructure.Settings.Enums;
 using System.Security.Claims;
-using SSO.Business.Groups.Queries;
-using Microsoft.AspNetCore.OData.Routing.Attributes;
 
 namespace SSO.Controllers
 {
@@ -17,7 +17,6 @@ namespace SSO.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Policy = "RootPolicy")]
-    [RealmValidator(Realm = Realm.Default)]
     public class GroupController : ControllerBase
     {
         readonly IMediator _mediator;
@@ -73,6 +72,7 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(GroupDto), 200)]
+        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Create([FromBody] CreateGroupCommand param)
         {
             try
@@ -96,6 +96,7 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpDelete("{groupId}")]
         [GroupIdValidator<GroupIdDto>]
+        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Delete([FromRoute] GroupIdDto form)
         {
             try
@@ -120,6 +121,7 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPut("{groupId}")]
         [GroupIdValidator<GroupIdDto>]
+        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Update([FromRoute] GroupIdDto form, [FromBody] UpdateGroupCommand param)
         {
             try
