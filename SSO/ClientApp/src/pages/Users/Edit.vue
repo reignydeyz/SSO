@@ -64,6 +64,7 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
+import { getAccount } from '@/services/account.service';
 import { getUserById } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import EditBasic from "@/pages/Users/components/EditBasic.vue";
@@ -84,6 +85,11 @@ export default {
             this.user = r.data;
             emitter.emit("showLoader", false);
         });
+    },
+    methods: {
+        isInRealm(realm) {
+            return getAccount().authmethod === realm;
+        },
     }
 }
 </script>

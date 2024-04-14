@@ -1,5 +1,5 @@
 <template>
-    <div class="row g-4 settings-section">
+    <div class="row g-4 settings-section" v-if="isInRealm('Default')">
         <div class="col-12 col-md-2">
             <h3 class="section-title">Add to group</h3>
             <div class="section-intro">
@@ -22,7 +22,7 @@
     </div>
 
     <div v-show="groups.length > 0">
-        <hr class="mb-4" />
+        <hr class="mb-4" v-if="isInRealm('Default')"/>
         <h5 class="section-title mb-3">Groups</h5>
         <div class="row g-4 settings-section mb-4">
             <div class="col-md-4" v-for="i in groups" :key="i.groupId">
@@ -33,7 +33,7 @@
                         </router-link>
 
                         <div class="mt-3">
-                            <button type="button" class="btn app-btn-outline-danger bg-white"
+                            <button type="button" class="btn app-btn-outline-danger bg-white" v-if="isInRealm('Default')"
                                 @click="remove(i.groupId)">Remove</button>
                         </div>
                     </div>
@@ -45,6 +45,7 @@
 
 <script>
 import autocomplete from 'autocompleter';
+import { getAccount } from '@/services/account.service';
 import { searchGroup } from "@/services/group.service";
 import { getUserGroups } from "@/services/user-group.service";
 import { addGroupUser, removeGroupUser } from '@/services/group-user.service';
@@ -107,7 +108,11 @@ export default {
                     emitter.emit("showLoader", false);
                 });
             }
-        }
+        },
+
+        isInRealm(realm) {
+            return getAccount().authmethod === realm;
+        },
     }
 }
 </script>
