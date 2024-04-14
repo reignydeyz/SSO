@@ -103,7 +103,7 @@
                                                         <router-link :to="'/users/edit/' + i.userId"
                                                             class="dropdown-item">Edit/View</router-link>
                                                     </li>
-                                                    <li>
+                                                    <li v-if="isInRealm('Default')">
                                                         <router-link :to="'/users/copy/' + i.userId"
                                                             class="dropdown-item">Copy</router-link>
                                                     </li>

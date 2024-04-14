@@ -18,7 +18,7 @@
                 <div class="col-auto">
                     <h1 class="app-page-title mb-0">Update</h1>
                 </div>
-                <div class="col-auto">
+                <div class="col-auto" v-if="isInRealm('Default')">
                     <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
                         <router-link :to="'../../users/copy/' + this.$route.params.id" class="btn app-btn-outline-primary">Copy</router-link>
                     </div>
