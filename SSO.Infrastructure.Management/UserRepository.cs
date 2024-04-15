@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SSO.Domain.Models;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management

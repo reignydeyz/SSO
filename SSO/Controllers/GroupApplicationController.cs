@@ -2,36 +2,36 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Applications;
-using SSO.Business.UserApplications.Queries;
-using SSO.Business.Users;
+using SSO.Business.GroupApplications.Queries;
+using SSO.Business.Groups;
 using SSO.Filters;
 
 namespace SSO.Controllers
 {
     [ApiExplorerSettings(GroupName = "System")]
-    [Route("api/user/{userId}/application")]
+    [Route("api/group/{groupId}/application")]
     [ApiController]
     [Authorize(Policy = "RootPolicy")]
-    public class UserApplicationController : ControllerBase
+    public class GroupApplicationController : ControllerBase
     {
         readonly IMediator _mediator;
 
-        public UserApplicationController(IMediator mediator)
+        public GroupApplicationController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         /// <summary>
-        /// Gets user`s assigned apps 
+        /// Gets group`s assigned apps 
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpGet]
-        [UserIdValidator]
+        [GroupIdValidator<GroupIdDto>]
         [ProducesResponseType(typeof(IEnumerable<ApplicationDto>), 200)]
-        public async Task<IActionResult> Get([FromRoute] UserIdDto form)
+        public async Task<IActionResult> Get([FromRoute] GroupIdDto form)
         {
-            var param = new GetUserAppsQuery { UserId = form.UserId!.Value };
+            var param = new GetGroupAppsQuery { GroupId = form.GroupId };
 
             var res = await _mediator.Send(param);
 

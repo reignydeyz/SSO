@@ -58,6 +58,16 @@ namespace SSO.Infrastructure.Management
             return await _context.Groups.FirstOrDefaultAsync(predicate);
         }
 
+        public async Task<IEnumerable<Application>> GetApplications(Guid groupId)
+        {
+            var apps = from ur in _context.GroupRoles.Where(x => x.GroupId == groupId)
+                       join r in _context.Roles on ur.RoleId equals r.Id
+                       join a in _context.Applications on r.ApplicationId equals a.ApplicationId
+                       select a;
+
+            return await apps.Distinct().ToListAsync();
+        }
+
         public async Task RemoveRange(IEnumerable<Group> param, bool? saveChanges = true, object? args = null)
         {
             _context.RemoveRange(param);
