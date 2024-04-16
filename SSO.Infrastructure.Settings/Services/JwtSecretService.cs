@@ -1,9 +1,11 @@
-﻿namespace SSO.Infrastructure.Settings.Services
+﻿using System.Security.Cryptography;
+
+namespace SSO.Infrastructure.Settings.Services
 {
     public class JwtSecretService
     {
-        public string Secret { get; }
+        public RSA PrivateKey { get; }
 
-        public JwtSecretService(string secret) => Secret = secret;
+        public JwtSecretService(RSA privateKey) => PrivateKey = privateKey;
     }
 }

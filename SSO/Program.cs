@@ -24,7 +24,6 @@ using SSO.Infrastructure.Settings.Enums;
 using SSO.Infrastructure.Settings.Services;
 using System.Reflection;
 using System.Security.Claims;
-using System.Text;
 using VueCliMiddleware;
 using LDAP = SSO.Infrastructure.LDAP;
 
@@ -76,11 +75,9 @@ builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginQueryHandler>());
 
-#if !DEBUG
-var jwtSecret = Guid.NewGuid().ToString();
-#else
-var jwtSecret = "62f59942-7c23-48e3-b8c0-ec81a0dacf51";
-#endif
+var rsaPrivateKeyService = new RsaPrivateKeyService();
+var pemFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "private_key.pem");
+var privateKey = rsaPrivateKeyService.CreatePrivateKey(pemFilePath);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -98,7 +95,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = TokenValidationParamConstants.Audience,
         ValidIssuer = TokenValidationParamConstants.Issuer,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
+        IssuerSigningKey = new RsaSecurityKey(privateKey)
     };
 });
 
@@ -115,7 +112,7 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddSingleton(_ => new JwtSecretService(jwtSecret));
+builder.Services.AddSingleton(_ => new JwtSecretService(privateKey));
 builder.Services.AddSingleton(_ => new RealmService(Realm.Default));
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
