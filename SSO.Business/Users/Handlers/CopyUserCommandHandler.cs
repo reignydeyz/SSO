@@ -13,17 +13,20 @@ namespace SSO.Business.Users.Handlers
         readonly Realm _realm;
         readonly IUserRepository _userRepository;
         readonly IUserRoleRepository _userRoleRepository;
+        readonly IGroupUserRepository _groupUserRepository;
         readonly IMapper _mapper;
 
         public CopyUserCommandHandler(RealmService realmService,
             IUserRepository userRepository, 
             IUserRoleRepository userRoleRepository,
+            IGroupUserRepository groupUserRepository,
             IMapper mapper)
         {
             _realm = realmService.Realm;
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
-            _mapper = mapper;
+            _groupUserRepository = groupUserRepository;
+            _mapper = mapper;            
         }
 
         public async Task<UserDto> Handle(CopyUserCommand request, CancellationToken cancellationToken)
@@ -88,7 +91,12 @@ namespace SSO.Business.Users.Handlers
             }
             await _userRoleRepository.AddRoles(new Guid(newUser.Id), newRoles);
 
-            // TODO: User groups
+            // User groups
+            var groups = await _userRepository.GetGroups(new Guid(srcUser.Id));
+            if (existingUser != null)
+                await _groupUserRepository.RemoveRange(x => x.UserId == existingUser.Id, false);
+
+            await _groupUserRepository.AddRange(groups.Select(x => new GroupUser { GroupId = x.GroupId, UserId = newUser.Id }));
 
             return _mapper.Map<UserDto>(newUser);
         }

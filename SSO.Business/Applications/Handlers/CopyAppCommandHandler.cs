@@ -15,6 +15,7 @@ namespace SSO.Business.Applications.Handlers
         readonly IApplicationRoleRepository _applicationRoleRepository;
         readonly IApplicationRoleClaimRepository _applicationRoleClaimRepository;
         readonly IUserRoleRepository _userRoleRepository;
+        readonly IGroupRoleRepository _groupRoleRepository;
         readonly IMapper _mapper;
 
         public CopyAppCommandHandler(IApplicationRepository applicationRepository,
@@ -23,6 +24,7 @@ namespace SSO.Business.Applications.Handlers
             IApplicationRoleRepository applicationRoleRepository,
             IApplicationRoleClaimRepository applicationRoleClaimRepository,
             IUserRoleRepository userRoleRepository,
+            IGroupRoleRepository groupRoleRepository,
             IMapper mapper)
         {
             _applicationRepository = applicationRepository;
@@ -31,6 +33,7 @@ namespace SSO.Business.Applications.Handlers
             _applicationRoleRepository = applicationRoleRepository;
             _applicationRoleClaimRepository = applicationRoleClaimRepository;
             _userRoleRepository = userRoleRepository;
+            _groupRoleRepository = groupRoleRepository;
             _mapper = mapper;
         }
 
@@ -109,7 +112,19 @@ namespace SSO.Business.Applications.Handlers
                 await _userRoleRepository.AddRoles(new Guid(user.Id), newUserRoles, false);
             }
 
-            // TODO: Groups
+            // Group roles
+            var groups = (await _applicationRepository.GetGroups(request.ApplicationId)).ToList();
+            foreach (var group in groups)
+            {
+                var groupRoles = await _groupRoleRepository.Roles(group.GroupId, request.ApplicationId);
+                var newUserGroups = groupRoles.Select(x => new GroupRole
+                {
+                    GroupId = group.GroupId,
+                    RoleId = newRoles.First(y => y.Name == x.Name).Id
+                });
+
+                await _groupRoleRepository.AddRange(newUserGroups, false);
+            }
 
             await _applicationRepository.Add(newApp);
 
