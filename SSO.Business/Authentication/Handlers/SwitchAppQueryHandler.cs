@@ -19,7 +19,7 @@ namespace SSO.Business.Authentication.Handlers
         readonly UserManager<ApplicationUser> _userManager;
 
         public SwitchAppQueryHandler(ITokenService tokenService,
-            IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository
+            IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository,
             UserManager<ApplicationUser> userManager)
         {
             _tokenService = tokenService;
