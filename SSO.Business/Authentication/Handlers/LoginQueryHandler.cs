@@ -17,9 +17,10 @@ namespace SSO.Business.Authentication.Handlers
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
+        readonly IGroupRoleRepository _groupRoleRepo;
 
         public LoginQueryHandler(IAuthenticationService authenticationService, ITokenService tokenService,
-            IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo)
+            IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo)
         {
             _authenticationService = authenticationService;
             _tokenService = tokenService;
@@ -27,6 +28,7 @@ namespace SSO.Business.Authentication.Handlers
             _roleRepo = roleRepo;
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
+            _groupRoleRepo = groupRoleRepo;
         }
 
         public async Task<TokenDto> Handle(LoginQuery request, CancellationToken cancellationToken)
@@ -37,6 +39,10 @@ namespace SSO.Business.Authentication.Handlers
 
             var user = await _userRepo.GetByUsername(request.Username);
             var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId.Value);
+
+            var groups = await _userRepo.GetGroups(new Guid(user.Id));
+            foreach (var group in groups)
+                roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, app.ApplicationId));
 
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),

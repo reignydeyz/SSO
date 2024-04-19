@@ -15,10 +15,11 @@ namespace SSO.Business.Authentication.Handlers
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
+        readonly IGroupRoleRepository _groupRoleRepo;
         readonly UserManager<ApplicationUser> _userManager;
 
         public SwitchAppQueryHandler(ITokenService tokenService,
-            IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo,
+            IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository
             UserManager<ApplicationUser> userManager)
         {
             _tokenService = tokenService;
@@ -26,6 +27,7 @@ namespace SSO.Business.Authentication.Handlers
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
             _userManager = userManager;
+            _groupRoleRepo = groupRoleRepository;
         }
 
         public async Task<TokenDto> Handle(SwitchAppQuery request, CancellationToken cancellationToken)
@@ -51,7 +53,11 @@ namespace SSO.Business.Authentication.Handlers
                 throw new UnauthorizedAccessException("User is locked-out.");
 
             var roles = await _userRoleRepo.Roles(user.UserName, request.ApplicationId.Value);
-            
+
+            var groups = await _userRepo.GetGroups(new Guid(user.Id));
+            foreach (var group in groups)
+                roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, request.ApplicationId.Value));
+
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")

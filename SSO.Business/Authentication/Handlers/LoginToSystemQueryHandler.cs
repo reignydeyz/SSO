@@ -17,12 +17,13 @@ namespace SSO.Business.Authentication.Handlers
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
+        readonly IGroupRoleRepository _groupRoleRepo;
         readonly Application _root;
 
         public LoginToSystemQueryHandler(RealmService realmService,
             IAuthenticationService authenticationService, ITokenService tokenService,
             IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo,
-            IUserRepository userRepo, IUserRoleRepository userRoleRepo)
+            IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository)
         {
             _realm = realmService.Realm;
             _authenticationService = authenticationService;
@@ -30,6 +31,7 @@ namespace SSO.Business.Authentication.Handlers
             _roleRepo = roleRepo;
             _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
+            _groupRoleRepo = groupRoleRepository;
             _root = applicationRepository.FindOne(x => x.Name == "root").Result;
         }
 
@@ -41,6 +43,10 @@ namespace SSO.Business.Authentication.Handlers
 
             // Checks root access
             var roles = await _userRoleRepo.Roles(request.Username, _root.ApplicationId);
+
+            var groups = await _userRepo.GetGroups(new Guid(user.Id));
+            foreach (var group in groups)
+                roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, _root.ApplicationId));
 
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.AuthenticationMethod, _realm.ToString()),
