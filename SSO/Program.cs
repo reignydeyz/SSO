@@ -1,12 +1,15 @@
 using Hangfire;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
+using SSO;
 using SSO.Business.Applications;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Groups;
@@ -192,6 +195,8 @@ builder.Services.AddCors(options => {
 
 builder.Services.AddHangfire(x => x.UseSqlServerStorage((builder.Configuration.GetConnectionString("DefaultConnection"))));
 
+builder.Services.AddHealthChecks().AddCheck<HealthCheckHandler>(nameof(HealthCheckHandler));
+
 var app = builder.Build();
 
 // Obtain an instance of IWebHostEnvironment through dependency injection
@@ -209,6 +214,12 @@ app.UseSpaStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHealthChecks("/hc", new HealthCheckOptions()
+{
+    Predicate = _ => true,
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 
 string[] prefixes = { "/swagger", "/api", "/odata", "/hangfire" };
 
