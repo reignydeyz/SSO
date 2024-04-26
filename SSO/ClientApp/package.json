@@ -1,6 +1,6 @@
 {
   "name": "clientapp",
-  "version": "0.3.1",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -10,25 +10,25 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "autocompleter": "^9.2.0",
+    "autocompleter": "^9.2.1",
     "axios": "^1.6.8",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
-    "core-js": "^3.36.1",
+    "core-js": "^3.37.0",
     "js-cookie": "^3.0.5",
-    "json-formatter-js": "^2.3.4",
+    "json-formatter-js": "^2.5.11",
     "jwt-decode": "^4.0.0",
     "mitt": "^3.0.1",
     "moment": "^2.30.1",
-    "vue": "^3.4.21",
+    "vue": "^3.4.25",
     "vue-loader-v16": "npm:vue-loader@^17.4.2",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
     "@vue/cli-plugin-babel": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
-    "@vue/compiler-sfc": "^3.4.21",
+    "@vue/compiler-sfc": "^3.4.25",
     "babel-eslint": "^10.1.0"
   }
 }
