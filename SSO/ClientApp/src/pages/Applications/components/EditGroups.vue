@@ -1,6 +1,6 @@
 <template>
     <div class="alert alert-danger" role="alert" v-show="roles.length <= 0">
-        It seems like roles haven't been set up yet. Unfortunately, adding a user is currently not possible.
+        It seems like roles haven't been set up yet. Unfortunately, adding a group is currently not possible.
     </div>
     <div v-show="roles.length > 0">
         <div class="row g-4 settings-section">
