@@ -1,3 +1,5 @@
+
+import Cookies from 'js-cookie';
 import { createWebHistory, createRouter } from "vue-router";
 import { canActivate } from '@/services/auth-guard.service';
 
@@ -12,14 +14,29 @@ const routes = [
         name: "Login",
         component: () => import('@/pages/Login.vue'),
     },
-    ,
+    {
+        path: '/logout',
+        name: "Logout",
+        beforeEnter(to, from, next) {
+            Cookies.remove('token');
+            Cookies.remove('system');
+
+            let baseUrl = process.env.VUE_APP_API_URL ?? '';
+            if (to.query.applicationId && to.query.callbackUrl) {
+                window.location.href = `${baseUrl}/api/authentication?applicationId=${to.query.applicationId}&callbackurl=${to.query.callbackUrl}`
+            }
+            else {
+                location.reload();
+            }
+        }
+    },
     {
         path: "/init",
         name: "Init",
         component: () => import('@/pages/Init.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate())
-          }
+        }
     },
     {
         path: "/changepassword",
@@ -28,7 +45,7 @@ const routes = [
         component: () => import('@/pages/ChangePassword.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/main",
@@ -37,7 +54,7 @@ const routes = [
         component: () => import('@/pages/Main.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/applications",
@@ -46,7 +63,7 @@ const routes = [
         component: () => import('@/pages/Applications/Manage.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/applications/new",
@@ -55,7 +72,7 @@ const routes = [
         component: () => import('@/pages/Applications/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/applications/edit/:id",
@@ -64,7 +81,7 @@ const routes = [
         component: () => import('@/pages/Applications/Edit.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/applications/copy/:id",
@@ -73,7 +90,7 @@ const routes = [
         component: () => import('@/pages/Applications/Copy.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/users",
@@ -82,7 +99,7 @@ const routes = [
         component: () => import('@/pages/Users/Manage.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/users/new",
@@ -91,7 +108,7 @@ const routes = [
         component: () => import('@/pages/Users/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/users/edit/:id",
@@ -100,7 +117,7 @@ const routes = [
         component: () => import('@/pages/Users/Edit.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/users/copy/:id",
@@ -109,7 +126,7 @@ const routes = [
         component: () => import('@/pages/Users/Copy.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/groups",
@@ -118,7 +135,7 @@ const routes = [
         component: () => import('@/pages/Groups/Manage.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/groups/new",
@@ -127,7 +144,7 @@ const routes = [
         component: () => import('@/pages/Groups/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
     {
         path: "/groups/edit/:id",
@@ -136,7 +153,7 @@ const routes = [
         component: () => import('@/pages/Groups/Edit.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
-          }
+        }
     },
 ];
 

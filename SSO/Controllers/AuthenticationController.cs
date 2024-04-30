@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
 using SSO.Filters;
-using System.ComponentModel.DataAnnotations;
 
 namespace SSO.Controllers
 {
@@ -57,23 +56,6 @@ namespace SSO.Controllers
 
                 return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.ApplicationId}&callbackUrl={form.CallbackUrl}");
             }
-        }
-
-        /// <summary>
-        /// Logout
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("logout")]
-        [EnableCors("AllowAnyOrigin")]
-        public async Task<IActionResult> Logout([FromQuery] Guid? applicationId, [FromQuery, Url(ErrorMessage = "Not a valid Uri.")] string? callbackUrl)
-        {
-            Response.Cookies.Delete("token");
-            Response.Cookies.Delete("system");
-
-            if (applicationId is not null && callbackUrl is not null)
-                return await Init(new InitLoginQuery { ApplicationId = applicationId, CallbackUrl = callbackUrl });
-
-            return Ok();
         }
 
         /// <summary>

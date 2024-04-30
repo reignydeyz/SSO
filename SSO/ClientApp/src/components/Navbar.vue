@@ -177,8 +177,6 @@
 
 <script>
 import { getAccount } from '@/services/account.service';
-import { logout } from "@/services/authentication.service";
-import Cookies from 'js-cookie';
 export default {
     mounted() {
 
@@ -198,10 +196,7 @@ export default {
         },
 
         signout() {
-            logout().then(r => {
-                Cookies.remove('system');
-                location.reload();
-            })
+            this.$router.push('/logout');
         },
 
         isInRealm(realm) {

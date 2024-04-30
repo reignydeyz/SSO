@@ -32,10 +32,7 @@ export default {
     },
 	methods: {
 		signout() {
-            logout().then(r => {
-				Cookies.remove('system');
-                location.reload();
-            })
+            this.$router.push('/logout');
         },
 		isInRealm(realm) {
 			return this.account.authmethod === realm;
