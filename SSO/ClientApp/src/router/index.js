@@ -1,5 +1,3 @@
-
-import Cookies from 'js-cookie';
 import { createWebHistory, createRouter } from "vue-router";
 import { canActivate } from '@/services/auth-guard.service';
 
@@ -18,15 +16,12 @@ const routes = [
         path: '/logout',
         name: "Logout",
         beforeEnter(to, from, next) {
-            Cookies.remove('token');
-            Cookies.remove('system');
-
             let baseUrl = process.env.VUE_APP_API_URL ?? '';
             if (to.query.applicationId && to.query.callbackUrl) {
-                window.location.href = `${baseUrl}/api/authentication?applicationId=${to.query.applicationId}&callbackurl=${to.query.callbackUrl}`
+                window.location.href = `${baseUrl}/api/authentication/logout?applicationId=${to.query.applicationId}&callbackurl=${to.query.callbackUrl}`;
             }
             else {
-                location.reload();
+                window.location.href = `${baseUrl}/api/authentication/logout`;
             }
         }
     },
