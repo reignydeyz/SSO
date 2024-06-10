@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Linq.Expressions;
@@ -7,9 +8,9 @@ namespace SSO.Infrastructure.Management
 {
     public class ApplicationRoleClaimRepository : IApplicationRoleClaimRepository
     {
-        readonly AppDbContext _context;
+        readonly IAppDbContext _context;
 
-        public ApplicationRoleClaimRepository(AppDbContext context)
+        public ApplicationRoleClaimRepository(IAppDbContext context)
         {
             _context = context;
         }

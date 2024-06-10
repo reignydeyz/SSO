@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Linq.Expressions;
@@ -9,9 +10,9 @@ namespace SSO.Infrastructure.Management
     public abstract class UserRepositoryBase : IUserRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly AppDbContext _context;
+        private readonly IAppDbContext _context;
 
-        protected UserRepositoryBase(UserManager<ApplicationUser> userManager, AppDbContext context)
+        protected UserRepositoryBase(UserManager<ApplicationUser> userManager, IAppDbContext context)
         {
             _userManager = userManager;
             _context = context;

@@ -1,14 +1,14 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using SSO.Infrastructure;
+using SSO.Domain.Interfaces;
 using System.Globalization;
 
 namespace SSO
 {
     public class HealthCheckHandler : IHealthCheck
     {
-        readonly AppDbContext _context;
+        readonly IAppDbContext _context;
 
-        public HealthCheckHandler(AppDbContext context)
+        public HealthCheckHandler(IAppDbContext context)
         {
             _context = context;
         }

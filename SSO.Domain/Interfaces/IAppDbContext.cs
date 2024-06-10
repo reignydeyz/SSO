@@ -1,0 +1,49 @@
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using SSO.Domain.Models;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+
+namespace SSO.Domain.Interfaces
+{
+    public interface IAppDbContext : IDisposable
+    {
+        // DbSet properties for Identity entities
+        DbSet<ApplicationUser> Users { get; set; }
+        DbSet<ApplicationRole> Roles { get; set; }
+        DbSet<ApplicationUserClaim> UserClaims { get; set; }
+        DbSet<IdentityUserRole<string>> UserRoles { get; set; }
+        DbSet<IdentityUserLogin<string>> UserLogins { get; set; }
+        DbSet<ApplicationRoleClaim> RoleClaims { get; set; }
+        DbSet<IdentityUserToken<string>> UserTokens { get; set; }
+
+        // DbSet properties for additional entities
+        DbSet<Application> Applications { get; set; }
+        DbSet<ApplicationPermission> ApplicationPermissions { get; set; }
+        DbSet<ApplicationRole> ApplicationRoles { get; set; }
+        DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        DbSet<ApplicationUserClaim> ApplicationUserClaims { get; set; }
+        DbSet<ApplicationRoleClaim> ApplicationRoleClaims { get; set; }
+        DbSet<ApplicationCallback> ApplicationCallbacks { get; set; }
+        DbSet<Group> Groups { get; set; }
+        DbSet<GroupUser> GroupUsers { get; set; }
+        DbSet<GroupRole> GroupRoles { get; set; }
+
+        // Method signatures for saving changes and accessing entity instances
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
+
+        // Database property from DbContext
+        DatabaseFacade Database { get; }
+
+        // Default implementations for saving changes and accessing entity instances
+        Task<int> SaveChangesAsync() => SaveChangesAsync();
+        int SaveChanges() => SaveChanges();
+        EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class => Entry(entity);
+
+        // Default implementations for Add, AddRange, Remove, and RemoveRange
+        void Add<TEntity>(TEntity entity) where TEntity : class => Set<TEntity>().Add(entity);
+        void AddRange<TEntity>(params TEntity[] entities) where TEntity : class => Set<TEntity>().AddRange(entities);
+        void Remove<TEntity>(TEntity entity) where TEntity : class => Set<TEntity>().Remove(entity);
+        void RemoveRange<TEntity>(params TEntity[] entities) where TEntity : class => Set<TEntity>().RemoveRange(entities);
+    }
+}

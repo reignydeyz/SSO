@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Data;
@@ -8,9 +9,9 @@ namespace SSO.Infrastructure.Management
 {
     public class GroupRoleRepository : IGroupRoleRepository
     {
-        readonly AppDbContext _context;
+        readonly IAppDbContext _context;
 
-        public GroupRoleRepository(AppDbContext context)
+        public GroupRoleRepository(IAppDbContext context)
         {
             _context = context;
         }

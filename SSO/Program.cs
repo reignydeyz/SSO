@@ -3,9 +3,7 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.OData;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
@@ -17,14 +15,13 @@ using SSO.Business.Mappings;
 using SSO.Business.Users;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
-using SSO.Domain.Models;
-using SSO.Infrastructure;
 using SSO.Infrastructure.Authentication;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
 using SSO.Infrastructure.Settings.Enums;
 using SSO.Infrastructure.Settings.Services;
+using SSO.ServiceCollections;
 using System.Reflection;
 using System.Security.Claims;
 using VueCliMiddleware;
@@ -59,20 +56,7 @@ builder.Services.AddControllers().AddOData(
         "odata",
         modelBuilder.GetEdmModel()));
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
-
-#if !DEBUG
-using (var scope = builder.Services.BuildServiceProvider().CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.Migrate();
-}
-#endif
+builder.Services.ApplySqlServerServiceColletions(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
@@ -192,8 +176,6 @@ builder.Services.AddCors(options => {
         .AllowAnyHeader();
     });
 });
-
-builder.Services.AddHangfire(x => x.UseSqlServerStorage((builder.Configuration.GetConnectionString("DefaultConnection"))));
 
 builder.Services.AddHealthChecks().AddCheck<HealthCheckHandler>(nameof(HealthCheckHandler));
 

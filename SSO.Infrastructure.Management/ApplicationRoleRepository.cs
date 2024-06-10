@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Linq.Expressions;
@@ -10,9 +11,9 @@ namespace SSO.Infrastructure.Management
     public class ApplicationRoleRepository : IApplicationRoleRepository
     {
         readonly RoleManager<ApplicationRole> _roleManager;
-        readonly AppDbContext _context;
+        readonly IAppDbContext _context;
 
-        public ApplicationRoleRepository(RoleManager<ApplicationRole> roleManager, AppDbContext context)
+        public ApplicationRoleRepository(RoleManager<ApplicationRole> roleManager, IAppDbContext context)
         {
             _roleManager = roleManager;
             _context = context;

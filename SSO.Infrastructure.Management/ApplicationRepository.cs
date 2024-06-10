@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SSO.Domain.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Linq.Expressions;
@@ -7,9 +8,9 @@ namespace SSO.Infrastructure.Management
 {
     public class ApplicationRepository : IApplicationRepository
     {
-        private readonly AppDbContext _context;
+        private readonly IAppDbContext _context;
 
-        public ApplicationRepository(AppDbContext context)
+        public ApplicationRepository(IAppDbContext context)
         {
             _context = context;
         }

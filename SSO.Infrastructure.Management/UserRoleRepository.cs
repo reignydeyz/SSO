@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SSO.Domain.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using System.Data;
@@ -8,9 +9,9 @@ namespace SSO.Infrastructure.Management
     public class UserRoleRepository : IUserRoleRepository
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly AppDbContext _context;
+        private readonly IAppDbContext _context;
 
-        public UserRoleRepository(UserManager<ApplicationUser> userManager, AppDbContext context)
+        public UserRoleRepository(UserManager<ApplicationUser> userManager, IAppDbContext context)
         {
             _userManager = userManager;
             _context = context;
