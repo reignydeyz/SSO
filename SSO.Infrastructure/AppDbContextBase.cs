@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace SSO.Infrastructure
 {
@@ -30,5 +31,19 @@ namespace SSO.Infrastructure
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupUser> GroupUsers { get; set; }
         public DbSet<GroupRole> GroupRoles { get; set; }
+
+        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => base.SaveChangesAsync(cancellationToken);
+        public int SaveChanges() => base.SaveChanges();
+
+        public EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class => base.Entry(entity);
+
+        public void Add<TEntity>(TEntity entity) where TEntity : class => base.Add(entity);
+        public async Task AddAsync<TEntity>(TEntity entity) where TEntity : class => await base.AddAsync(entity);
+        public void AddRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class => base.AddRange(entities);
+        public Task AddRangeAsync<TEntity>(IEnumerable<TEntity> entities) where TEntity : class => base.AddRangeAsync(entities);
+
+        public void Remove<TEntity>(TEntity entity) where TEntity : class => base.Remove(entity);
+        public void RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class => base.RemoveRange(entities);
+
     }
 }

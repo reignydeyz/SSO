@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using SSO.Domain.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace SSO.Domain.Interfaces
@@ -29,21 +29,22 @@ namespace SSO.Domain.Interfaces
         DbSet<GroupUser> GroupUsers { get; set; }
         DbSet<GroupRole> GroupRoles { get; set; }
 
-        // Method signatures for saving changes and accessing entity instances
-        DbSet<TEntity> Set<TEntity>() where TEntity : class;
-
         // Database property from DbContext
         DatabaseFacade Database { get; }
 
-        // Default implementations for saving changes and accessing entity instances
+        // Method signatures for saving changes
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         int SaveChanges();
-        EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class => Entry(entity);
 
-        // Default implementations for Add, AddRange, Remove, and RemoveRange
-        void Add<TEntity>(TEntity entity) where TEntity : class => Set<TEntity>().Add(entity);
-        void AddRange<TEntity>(params TEntity[] entities) where TEntity : class => Set<TEntity>().AddRange(entities);
-        void Remove<TEntity>(TEntity entity) where TEntity : class => Set<TEntity>().Remove(entity);
-        void RemoveRange<TEntity>(params TEntity[] entities) where TEntity : class => Set<TEntity>().RemoveRange(entities);
+        // Default EF functions
+        EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
+
+        void Add<TEntity>(TEntity entity) where TEntity : class;
+        Task AddAsync<TEntity>(TEntity entity) where TEntity : class;
+        void AddRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
+        Task AddRangeAsync<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
+
+        void Remove<TEntity>(TEntity entity) where TEntity : class;
+        void RemoveRange<TEntity>(IEnumerable<TEntity> entities) where TEntity : class;
     }
 }

@@ -8,7 +8,7 @@ using SSO.Infrastructure.Db.MySql;
 
 namespace SSO.ServiceCollections
 {
-    public static class MySqlServiceColletions
+    public static class MySqlServiceCollections
     {
         public static void ApplyMySqlServiceColletions(this IServiceCollection services, IConfiguration configuration)
         {
