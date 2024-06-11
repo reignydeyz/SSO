@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace SSO.Domain.Interfaces
 {
-    public interface IAppDbContext : IDisposable
+    public interface IAppDbContext
     {
         // DbSet properties for Identity entities
         DbSet<ApplicationUser> Users { get; set; }
@@ -36,8 +36,8 @@ namespace SSO.Domain.Interfaces
         DatabaseFacade Database { get; }
 
         // Default implementations for saving changes and accessing entity instances
-        Task<int> SaveChangesAsync() => SaveChangesAsync();
-        int SaveChanges() => SaveChanges();
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        int SaveChanges();
         EntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class => Entry(entity);
 
         // Default implementations for Add, AddRange, Remove, and RemoveRange

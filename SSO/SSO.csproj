@@ -17,6 +17,7 @@
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
 		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.12" />
 		<PackageReference Include="Hangfire.Core" Version="1.8.12" />
+		<PackageReference Include="Hangfire.MySql.Core" Version="2.2.5" />
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.12" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
 		<PackageReference Include="Microsoft.AspNetCore.OData" Version="8.2.5" />
@@ -30,6 +31,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.2" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2" />
@@ -40,6 +42,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\SSO.Business\SSO.Business.csproj" />
 		<ProjectReference Include="..\SSO.Infrastructure.Authentication\SSO.Infrastructure.Authentication.csproj" />
+		<ProjectReference Include="..\SSO.Infrastructure.Db.MySql\SSO.Infrastructure.Db.MySql.csproj" />
 		<ProjectReference Include="..\SSO.Infrastructure.LDAP\SSO.Infrastructure.LDAP.csproj" />
 		<ProjectReference Include="..\SSO.Infrastructure.Management\SSO.Infrastructure.Management.csproj" />
 		<ProjectReference Include="..\SSO.Infrastructure\SSO.Infrastructure.csproj" />

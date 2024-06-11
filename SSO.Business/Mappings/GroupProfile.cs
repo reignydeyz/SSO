@@ -13,6 +13,7 @@ namespace SSO.Business.Mappings
                 .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
 
             CreateMap<CreateGroupCommand, Group>()
+                .ForMember(x => x.GroupId, from => from.MapFrom(x => Guid.NewGuid()))
                 .IgnoreAllSourcePropertiesWithAnInaccessibleSetter();
 
             CreateMap<UpdateGroupCommand, Group>()

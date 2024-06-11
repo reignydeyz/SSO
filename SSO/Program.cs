@@ -56,7 +56,7 @@ builder.Services.AddControllers().AddOData(
         "odata",
         modelBuilder.GetEdmModel()));
 
-builder.Services.ApplySqlServerServiceColletions(builder.Configuration);
+builder.Services.ApplyMySqlServiceColletions(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
