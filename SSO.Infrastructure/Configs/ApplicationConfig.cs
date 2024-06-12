@@ -41,8 +41,19 @@ namespace SSO.Infrastructure.Configs
 
         void UsePostgres(EntityTypeBuilder<Application> builder)
         {
-            builder.Property(x => x.DateCreated).HasColumnType("timestamp without time zone").HasDefaultValueSql("now()");
-            builder.Property(x => x.DateModified).HasColumnType("timestamp without time zone").HasDefaultValueSql("now()");
+            builder.Property(x => x.DateCreated)
+                .HasColumnType("timestamp with time zone")
+                .HasConversion(x => x.UtcDateTime, x => new DateTimeOffset(x, TimeSpan.Zero))
+                .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
+
+            builder.Property(x => x.DateModified)
+                .HasColumnType("timestamp with time zone")
+                .HasConversion(x => x.UtcDateTime, x => new DateTimeOffset(x, TimeSpan.Zero))
+                .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
+
+            builder.Property(x => x.DateInactive)
+                .HasColumnType("timestamp with time zone")
+                .HasConversion(x => x.HasValue ? x.Value.UtcDateTime : (DateTime?)null, x => x.HasValue ? new DateTimeOffset(x.Value, TimeSpan.Zero) : (DateTimeOffset?)null);
         }
     }
 }
