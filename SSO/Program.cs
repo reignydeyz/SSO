@@ -22,6 +22,7 @@ using SSO.Infrastructure.Settings.Constants;
 using SSO.Infrastructure.Settings.Enums;
 using SSO.Infrastructure.Settings.Services;
 using SSO.ServiceCollections;
+using System.Data.Common;
 using System.Reflection;
 using System.Security.Claims;
 using VueCliMiddleware;
@@ -57,9 +58,13 @@ builder.Services.AddControllers().AddOData(
         modelBuilder.GetEdmModel()));
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionStringBuilder = new DbConnectionStringBuilder { ConnectionString = connectionString };
+var keys = connectionStringBuilder.Keys.Cast<string>().ToList();
 
-if (connectionString!.ToLower().Contains("uid="))
+if (keys.Any(k => k.Equals("Uid", StringComparison.OrdinalIgnoreCase)))
     builder.Services.ApplyMySqlServiceCollections(builder.Configuration);
+else if (keys.Any(k => k.Equals("Host", StringComparison.OrdinalIgnoreCase)))
+    builder.Services.ApplyPostgresServiceCollections(builder.Configuration);
 else
     builder.Services.ApplySqlServerServiceCollections(builder.Configuration);
 

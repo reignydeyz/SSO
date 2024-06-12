@@ -18,23 +18,31 @@ namespace SSO.Infrastructure.Configs
         {
             builder.HasKey(x => x.ApplicationId);
 
-            if (_dbType == DatabaseType.SqlServer)
-            {
-                builder.Property(x => x.ApplicationId)
-                    .HasDefaultValueSql("NEWID()");
-            }
-
-            builder.Property(x => x.Name).HasMaxLength(200);
-            builder.Property(x => x.CreatedBy).HasMaxLength(200);
-            builder.Property(x => x.ModifiedBy).HasMaxLength(200);
-
-            if (_dbType == DatabaseType.MySql)
-            {
-                builder.Property(x => x.DateCreated).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
-                builder.Property(x => x.DateModified).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
-            }
-
             builder.HasIndex(x => x.Name).IsUnique();
+
+            (_dbType switch
+            {
+                DatabaseType.MySql => (Action<EntityTypeBuilder<Application>>)UseMySql,
+                DatabaseType.Postgres => UsePostgres,
+                _ => UseSqlServer
+            })(builder);
+        }
+
+        void UseSqlServer(EntityTypeBuilder<Application> builder)
+        {
+            builder.Property(x => x.ApplicationId).HasDefaultValueSql("NEWID()");
+        }
+
+        void UseMySql(EntityTypeBuilder<Application> builder)
+        {
+            builder.Property(x => x.DateCreated).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
+            builder.Property(x => x.DateModified).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
+        }
+
+        void UsePostgres(EntityTypeBuilder<Application> builder)
+        {
+            builder.Property(x => x.DateCreated).HasColumnType("timestamp without time zone").HasDefaultValueSql("now()");
+            builder.Property(x => x.DateModified).HasColumnType("timestamp without time zone").HasDefaultValueSql("now()");
         }
     }
 }
