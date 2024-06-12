@@ -56,7 +56,12 @@ builder.Services.AddControllers().AddOData(
         "odata",
         modelBuilder.GetEdmModel()));
 
-builder.Services.ApplyMySqlServiceColletions(builder.Configuration);
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (connectionString!.ToLower().Contains("uid="))
+    builder.Services.ApplyMySqlServiceCollections(builder.Configuration);
+else
+    builder.Services.ApplySqlServerServiceCollections(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 

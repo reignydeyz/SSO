@@ -7,9 +7,9 @@ using SSO.Infrastructure;
 
 namespace SSO.ServiceCollections
 {
-    public static class SqlServerServiceColletions
+    public static class SqlServerServiceCollections
     {
-        public static void ApplySqlServerServiceColletions(this IServiceCollection services, IConfiguration configuration)
+        public static void ApplySqlServerServiceCollections(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));

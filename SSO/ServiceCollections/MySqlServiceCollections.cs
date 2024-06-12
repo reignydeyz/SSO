@@ -10,7 +10,7 @@ namespace SSO.ServiceCollections
 {
     public static class MySqlServiceCollections
     {
-        public static void ApplyMySqlServiceColletions(this IServiceCollection services, IConfiguration configuration)
+        public static void ApplyMySqlServiceCollections(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseMySQL(configuration.GetConnectionString("DefaultConnection")));
