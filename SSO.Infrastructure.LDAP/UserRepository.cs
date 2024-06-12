@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.Management;
 using System.Linq.Expressions;
@@ -7,9 +8,9 @@ namespace SSO.Infrastructure.LDAP
 {
     public class UserRepository : UserRepositoryBase
     {
-        readonly AppDbContext _context;
+        readonly IAppDbContext _context;
 
-        public UserRepository(UserManager<ApplicationUser> userManager, AppDbContext context) : base(userManager, context)
+        public UserRepository(UserManager<ApplicationUser> userManager, IAppDbContext context) : base(userManager, context)
         {
             _context = context;
         }
