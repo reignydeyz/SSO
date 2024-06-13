@@ -127,9 +127,5 @@ Please visit [this link](https://learn.microsoft.com/en-us/aspnet/core/tutorials
 
 Please visit [wiki page](https://github.com/reignydeyz/SSO/wiki)
 
-
-## People to blame
-
-The following personnel is/are responsible for managing this project.
-
-- [actchua@periapsys.com](mailto:actchua@periapsys.com)
+## Misc
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=reignydeyz_SSO)](https://sonarcloud.io/summary/new_code?id=reignydeyz_SSO)
