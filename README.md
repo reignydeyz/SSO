@@ -29,10 +29,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 - [Visual Studio](https://www.visualstudio.com/)
 - [VS Code](https://code.visualstudio.com) - optional but recommended
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-2022)
-- [SQL Server Management Studio](https://msdn.microsoft.com/en-us/library/mt238290.aspx)
+- ~~[SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-2022)~~
+- ~~[SQL Server Management Studio](https://msdn.microsoft.com/en-us/library/mt238290.aspx)~~
 - [Node.js](https://nodejs.org)
 - [.Net Core SDK](https://dotnet.microsoft.com/download)
+- Supports **MSSQL**, **MySQL** and **Postgres**
 
 ### Debugging
 
@@ -44,6 +45,11 @@ These instructions will get you a copy of the project up and running on your loc
     "DefaultConnection": "[CONNECTION_STRING]"
   }
   ```
+    - For Postgres, use *Host* as server.
+      ```
+      Host=myServerAddress;Port=myPortNumber;Database=myDataBase;Username=myUsername;Password=myPassword;
+      ```
+    
   LDAP settings ~ If present, will use LDAP modules instead of the default ones...
   ```json
   "LDAPSettings": 
