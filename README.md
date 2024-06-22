@@ -64,12 +64,25 @@ These instructions will get you a copy of the project up and running on your loc
   }
   ```
 
-- Database that includes the tables...
-  - From **Package Manager Console**, choose `SSO.Infrastructure` as Default project.
-  - Generate the tables and data, run... (EF)
-    ```
-    update-database
-    ```
+- Update database (EF)...
+  - PMC
+    - From **Package Manager Console**, choose the Default project...
+      - `SSO.Infrastructure` for MS SQL
+      - `SSO.Infrastructure.Db.MySql` for MySQL
+      - `SSO.Infrastructure.Db.Postgres` for Postgres
+    - Generate the tables and data, run... (EF)
+      ```
+      update-database
+      ```
+  - Powershell
+    - Locate the corresponding folder
+      - `..\SSO.Infrastructure` for MS SQL
+      - `..\SSO.Infrastructure.Db.MySql` for MySQL
+      - `..\SSO.Infrastructure.Db.Postgres` for Postgres
+    - Generate the tables and data, run... (EF)
+      ```
+      dotnet ef database update --startup-project ../SSO
+      ```
 - Run by pressing **F5**. Login page should be launched.
   - username: `admin@example.com`
   - password: `Password123#`
