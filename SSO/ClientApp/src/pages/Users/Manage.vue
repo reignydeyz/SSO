@@ -23,7 +23,7 @@
                             </div>
                             <!--//col-->
 
-                            <div class="col-auto" v-if="isInRealm('Default')">
+                            <div class="col-auto">
                                 <router-link to="/users/new" class="btn app-btn-primary"><i
                                         class="bi bi-plus-lg"></i>&nbsp;Create
                                     New</router-link>

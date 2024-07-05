@@ -99,7 +99,7 @@ const routes = [
     {
         path: "/users/new",
         name: "New User",
-        meta: { mustBeRoot: true, realm: 'Default' },
+        meta: { mustBeRoot: true },
         component: () => import('@/pages/Users/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
