@@ -110,7 +110,7 @@
                                                     <li>
                                                         <hr class="dropdown-divider" />
                                                     </li>
-                                                    <li v-if="isInRealm('Default')">
+                                                    <li>
                                                         <a class="dropdown-item" href="#"
                                                             @click="onDelete(i.userId)">Remove</a>
                                                     </li>

@@ -79,8 +79,7 @@
                         <!--//app-card-body-->
                         <div class="app-card-footer p-4 mt-auto">
                             <div class="btn-group">
-                                <router-link to="/users/new" class="btn app-btn-secondary"
-                                    v-if="isInRealm('Default')">Create New</router-link>
+                                <router-link to="/users/new" class="btn app-btn-secondary">Create New</router-link>
                                 <router-link to="/users" class="btn app-btn-secondary">Manage</router-link>
                             </div>
                         </div>

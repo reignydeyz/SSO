@@ -36,7 +36,6 @@ const routes = [
     {
         path: "/changepassword",
         name: "ChangePassword",
-        meta: { realm: 'Default' },
         component: () => import('@/pages/ChangePassword.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))

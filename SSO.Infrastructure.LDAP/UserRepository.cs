@@ -12,22 +12,25 @@ namespace SSO.Infrastructure.LDAP
     public class UserRepository : UserRepositoryBase
     {
         readonly IAppDbContext _context;
-        readonly LDAPSettings _ldapSettings;
-        readonly string _ldapConnectionString;
+        readonly DirectoryEntry _dirEntry;
+        readonly DirectorySearcher _dirSearcher;
+        readonly UserManager<ApplicationUser> _userManager;
 
         public UserRepository(UserManager<ApplicationUser> userManager,
             IAppDbContext context,
             IOptions<LDAPSettings> ldapSettings) : base(userManager, context)
         {
             _context = context;
-            _ldapSettings = ldapSettings.Value;
-            _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
+
+            var ldapConnectionString = $"{(ldapSettings.Value.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Value.Server}:{ldapSettings.Value.Port}/{ldapSettings.Value.SearchBase}";
+            _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Value.Username, ldapSettings.Value.Password);            
+            _dirSearcher = new DirectorySearcher(_dirEntry);
+            _userManager = userManager;
         }
 
         public override async Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            var entry = new DirectoryEntry(_ldapConnectionString, _ldapSettings.Username, _ldapSettings.Password);
-            var newUser = entry.Children.Add($"CN={param.UserName}", "user");
+            var newUser = _dirEntry.Children.Add($"CN={param.UserName}", "user");
             newUser.Properties["samAccountName"].Value = param.UserName;
             newUser.Properties["userPassword"].Value = param.PasswordHash;
             newUser.Properties["givenName"].Value = param.FirstName;
@@ -60,14 +63,55 @@ namespace SSO.Infrastructure.LDAP
                 await _context.SaveChangesAsync();
         }
 
-        public override Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null)
+        public override async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null)
         {
-            throw new NotImplementedException();
+            _dirSearcher.Filter = $"(samAccountName={applicationUser.UserName})";
+            _dirSearcher.SearchScope = SearchScope.Subtree;
+
+            var result = _dirSearcher.FindOne();
+
+            if (result != null)
+            {
+                var userEntry = result.GetDirectoryEntry();
+
+                userEntry.Invoke("SetPassword", new object[] { password });
+                userEntry.Properties["LockOutTime"].Value = 0; // Unlock account if locked
+                userEntry.CommitChanges();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
+
+            var res = await _userManager.ResetPasswordAsync(applicationUser, token, password);
+
+            if (!res.Succeeded && res.Errors.Any())
+                throw new ArgumentException(res.Errors.First().Description);
+
+            var rec = _context.ApplicationUsers.First(x => x.Id == applicationUser.Id);
+
+            rec.DateModified = DateTime.Now;
+            rec.ModifiedBy = author == null ? $"{applicationUser.FirstName} {applicationUser.LastName}" : $"{author.FirstName} {author.LastName}";
+
+            _context.SaveChanges();
         }
 
-        public override Task Delete(ApplicationUser param, bool? saveChanges = true)
+        public override async Task Delete(ApplicationUser param, bool? saveChanges = true)
         {
-            throw new NotImplementedException();
+            _dirSearcher.Filter = $"(samAccountName={param.UserName})";
+            _dirSearcher.SearchScope = SearchScope.Subtree;
+
+            var result = _dirSearcher.FindOne();
+
+            if (result != null)
+            {
+                var userEntry = result.GetDirectoryEntry();
+                _dirEntry.Children.Remove(userEntry);
+                _dirEntry.CommitChanges();
+            }
+
+            _context.Remove(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public override async Task RemoveRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null)
@@ -86,9 +130,40 @@ namespace SSO.Infrastructure.LDAP
                 await _context.SaveChangesAsync();
         }
 
-        public override Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
+        public override async Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            throw new NotImplementedException();
+            _dirSearcher.Filter = $"(samAccountName={param.UserName})";
+            _dirSearcher.SearchScope = SearchScope.Subtree;
+
+            var result = _dirSearcher.FindOne();
+
+            if (result != null)
+            {
+                var userEntry = result.GetDirectoryEntry();
+
+                userEntry.Properties["samAccountName"].Value = param.UserName;
+                userEntry.Properties["givenName"].Value = param.FirstName;
+                userEntry.Properties["sn"].Value = param.LastName;
+                userEntry.CommitChanges();
+            }
+
+            var rec = _context.ApplicationUsers.First(x => x.Id == param.Id);
+            rec.FirstName = param.FirstName;
+            rec.LastName = param.LastName;
+            rec.UserName = param.UserName;
+            rec.NormalizedUserName = param.UserName.ToUpper();
+            rec.Email = param.Email;
+
+            await _context.SaveChangesAsync();
+
+            if (param.PasswordHash is not null)
+                await ChangePassword(rec, param.PasswordHash, default);
+
+            // Unlock the user
+            await _userManager.ResetAccessFailedCountAsync(rec);
+            await _userManager.SetLockoutEndDateAsync(rec, DateTimeOffset.MinValue);
+
+            return rec;
         }
     }
 }

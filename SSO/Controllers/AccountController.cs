@@ -1,8 +1,11 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Accounts.Commands;
 using SSO.Domain.Management.Interfaces;
+using SSO.Infrastructure.Settings.Enums;
+using SSO.Infrastructure.Settings.Services;
 using System.Security.Claims;
 
 namespace SSO.Controllers
@@ -15,11 +18,15 @@ namespace SSO.Controllers
     {
         readonly IMediator _mediator;
         readonly IUserRepository _userRepository;
+        readonly IMapper _mapper;
+        readonly Realm _realm;
 
-        public AccountController(IMediator mediator, IUserRepository userRepository)
+        public AccountController(IMediator mediator, IUserRepository userRepository, IMapper mapper, RealmService realmService)
         {
             _mediator = mediator;
             _userRepository = userRepository;
+            _mapper = mapper;
+            _realm = realmService.Realm;
         }
 
         /// <summary>
@@ -36,7 +43,12 @@ namespace SSO.Controllers
 
                 param.User = await _userRepository.FindOne(x => x.Id == userId);
 
-                await _mediator.Send(param);
+                await (_realm switch
+                {
+                    Realm.Default => _mediator.Send(param),
+                    Realm.LDAP => _mediator.Send(_mapper.Map<ChangePasswordLDAPCommand>(param)),
+                    _ => throw new InvalidOperationException("Unsupported realm type")
+                });
 
                 return Ok();
             }

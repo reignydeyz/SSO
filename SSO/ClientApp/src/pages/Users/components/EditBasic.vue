@@ -6,16 +6,16 @@
                     <form class="settings-form" @submit.prevent="onSubmit">
                         <div class="mb-3">
                             <label class="form-label">First name*</label>
-                            <input v-model="user.firstName" type="text" class="form-control" minlength="3" maxlength="200"
-                                placeholder="First name" required autocomplete="off" ref="FirstName" />
+                            <input v-model="user.firstName" type="text" class="form-control" minlength="3"
+                                maxlength="200" placeholder="First name" required autocomplete="off" ref="FirstName" />
                             <div class="invalid-feedback">
                                 {{ errorMessage }}
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Last name*</label>
-                            <input v-model="user.lastName" type="text" class="form-control" minlength="2" maxlength="200"
-                                placeholder="Last name" required autocomplete="off" ref="LastName" />
+                            <input v-model="user.lastName" type="text" class="form-control" minlength="2"
+                                maxlength="200" placeholder="Last name" required autocomplete="off" ref="LastName" />
                             <div class="invalid-feedback">
                                 {{ errorMessage }}
                             </div>
@@ -66,7 +66,7 @@
                             </div>
                         </div><!--//form-group-->
 
-                        <button type="submit" class="btn app-btn-primary mt-3" v-if="isInRealm('Default')">
+                        <button type="submit" class="btn app-btn-primary mt-3">
                             Save Changes
                         </button>
                     </form>
@@ -103,41 +103,39 @@ export default {
         },
 
         onSubmit() {
-            if (this.isInRealm('Default')) {
-                const allInputs = document.querySelectorAll('.is-invalid');
+            const allInputs = document.querySelectorAll('.is-invalid');
 
-                allInputs.forEach((input) => {
-                    input.classList.remove('is-invalid');
-                });
+            allInputs.forEach((input) => {
+                input.classList.remove('is-invalid');
+            });
 
-                this.user.email = this.user.email === '' ? null : this.user.email;
+            this.user.email = this.user.email === '' ? null : this.user.email;
 
-                emitter.emit("showLoader", true);
-                updateUser(this.user.userId, this.user).then(r => {
-                    this.$router.push("../../users");
-                    emitter.emit("showLoader", false);
-                }, error => {
-                    // Check if the error is related to a specific input field
-                    if (error && error.response && error.response.data && error.response.data.errors) {
-                        const errorField = Object.keys(error.response.data.errors)[0];
+            emitter.emit("showLoader", true);
+            updateUser(this.user.userId, this.user).then(r => {
+                this.$router.push("../../users");
+                emitter.emit("showLoader", false);
+            }, error => {
+                // Check if the error is related to a specific input field
+                if (error && error.response && error.response.data && error.response.data.errors) {
+                    const errorField = Object.keys(error.response.data.errors)[0];
 
-                        // Add 'is-invalid' class to the corresponding input field
-                        const inputElement = this.$refs[errorField];
-                        if (inputElement) {
-                            inputElement.classList.add('is-invalid');
+                    // Add 'is-invalid' class to the corresponding input field
+                    const inputElement = this.$refs[errorField];
+                    if (inputElement) {
+                        inputElement.classList.add('is-invalid');
 
-                            const errorMessage = Object.values(error.response.data.errors)[0][0];
-                            this.errorMessage = errorMessage;
-                        }
+                        const errorMessage = Object.values(error.response.data.errors)[0][0];
+                        this.errorMessage = errorMessage;
                     }
-                    else {
-                        alert('Failed to update user.');
-                    }
+                }
+                else {
+                    alert('Failed to update user.');
+                }
 
-                    emitter.emit("showLoader", false);
-                    return false;
-                });
-            }
+                emitter.emit("showLoader", false);
+                return false;
+            });
         },
 
         isInRealm(realm) {

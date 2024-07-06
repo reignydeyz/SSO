@@ -121,7 +121,7 @@
                             <!--//nav-link-->
                             <div id="submenu-2" class="collapse submenu submenu-1" data-bs-parent="#menu-accordion">
                                 <ul class="submenu-list list-unstyled">
-                                    <li class="submenu-item" v-if="isInRealm('Default')">
+                                    <li class="submenu-item">
                                         <router-link to="/users/new" class="submenu-link">Create New</router-link>
                                     </li>
                                     <li class="submenu-item">
