@@ -134,6 +134,7 @@ if (ldapSettings != null)
 
     builder.Services.AddScoped<IAuthenticationService, LDAP.AuthenticationService>();
     builder.Services.AddScoped<IUserRepository, LDAP.UserRepository>();
+    builder.Services.AddScoped<IGroupRepository, LDAP.GroupRepository>();
 
     builder.Services.Configure<LDAPSettings>(builder.Configuration.GetSection("LDAPSettings"));
 

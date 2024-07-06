@@ -1,20 +1,34 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
+using SSO.Infrastructure.LDAP.Models;
+using SSO.Infrastructure.Management;
+using System.DirectoryServices;
 
-namespace SSO.Infrastructure.Management
+namespace SSO.Infrastructure.LDAP
 {
     public class GroupRepository : GroupRepositoryBase
     {
         readonly IAppDbContext _context;
+        readonly DirectoryEntry _dirEntry;
 
-        public GroupRepository(IAppDbContext context) : base(context)
+        public GroupRepository(IAppDbContext context, IOptions<LDAPSettings> ldapSettings) : base(context)
         {
             _context = context;
+
+            var ldapConnectionString = $"{(ldapSettings.Value.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Value.Server}:{ldapSettings.Value.Port}/{ldapSettings.Value.SearchBase}";
+            _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Value.Username, ldapSettings.Value.Password);
         }
 
         public override async Task<Group> Add(Group param, bool? saveChanges = true, object? args = null)
         {
+            var newGroup = _dirEntry.Children.Add($"CN={param.Name}", "group");
+
+            newGroup.Properties["sAMAccountName"].Value = param.Name;
+            newGroup.Properties["description"].Value = param.Description ?? string.Empty;
+            newGroup.CommitChanges();
+
             _context.Add(param);
 
             if (saveChanges!.Value)

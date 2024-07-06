@@ -104,7 +104,7 @@ namespace SSO.Infrastructure.LDAP
             if (result != null)
             {
                 var userEntry = result.GetDirectoryEntry();
-                _dirEntry.Children.Remove(userEntry);
+                userEntry.DeleteTree();
                 _dirEntry.CommitChanges();
             }
 

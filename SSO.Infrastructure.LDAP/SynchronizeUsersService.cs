@@ -37,6 +37,32 @@ namespace SSO.Infrastructure.LDAP
             {
                 using (var searcher = new DirectorySearcher(entry))
                 {
+                    searcher.Filter = "(objectClass=group)"; // Filter to get only groups
+                    searcher.PropertiesToLoad.Add("cn");
+                    searcher.PropertiesToLoad.Add("sAMAccountName");
+                    searcher.PropertiesToLoad.Add("description");
+                    searcher.PropertiesToLoad.Add("distinguishedName");
+
+                    searcher.SearchScope = SearchScope.Subtree;
+
+                    SearchResultCollection results = searcher.FindAll();
+
+                    foreach (SearchResult searchResult in results)
+                    {
+                        var rec = searchResult.GetDirectoryEntry();
+                        groups.Add(new Group { GroupId = Guid.NewGuid(), Name = rec.Properties["cn"].Value?.ToString() ?? string.Empty });
+                    }
+
+                    // Groups
+                    var toBeAddedGroups = groups.Where(x => !_groupRepository.Any(y => y.Name == x.Name).Result);
+                    await _groupRepository.AddRange(toBeAddedGroups, false);
+
+                    var groupNames = groups.Select(x => x.Name.ToLower());
+                    await _groupRepository.RemoveRange(x => !groupNames.Contains(x.Name)); // Write
+                }
+
+                using (var searcher = new DirectorySearcher(entry))
+                {
                     searcher.Filter = _ldapSettings.SearchFilter;
 
                     // Handle referrals explicitly
@@ -71,9 +97,6 @@ namespace SSO.Infrastructure.LDAP
                                         // Extract the group name from the LDAP path
                                         string groupName = groupPath.Split(',')[0].Substring(3);
 
-                                        if (!groups.Any(x => x.Name == groupName))
-                                            groups.Add(new Group { GroupId = Guid.NewGuid(), Name = groupName });
-
                                         if (!groupUsers.Any(x => x.Item1 == groupName && x.Item2 == result.Properties["sAMAccountName"][0].ToString()))
                                             groupUsers.Add(new Tuple<string, string>(groupName, result.Properties["sAMAccountName"][0].ToString()));
                                     }
@@ -88,14 +111,7 @@ namespace SSO.Infrastructure.LDAP
                 await _userRepository.AddRange(toBeAddedUsers, false);
 
                 var usernames = users.Select(x => x.UserName.ToLower());
-                await _userRepository.RemoveRange(x => !usernames.Contains(x.UserName), false);
-
-                // Groups
-                var toBeAddedGroups = groups.Where(x => !_groupRepository.Any(y => y.Name == x.Name).Result);
-                await _groupRepository.AddRange(toBeAddedGroups, false);
-
-                var groupNames = groups.Select(x => x.Name.ToLower());
-                await _groupRepository.RemoveRange(x => !groupNames.Contains(x.Name)); // Write
+                await _userRepository.RemoveRange(x => !usernames.Contains(x.UserName), false);               
 
                 // GroupUsers
                 var guList = (from gu in groupUsers

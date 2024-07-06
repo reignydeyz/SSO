@@ -72,7 +72,6 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(GroupDto), 200)]
-        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Create([FromBody] CreateGroupCommand param)
         {
             try

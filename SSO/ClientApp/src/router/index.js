@@ -134,7 +134,7 @@ const routes = [
     {
         path: "/groups/new",
         name: "New Group",
-        meta: { mustBeRoot: true, realm: 'Default' },
+        meta: { mustBeRoot: true },
         component: () => import('@/pages/Groups/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
