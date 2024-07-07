@@ -14,11 +14,30 @@ namespace SSO.Controllers
     [Authorize(Policy = "RootPolicy")]
     public class LDAPController : ControllerBase
     {
-        readonly SynchronizeUsersService _synchronizeUsersService;
+        readonly SynchronizeService _synchronizeService;
 
-        public LDAPController(SynchronizeUsersService synchronizeUsersService)
+        public LDAPController(SynchronizeService synchronizeService)
         {
-            _synchronizeUsersService = synchronizeUsersService;
+            _synchronizeService = synchronizeService;
+        }
+
+        /// <summary>
+        /// Checks sync if is has completed
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("sync/status")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        public IActionResult GetSyncStatus()
+        {
+            var api = JobStorage.Current.GetMonitoringApi();
+
+            var processingJobs = api.ProcessingJobs(0, int.MaxValue);
+
+            if (processingJobs.Any(x => x.Value.Job.ToString() == $"{nameof(SynchronizeService)}.{nameof(_synchronizeService.Begin)}"))
+                return Accepted(new { status = "Processing", message = $"The request is being processed. Check the status at /hangfire/jobs/enqueued" });
+
+            return Ok(new { status = "Ready", message = "Process is ready for further action." });
         }
 
         /// <summary>
@@ -28,16 +47,14 @@ namespace SSO.Controllers
         [HttpPost("sync")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        public IActionResult SyncUsers()
+        public IActionResult Sync()
         {
-            var api = JobStorage.Current.GetMonitoringApi();
+            var status = GetSyncStatus();
 
-            var processingJobs = api.ProcessingJobs(0, int.MaxValue);
+            if (status is AcceptedResult)
+                return status;
 
-            if (processingJobs.Any(x => x.Value.Job.ToString() == $"{nameof(SynchronizeUsersService)}.{nameof(_synchronizeUsersService.Begin)}"))
-                return Accepted(new { status = "Processing", message = $"The request is being processed. Check the status at /hangfire/jobs/enqueued" });
-
-            BackgroundJob.Enqueue(() => _synchronizeUsersService.Begin());
+            BackgroundJob.Enqueue(() => _synchronizeService.Begin());
 
             return Ok();
         }

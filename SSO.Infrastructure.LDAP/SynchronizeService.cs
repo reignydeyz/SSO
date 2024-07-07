@@ -7,7 +7,7 @@ using System.DirectoryServices;
 
 namespace SSO.Infrastructure.LDAP
 {
-    public class SynchronizeUsersService
+    public class SynchronizeService
     {
         readonly IGroupRepository _groupRepository;
         readonly IGroupUserRepository _groupUserRepository;
@@ -15,7 +15,7 @@ namespace SSO.Infrastructure.LDAP
         readonly LDAPSettings _ldapSettings;
         readonly string _ldapConnectionString;
 
-        public SynchronizeUsersService(IGroupRepository groupRepository,
+        public SynchronizeService(IGroupRepository groupRepository,
             IGroupUserRepository groupUserRepository,
             IUserRepository userRepository,
             IOptions<LDAPSettings> ldapSettings)

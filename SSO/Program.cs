@@ -138,7 +138,7 @@ if (ldapSettings != null)
 
     builder.Services.Configure<LDAPSettings>(builder.Configuration.GetSection("LDAPSettings"));
 
-    builder.Services.AddScoped<LDAP.SynchronizeUsersService>();
+    builder.Services.AddScoped<LDAP.SynchronizeService>();
 }
 
 builder.Services.AddSpaStaticFiles(configuration =>
