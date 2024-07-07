@@ -8,7 +8,6 @@ using SSO.Business.Groups;
 using SSO.Business.Groups.Commands;
 using SSO.Business.Groups.Queries;
 using SSO.Filters;
-using SSO.Infrastructure.Settings.Enums;
 using System.Security.Claims;
 
 namespace SSO.Controllers
@@ -95,7 +94,6 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpDelete("{groupId}")]
         [GroupIdValidator<GroupIdDto>]
-        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Delete([FromRoute] GroupIdDto form)
         {
             try
@@ -120,7 +118,6 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPut("{groupId}")]
         [GroupIdValidator<GroupIdDto>]
-        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Update([FromRoute] GroupIdDto form, [FromBody] UpdateGroupCommand param)
         {
             try

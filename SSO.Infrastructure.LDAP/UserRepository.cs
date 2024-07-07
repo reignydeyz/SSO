@@ -9,12 +9,14 @@ using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.LDAP
 {
-    public class UserRepository : UserRepositoryBase
+    public class UserRepository : UserRepositoryBase, IDisposable
     {
         readonly IAppDbContext _context;
         readonly DirectoryEntry _dirEntry;
         readonly DirectorySearcher _dirSearcher;
         readonly UserManager<ApplicationUser> _userManager;
+
+        bool _disposed;
 
         public UserRepository(UserManager<ApplicationUser> userManager,
             IAppDbContext context,
@@ -141,6 +143,7 @@ namespace SSO.Infrastructure.LDAP
             {
                 var userEntry = result.GetDirectoryEntry();
 
+                userEntry.Rename($"CN={param.FirstName} {param.LastName}");
                 userEntry.Properties["samAccountName"].Value = param.UserName;
                 userEntry.Properties["givenName"].Value = param.FirstName;
                 userEntry.Properties["sn"].Value = param.LastName;
@@ -164,6 +167,25 @@ namespace SSO.Infrastructure.LDAP
             await _userManager.SetLockoutEndDateAsync(rec, DateTimeOffset.MinValue);
 
             return rec;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _dirSearcher?.Dispose();
+                    _dirEntry?.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

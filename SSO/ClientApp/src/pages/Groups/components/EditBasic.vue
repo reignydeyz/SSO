@@ -20,7 +20,7 @@
                             <input v-model="group.description" type="text" class="form-control" id="setting-input-3"
                                 maxlength="500" placeholder="Description" autocomplete="off" />
                         </div>
-                        <button type="submit" class="btn app-btn-primary" v-if="isInRealm('Default')">
+                        <button type="submit" class="btn app-btn-primary">
                             Save Changes
                         </button>
                     </form>
@@ -40,19 +40,17 @@ export default {
     props: ["group"],
     methods: {
         onSubmit() {
-            if (this.isInRealm('Default')) {
-                emitter.emit("showLoader", true);
+            emitter.emit("showLoader", true);
 
-                updateGroup(this.group).then(
-                    (r) => {
-                        this.$router.push("../../groups");
-                    },
-                    (err) => {
-                        alert('Failed to update record.');
-                        emitter.emit("showLoader", false);
-                    }
-                );
-            }
+            updateGroup(this.group).then(
+                (r) => {
+                    this.$router.push("../../groups");
+                },
+                (err) => {
+                    alert('Failed to update record.');
+                    emitter.emit("showLoader", false);
+                }
+            );
         },
 
         isInRealm(realm) {

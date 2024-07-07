@@ -23,7 +23,7 @@
                             </div>
                             <!--//col-->
 
-                            <div class="col-auto" v-if="isInRealm('Default')">
+                            <div class="col-auto">
                                 <router-link to="/groups/new" class="btn app-btn-primary"><i
                                         class="bi bi-plus-lg"></i>&nbsp;Create
                                     New</router-link>
@@ -86,7 +86,7 @@
                                                         <router-link :to="'/groups/edit/' + i.groupId"
                                                             class="dropdown-item">Edit/View</router-link>
                                                     </li>                                         
-                                                    <li v-if="isInRealm('Default')">
+                                                    <li>
                                                         <a class="dropdown-item" href="#"
                                                             @click="onDelete(i.groupId)">Remove</a>
                                                     </li>
