@@ -5,53 +5,31 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using SSO;
-using SSO.Business.Applications;
+using SSO.Business;
 using SSO.Business.Authentication.Handlers;
-using SSO.Business.Groups;
 using SSO.Business.Mappings;
-using SSO.Business.Users;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
+using SSO.Infrastructure;
 using SSO.Infrastructure.Authentication;
 using SSO.Infrastructure.Db.MySql;
+using SSO.Infrastructure.Db.Postgres;
+using SSO.Infrastructure.LDAP;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
 using SSO.Infrastructure.Settings.Enums;
 using SSO.Infrastructure.Settings.Services;
-using SSO.ServiceCollections;
 using System.Data.Common;
 using System.Reflection;
 using System.Security.Claims;
 using VueCliMiddleware;
-using LDAP = SSO.Infrastructure.LDAP;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var modelBuilder = new ODataConventionModelBuilder();
-
-modelBuilder.EntityType<ApplicationDto>().HasKey(x => x.ApplicationId);
-modelBuilder.EntitySet<ApplicationDto>("Application");
-
-modelBuilder.EntityType<UserDto>().HasKey(x => x.UserId);
-modelBuilder.EntitySet<UserDto>("User");
-
-modelBuilder.EntityType<UserDto>().HasKey(x => x.UserId);
-modelBuilder.EntitySet<UserDto>("ApplicationUser");
-
-modelBuilder.EntityType<GroupDto>().HasKey(x => x.GroupId);
-modelBuilder.EntitySet<GroupDto>("Group");
-
-modelBuilder.EntityType<UserDto>().HasKey(x => x.UserId);
-modelBuilder.EntitySet<UserDto>("GroupUser");
-
-modelBuilder.EntityType<GroupDto>().HasKey(x => x.GroupId);
-modelBuilder.EntitySet<GroupDto>("ApplicationGroup");
-
-modelBuilder.EnableLowerCamelCase();
+var modelBuilder = ODataModelBuilderFactory.Create();
 
 builder.Services.AddControllers().AddOData(
     options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
@@ -63,11 +41,11 @@ var connectionStringBuilder = new DbConnectionStringBuilder { ConnectionString =
 var keys = connectionStringBuilder.Keys.Cast<string>().ToList();
 
 if (keys.Any(k => k.Equals("Uid", StringComparison.OrdinalIgnoreCase)))
-    builder.Services.ApplyMySqlServiceCollections(builder.Configuration);
+    builder.Services.ApplyMySqlServiceCollection(builder.Configuration);
 else if (keys.Any(k => k.Equals("Host", StringComparison.OrdinalIgnoreCase)))
-    builder.Services.ApplyPostgresServiceCollections(builder.Configuration);
+    builder.Services.ApplyPostgresServiceCollection(builder.Configuration);
 else
-    builder.Services.ApplySqlServerServiceCollections(builder.Configuration);
+    builder.Services.ApplySqlServerServiceCollection(builder.Configuration);
 
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
@@ -113,34 +91,24 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSingleton(_ => new JwtSecretService(privateKey));
 builder.Services.AddSingleton(_ => new RealmService(Realm.Default));
 
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IAuthenticationService, SSO.Infrastructure.Authentication.AuthenticationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository, SSO.Infrastructure.Management.UserRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IApplicationRoleRepository, ApplicationRoleRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IApplicationCallbackRepository, ApplicationCallbackRepository>();
 builder.Services.AddScoped<IApplicationPermissionRepository, ApplicationPermissionRepository>();
 builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaimRepository>();
-builder.Services.AddScoped<IGroupRepository, GroupRepository>();
+builder.Services.AddScoped<IGroupRepository, SSO.Infrastructure.Management.GroupRepository>();
 builder.Services.AddScoped<IGroupUserRepository, GroupUserRepository>();
 builder.Services.AddScoped<IGroupRoleRepository, GroupRoleRepository>();
 
 var ldapSettings = builder.Configuration.GetSection("LDAPSettings").Get<LDAPSettings>();
 
 if (ldapSettings != null)
-{
-    builder.Services.AddSingleton(_ => new RealmService(Realm.LDAP));
-
-    builder.Services.AddScoped<IAuthenticationService, LDAP.AuthenticationService>();
-    builder.Services.AddScoped<IUserRepository, LDAP.UserRepository>();
-    builder.Services.AddScoped<IGroupRepository, LDAP.GroupRepository>();
-
-    builder.Services.Configure<LDAPSettings>(builder.Configuration.GetSection("LDAPSettings"));
-
-    builder.Services.AddScoped<LDAP.SynchronizeService>();
-}
+    builder.Services.ApplyLdapServiceCollection(builder.Configuration);
 
 builder.Services.AddSpaStaticFiles(configuration =>
 {

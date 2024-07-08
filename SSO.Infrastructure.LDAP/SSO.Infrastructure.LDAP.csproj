@@ -14,6 +14,7 @@
     <ProjectReference Include="..\SSO.Domain.Authentication\SSO.Domain.Authentication.csproj" />
     <ProjectReference Include="..\SSO.Domain.Management\SSO.Domain.Management.csproj" />
     <ProjectReference Include="..\SSO.Infrastructure.Management\SSO.Infrastructure.Management.csproj" />
+    <ProjectReference Include="..\SSO.Infrastructure.Settings\SSO.Infrastructure.Settings.csproj" />
     <ProjectReference Include="..\SSO.Infrastructure\SSO.Infrastructure.csproj" />
   </ItemGroup>
 

@@ -1,23 +1,23 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
-using SSO.Infrastructure.Db.Postgres;
 
-namespace SSO.ServiceCollections
+namespace SSO.Infrastructure.Db.Postgres
 {
-    public static class PostgresServiceCollections
+    public static class ServiceCollection
     {
-        public static void ApplyPostgresServiceCollections(this IServiceCollection services, IConfiguration configuration)
+        public static void ApplyPostgresServiceCollection(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentityCore<ApplicationUser>()
+                .AddRoles<ApplicationRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
 
 #if !DEBUG
 using (var scope = services.BuildServiceProvider().CreateScope())

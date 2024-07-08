@@ -1,23 +1,23 @@
 ﻿using Hangfire;
 using Hangfire.MySql.Core;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
-using SSO.Infrastructure.Db.MySql;
 
-namespace SSO.ServiceCollections
+namespace SSO.Infrastructure.Db.MySql
 {
-    public static class MySqlServiceCollections
+    public static class ServiceCollection
     {
-        public static void ApplyMySqlServiceCollections(this IServiceCollection services, IConfiguration configuration)
+        public static void ApplyMySqlServiceCollection(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseMySQL(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentityCore<ApplicationUser>()
+                .AddRoles<ApplicationRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
 
 #if !DEBUG
 using (var scope = services.BuildServiceProvider().CreateScope())
@@ -26,7 +26,6 @@ using (var scope = services.BuildServiceProvider().CreateScope())
     dbContext.Database.Migrate();
 }
 #endif
-
             services.AddScoped<IAppDbContext>(provider => provider.GetService<AppDbContext>());
 
             services.AddHangfire(x =>
