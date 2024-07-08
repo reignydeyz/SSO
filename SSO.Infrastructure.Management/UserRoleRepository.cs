@@ -85,12 +85,20 @@ namespace SSO.Infrastructure.Management
 
         private async Task RemoveRoles(ApplicationUser user, IEnumerable<ApplicationRole> roles, bool? saveChanges = true)
         {
-            var toBeDeleted = _context.UserRoles.Where(x => x.UserId == user.Id && roles.Select(x => x.Id).Contains(x.RoleId.ToString()));
+            if (roles.Any())
+            {
+                var roleIds = roles.Select(r => r.Id.ToString()).ToList();
+                var roleIdsString = roleIds.Select(id => id.ToString()).ToList(); // Convert roleIds to string again, not using ToString().
 
-            _context.UserRoles.RemoveRange(toBeDeleted);
+                var toBeDeleted = _context.UserRoles
+                    .Where(x => x.UserId == user.Id && roleIdsString.Contains(x.RoleId)) // Use roleIdsString directly, which is already a list of strings.
+                    .ToList();
 
-            if (saveChanges!.Value)
-                await _context.SaveChangesAsync();
+                _context.UserRoles.RemoveRange(toBeDeleted);
+
+                if (saveChanges!.Value)
+                    await _context.SaveChangesAsync();
+            }
         }
 
         private async Task RemoveUser(ApplicationUser user, Guid applicationId, bool? saveChanges = true)
