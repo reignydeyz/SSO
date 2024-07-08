@@ -1,5 +1,5 @@
 ﻿using Hangfire;
-using Hangfire.MySql.Core;
+using Hangfire.MySql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +35,7 @@ using (var scope = services.BuildServiceProvider().CreateScope())
                         new MySqlStorageOptions
                         {
                             // Configuration options for MySQL storage
-                            TablePrefix = "Hangfire" // Optional: prefix for Hangfire tables
+                            TablesPrefix = "Hangfire" // Optional: prefix for Hangfire tables
                         }
                     )
                 )
