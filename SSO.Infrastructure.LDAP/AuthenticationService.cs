@@ -50,7 +50,7 @@ namespace SSO.Infrastructure.LDAP
                     await _userManager.ResetAccessFailedCountAsync(user);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 if (app.MaxAccessFailedCount > 0 && app.MaxAccessFailedCount == user.AccessFailedCount)
                 {

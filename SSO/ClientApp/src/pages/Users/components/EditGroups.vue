@@ -1,5 +1,5 @@
 <template>
-    <div class="row g-4 settings-section" v-if="isInRealm('Default')">
+    <div class="row g-4 settings-section">
         <div class="col-12 col-md-2">
             <h3 class="section-title">Add to group</h3>
             <div class="section-intro">
@@ -33,8 +33,7 @@
                         </router-link>
 
                         <div class="mt-3">
-                            <button type="button" class="btn app-btn-outline-danger bg-white"
-                                v-if="isInRealm('Default')" @click="remove(i.groupId)">Remove</button>
+                            <button type="button" class="btn app-btn-outline-danger bg-white" @click="remove(i.groupId)">Remove</button>
                         </div>
                     </div>
                 </div>

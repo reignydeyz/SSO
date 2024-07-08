@@ -6,8 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using SSO.Business.GroupUsers.Commands;
 using SSO.Business.GroupUsers.Queries;
 using SSO.Business.Users;
-using SSO.Filters;
-using SSO.Infrastructure.Settings.Enums;
 
 namespace SSO.Controllers
 {
@@ -63,7 +61,6 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(OkResult), 200)]
-        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Create([FromRoute] Guid groupId, [FromBody] Guid userId)
         {
             try
@@ -91,7 +88,6 @@ namespace SSO.Controllers
         /// <param name="userId"></param>
         /// <returns></returns>
         [HttpDelete("{userId}")]
-        [RealmValidator(Realm = Realm.Default)]
         public async Task<IActionResult> Delete(Guid groupId, Guid userId)
         {
             var param = new RemoveGroupUserCommand { UserId = userId, GroupId = groupId };

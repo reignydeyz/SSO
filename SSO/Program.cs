@@ -102,7 +102,7 @@ builder.Services.AddScoped<IApplicationCallbackRepository, ApplicationCallbackRe
 builder.Services.AddScoped<IApplicationPermissionRepository, ApplicationPermissionRepository>();
 builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaimRepository>();
 builder.Services.AddScoped<IGroupRepository, SSO.Infrastructure.Management.GroupRepository>();
-builder.Services.AddScoped<IGroupUserRepository, GroupUserRepository>();
+builder.Services.AddScoped<IGroupUserRepository, SSO.Infrastructure.Management.GroupUserRepository>();
 builder.Services.AddScoped<IGroupRoleRepository, GroupRoleRepository>();
 
 var ldapSettings = builder.Configuration.GetSection("LDAPSettings").Get<LDAPSettings>();

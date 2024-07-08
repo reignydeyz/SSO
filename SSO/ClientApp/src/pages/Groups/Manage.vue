@@ -28,6 +28,9 @@
                                         class="bi bi-plus-lg"></i>&nbsp;Create
                                     New</router-link>
                             </div>
+                            <div class="col-auto" v-if="isInRealm('LDAP')">
+                                <button class="btn app-btn-primary" @click="syncGroups"><i class="fa fa-refresh"></i>&nbsp;Sync</button>
+                            </div>
                         </div>
                         <!--//row-->
                     </div>
@@ -138,7 +141,7 @@ import { getAccount } from '@/services/account.service';
 import { searchGroup, deleteGroup } from "@/services/group.service";
 import { emitter } from "@/services/emitter.service";
 import { pagination } from "@/services/pagination.service";
-
+import { sync } from "@/services/ldap.service";
 export default {
     data: () => ({
         group: new Object(),
@@ -212,6 +215,16 @@ export default {
         isInRealm(realm) {
             return getAccount().authmethod === realm;
         },
+
+        syncGroups() {
+            sync().then(r => {
+                if (r.status === 202) {
+                    alert('Sync in progress. Please wait.');
+                }
+
+                location.reload();
+            });
+        }
     }
 }
 </script>

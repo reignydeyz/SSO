@@ -17,6 +17,7 @@ namespace SSO.Infrastructure.LDAP
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
+            services.AddScoped<IGroupUserRepository, GroupUserRepository>();
 
             services.Configure<LDAPSettings>(configuration.GetSection("LDAPSettings"));
 
