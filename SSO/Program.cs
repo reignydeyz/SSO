@@ -16,6 +16,7 @@ using SSO.Business.Users;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Infrastructure.Authentication;
+using SSO.Infrastructure.Db.MySql;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
