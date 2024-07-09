@@ -11,13 +11,16 @@ namespace SSO.Infrastructure.LDAP
 {
     public class UserRepository : UserRepositoryBase, IDisposable
     {
-        private readonly IAppDbContext _context;
-        private readonly DirectoryEntry _dirEntry;
-        private readonly DirectorySearcher _dirSearcher;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private bool _disposed;
+        readonly IAppDbContext _context;
+        readonly DirectoryEntry _dirEntry;
+        readonly DirectorySearcher _dirSearcher;
+        readonly UserManager<ApplicationUser> _userManager;
 
-        public UserRepository(UserManager<ApplicationUser> userManager, IAppDbContext context, IOptions<LDAPSettings> ldapSettings) : base(userManager, context)
+        bool _disposed;
+
+        public UserRepository(UserManager<ApplicationUser> userManager,
+            IAppDbContext context,
+            IOptions<LDAPSettings> ldapSettings) : base(userManager, context)
         {
             _context = context;
 
@@ -29,9 +32,24 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            CreateUserInLDAP(param);
+            var newUser = _dirEntry.Children.Add($"CN={param.UserName}", "user");
+            newUser.Properties["samAccountName"].Value = param.UserName;
+            newUser.Properties["userPassword"].Value = param.PasswordHash;
+            newUser.Properties["givenName"].Value = param.FirstName;
+            newUser.Properties["sn"].Value = param.LastName;
+            newUser.CommitChanges();
 
-            await _context.AddAsync(param);
+            // Set the password
+            newUser.Invoke("SetPassword", new object[] { param.PasswordHash });
+            newUser.CommitChanges();
+
+            // Enable the account by setting userAccountControl attribute
+            int val = (int)newUser.Properties["userAccountControl"].Value;
+            newUser.Properties["userAccountControl"].Value = val & ~(0x2); // Enable account flag
+            newUser.CommitChanges();
+
+            param.NormalizedUserName = param.UserName.ToUpper();
+            _context.Add(param);
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();
@@ -42,52 +60,113 @@ namespace SSO.Infrastructure.LDAP
         public override async Task AddRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null)
         {
             _context.AddRange(param);
-            await SaveChangesIfNeeded(saveChanges);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public override async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null)
         {
-            var userEntry = FindUserEntry(applicationUser.UserName);
-            SetPasswordAndUpdateEntry(userEntry, password);
+            _dirSearcher.Filter = $"(samAccountName={applicationUser.UserName})";
+            _dirSearcher.SearchScope = SearchScope.Subtree;
 
-            await UpdatePasswordInIdentity(applicationUser, password, author);
+            var result = _dirSearcher.FindOne();
+
+            if (result != null)
+            {
+                var userEntry = result.GetDirectoryEntry();
+
+                userEntry.Invoke("SetPassword", new object[] { password });
+                userEntry.Properties["LockOutTime"].Value = 0; // Unlock account if locked
+                userEntry.CommitChanges();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
+
+            var res = await _userManager.ResetPasswordAsync(applicationUser, token, password);
+
+            if (!res.Succeeded && res.Errors.Any())
+                throw new ArgumentException(res.Errors.First().Description);
+
+            var rec = _context.ApplicationUsers.First(x => x.Id == applicationUser.Id);
+
+            rec.DateModified = DateTime.Now;
+            rec.ModifiedBy = author == null ? $"{applicationUser.FirstName} {applicationUser.LastName}" : $"{author.FirstName} {author.LastName}";
+
+            _context.SaveChanges();
         }
 
         public override async Task Delete(ApplicationUser param, bool? saveChanges = true)
         {
-            var userEntry = FindUserEntry(param.UserName);
+            _dirSearcher.Filter = $"(samAccountName={param.UserName})";
+            _dirSearcher.SearchScope = SearchScope.Subtree;
 
-            if (userEntry != null)
+            var result = _dirSearcher.FindOne();
+
+            if (result != null)
             {
-                DeleteUserEntry(userEntry);
-
-                _context.Remove(param);
-
-                if (saveChanges!.Value)
-                    await _context.SaveChangesAsync();
+                var userEntry = result.GetDirectoryEntry();
+                userEntry.DeleteTree();
+                _dirEntry.CommitChanges();
             }
+
+            _context.Remove(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public override async Task RemoveRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null)
         {
             _context.RemoveRange(param);
-            await SaveChangesIfNeeded(saveChanges);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public override async Task RemoveRange(Expression<Func<ApplicationUser, bool>> predicate, bool? saveChanges = true, object? args = null)
         {
             _context.RemoveRange(_context.ApplicationUsers.Where(predicate));
-            await SaveChangesIfNeeded(saveChanges);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public override async Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            var userEntry = FindUserEntry(param.UserName);
-            RenameAndUpdateUserEntry(userEntry, param);
+            _dirSearcher.Filter = $"(samAccountName={param.UserName})";
+            _dirSearcher.SearchScope = SearchScope.Subtree;
 
-            await ManageUserSecurity(param);
+            var result = _dirSearcher.FindOne();
 
-            return param;
+            if (result != null)
+            {
+                var userEntry = result.GetDirectoryEntry();
+
+                userEntry.Rename($"CN={param.FirstName} {param.LastName}");
+                userEntry.Properties["samAccountName"].Value = param.UserName;
+                userEntry.Properties["givenName"].Value = param.FirstName;
+                userEntry.Properties["sn"].Value = param.LastName;
+                userEntry.CommitChanges();
+            }
+
+            var rec = _context.ApplicationUsers.First(x => x.Id == param.Id);
+            rec.FirstName = param.FirstName;
+            rec.LastName = param.LastName;
+            rec.UserName = param.UserName;
+            rec.NormalizedUserName = param.UserName.ToUpper();
+            rec.Email = param.Email;
+
+            await _context.SaveChangesAsync();
+
+            if (param.PasswordHash is not null)
+                await ChangePassword(rec, param.PasswordHash, default);
+
+            // Unlock the user
+            await _userManager.ResetAccessFailedCountAsync(rec);
+            await _userManager.SetLockoutEndDateAsync(rec, DateTimeOffset.MinValue);
+
+            return rec;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -107,108 +186,6 @@ namespace SSO.Infrastructure.LDAP
         {
             Dispose(true);
             GC.SuppressFinalize(this);
-        }
-
-        private void CreateUserInLDAP(ApplicationUser param)
-        {
-            var newUser = _dirEntry.Children.Add($"CN={param.UserName}", "user");
-            newUser.Properties["samAccountName"].Value = param.UserName;
-            newUser.Properties["userPassword"].Value = param.PasswordHash;
-            newUser.Properties["givenName"].Value = param.FirstName;
-            newUser.Properties["sn"].Value = param.LastName;
-            newUser.CommitChanges();
-
-            newUser.Invoke("SetPassword", new object[] { param.PasswordHash });
-            newUser.CommitChanges();
-
-            int val = (int)newUser.Properties["userAccountControl"].Value;
-            newUser.Properties["userAccountControl"].Value = val & ~(0x2); // Enable account flag
-            newUser.CommitChanges();
-
-            param.NormalizedUserName = param.UserName.ToUpper();
-        }
-
-        private DirectoryEntry FindUserEntry(string userName)
-        {
-            _dirSearcher.Filter = $"(samAccountName={userName})";
-            _dirSearcher.SearchScope = SearchScope.Subtree;
-
-            var result = _dirSearcher.FindOne();
-            return result?.GetDirectoryEntry();
-        }
-
-        private void SetPasswordAndUpdateEntry(DirectoryEntry userEntry, string password)
-        {
-            userEntry.Invoke("SetPassword", new object[] { password });
-            userEntry.Properties["LockOutTime"].Value = 0;
-            userEntry.CommitChanges();
-        }
-
-        private async Task UpdatePasswordInIdentity(ApplicationUser applicationUser, string password, ApplicationUser? author)
-        {
-            var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
-            var result = await _userManager.ResetPasswordAsync(applicationUser, token, password);
-
-            if (!result.Succeeded && result.Errors.Any())
-                throw new ArgumentException(result.Errors.First().Description);
-
-            var rec = _context.ApplicationUsers.First(x => x.Id == applicationUser.Id);
-            rec.DateModified = DateTime.Now;
-            rec.ModifiedBy = author == null ? $"{applicationUser.FirstName} {applicationUser.LastName}" : $"{author.FirstName} {author.LastName}";
-
-            await _context.SaveChangesAsync();
-        }
-
-        private void DeleteUserEntry(DirectoryEntry userEntry)
-        {
-            if (userEntry != null)
-            {
-                userEntry.DeleteTree();
-                _dirEntry.CommitChanges();
-            }
-        }
-
-        private async Task SaveChangesIfNeeded(bool? saveChanges)
-        {
-            if (saveChanges!.Value)
-                await _context.SaveChangesAsync();
-        }
-
-        private void RenameAndUpdateUserEntry(DirectoryEntry userEntry, ApplicationUser param)
-        {
-            if (userEntry != null)
-            {
-                userEntry.Rename($"CN={param.FirstName} {param.LastName}");
-                userEntry.Properties["samAccountName"].Value = param.UserName;
-                userEntry.Properties["givenName"].Value = param.FirstName;
-                userEntry.Properties["sn"].Value = param.LastName;
-                userEntry.CommitChanges();
-            }
-
-            var rec = _context.ApplicationUsers.First(x => x.Id == param.Id);
-            rec.FirstName = param.FirstName;
-            rec.LastName = param.LastName;
-            rec.UserName = param.UserName;
-            rec.NormalizedUserName = param.UserName.ToUpper();
-            rec.Email = param.Email;
-
-            _context.SaveChanges();
-        }
-
-        private async Task ManageUserSecurity(ApplicationUser user)
-        {
-            var userEntry = FindUserEntry(user.UserName);
-
-            if (userEntry != null)
-            {
-                // Unlock user account in LDAP
-                userEntry.Properties["LockOutTime"].Value = 0;
-                userEntry.CommitChanges();
-            }
-
-            // Reset access failed count and lockout end date in Identity system
-            await _userManager.ResetAccessFailedCountAsync(user);
-            await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MinValue);
         }
     }
 }
