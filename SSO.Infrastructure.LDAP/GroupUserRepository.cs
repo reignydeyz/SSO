@@ -9,11 +9,10 @@ namespace SSO.Infrastructure.LDAP
 {
     public class GroupUserRepository : GroupUserRepositoryBase, IDisposable
     {
-        readonly IAppDbContext _context;
-        readonly DirectoryEntry _dirEntry;
-        readonly DirectorySearcher _dirSearcher;
-
-        bool _disposed;
+        private readonly IAppDbContext _context;
+        private readonly DirectoryEntry _dirEntry;
+        private readonly DirectorySearcher _dirSearcher;
+        private bool _disposed;
 
         public GroupUserRepository(IAppDbContext context, IOptions<LDAPSettings> ldapSettings) : base(context)
         {
@@ -24,68 +23,67 @@ namespace SSO.Infrastructure.LDAP
             _dirSearcher = new DirectorySearcher(_dirEntry);
         }
 
-        public override async Task<GroupUser> Add(GroupUser param, bool? saveChanges = true, object? args = null)
+        public override Task<GroupUser> Add(GroupUser param, bool? saveChanges = true, object? args = null)
         {
-            var group = _context.Groups.First(x => x.GroupId == param.GroupId).Name;
-            var userName = _context.Users.First(x => x.Id == param.UserId);
+            var (userEntry, groupEntry) = FindUserAndGroupEntries(param);
 
-            _dirSearcher.Filter = $"(&(objectClass=user)(sAMAccountName={userName}))";
-
-            var userResult = _dirSearcher.FindOne();
-
-            if (userResult != null)
+            if (userEntry != null && groupEntry != null)
             {
-                var userEntry = userResult.GetDirectoryEntry();
-
-                _dirSearcher.Filter = $"(&(objectClass=group)(sAMAccountName={group}))";
-                var groupResult = _dirSearcher.FindOne();
-
-                if (groupResult != null) 
-                {
-                    var groupEntry = groupResult.GetDirectoryEntry();
-                    groupEntry.Properties["member"].Add(userEntry.Properties["distinguishedName"].Value);
-                    groupEntry.CommitChanges(); 
-                }
+                AddUserToGroup(userEntry, groupEntry);
+                groupEntry.CommitChanges();
             }
 
-            await _context.AddAsync(param);
+            _context.Add(param);
             if (saveChanges!.Value)
-                await _context.SaveChangesAsync();
-            return param;
+                return _context.SaveChangesAsync().ContinueWith(_ => param);
+
+            return Task.FromResult(param);
         }
 
-        public override async Task Delete(GroupUser param, bool? saveChanges = true)
+        public override Task Delete(GroupUser param, bool? saveChanges = true)
         {
-            var group = _context.Groups.First(x => x.GroupId == param.GroupId).Name;
-            var userName = _context.Users.First(x => x.Id == param.UserId);
+            var (userEntry, groupEntry) = FindUserAndGroupEntries(param);
 
-            _dirSearcher.Filter = $"(&(objectClass=user)(sAMAccountName={userName}))";
-
-            var userResult = _dirSearcher.FindOne();
-
-            if (userResult != null)
+            if (userEntry != null && groupEntry != null)
             {
-                var userEntry = userResult.GetDirectoryEntry();
-
-                _dirSearcher.Filter = $"(&(objectClass=group)(sAMAccountName={group}))";
-                var groupResult = _dirSearcher.FindOne();
-
-                if (groupResult != null)
-                {
-                    var groupEntry = groupResult.GetDirectoryEntry();
-
-                    if (groupEntry.Properties["member"].Contains(userEntry.Properties["distinguishedName"].Value))
-                    {
-                        groupEntry.Properties["member"].Remove(userEntry.Properties["distinguishedName"].Value);
-                        groupEntry.CommitChanges();
-                    }
-                }
+                RemoveUserFromGroup(userEntry, groupEntry);
+                groupEntry.CommitChanges();
             }
 
             _context.Remove(param);
 
             if (saveChanges!.Value)
-                await _context.SaveChangesAsync();
+                return _context.SaveChangesAsync();
+
+            return Task.CompletedTask;
+        }
+
+        private (DirectoryEntry?, DirectoryEntry?) FindUserAndGroupEntries(GroupUser param)
+        {
+            var group = _context.Groups.First(x => x.GroupId == param.GroupId).Name;
+            var userName = _context.Users.First(x => x.Id == param.UserId).UserName;
+
+            var userEntry = FindDirectoryEntryByFilter($"(&(objectClass=user)(sAMAccountName={userName}))");
+            var groupEntry = FindDirectoryEntryByFilter($"(&(objectClass=group)(sAMAccountName={group}))");
+
+            return (userEntry, groupEntry);
+        }
+
+        private DirectoryEntry? FindDirectoryEntryByFilter(string filter)
+        {
+            _dirSearcher.Filter = filter;
+            var searchResult = _dirSearcher.FindOne();
+            return searchResult?.GetDirectoryEntry();
+        }
+
+        private void AddUserToGroup(DirectoryEntry userEntry, DirectoryEntry groupEntry)
+        {
+            groupEntry.Properties["member"].Add(userEntry.Properties["distinguishedName"].Value);
+        }
+
+        private void RemoveUserFromGroup(DirectoryEntry userEntry, DirectoryEntry groupEntry)
+        {
+            groupEntry.Properties["member"].Remove(userEntry.Properties["distinguishedName"].Value);
         }
 
         protected virtual void Dispose(bool disposing)
