@@ -35,99 +35,109 @@ namespace SSO.Infrastructure.LDAP
 
             using (DirectoryEntry entry = new DirectoryEntry(_ldapConnectionString, _ldapSettings.Username, _ldapSettings.Password))
             {
-                using (var searcher = new DirectorySearcher(entry))
+                await SyncGroups(entry, groups);
+
+                await SyncUsers(entry, users, groupUsers);
+            }
+        }
+
+        private async Task SyncGroups(DirectoryEntry entry, List<Group> groups)
+        {
+            var searcher = CreateDirectorySearcher(entry, "(objectClass=group)", new[] { "cn", "sAMAccountName", "description", "distinguishedName" });
+
+            SearchResultCollection results = searcher.FindAll();
+
+            foreach (SearchResult searchResult in results)
+            {
+                var rec = searchResult.GetDirectoryEntry();
+                groups.Add(new Group { GroupId = Guid.NewGuid(), Name = rec.Properties["cn"].Value?.ToString() ?? string.Empty });
+            }
+
+            var toBeAddedGroups = groups.Where(x => !_groupRepository.Any(y => y.Name == x.Name).Result);
+            await _groupRepository.AddRange(toBeAddedGroups, false);
+
+            var groupNames = groups.Select(x => x.Name.ToLower());
+            await _groupRepository.RemoveRange(x => !groupNames.Contains(x.Name)); // Write
+        }
+
+        private async Task SyncUsers(DirectoryEntry entry, List<ApplicationUser> users, List<Tuple<string, string>> groupUsers)
+        {
+            var searcher = CreateDirectorySearcher(entry, _ldapSettings.SearchFilter);
+            searcher.ReferralChasing = ReferralChasingOption.All;
+
+            SearchResultCollection results = searcher.FindAll();
+
+            foreach (SearchResult result in results)
+            {
+                if (result.Properties["sAMAccountName"]?.Count > 0 &&
+                    result.Properties["givenName"]?.Count > 0 &&
+                    result.Properties["sn"]?.Count > 0)
                 {
-                    searcher.Filter = "(objectClass=group)"; // Filter to get only groups
-                    searcher.PropertiesToLoad.Add("cn");
-                    searcher.PropertiesToLoad.Add("sAMAccountName");
-                    searcher.PropertiesToLoad.Add("description");
-                    searcher.PropertiesToLoad.Add("distinguishedName");
-
-                    searcher.SearchScope = SearchScope.Subtree;
-
-                    SearchResultCollection results = searcher.FindAll();
-
-                    foreach (SearchResult searchResult in results)
+                    users.Add(new ApplicationUser
                     {
-                        var rec = searchResult.GetDirectoryEntry();
-                        groups.Add(new Group { GroupId = Guid.NewGuid(), Name = rec.Properties["cn"].Value?.ToString() ?? string.Empty });
-                    }
+                        UserName = result.Properties["sAMAccountName"][0].ToString(),
+                        NormalizedUserName = result.Properties["sAMAccountName"][0].ToString().ToUpper(),
+                        FirstName = result.Properties["givenName"][0].ToString(),
+                        LastName = result.Properties["sn"][0].ToString(),
+                        PasswordHash = Guid.NewGuid().ToString()
+                    });
 
-                    // Groups
-                    var toBeAddedGroups = groups.Where(x => !_groupRepository.Any(y => y.Name == x.Name).Result);
-                    await _groupRepository.AddRange(toBeAddedGroups, false);
-
-                    var groupNames = groups.Select(x => x.Name.ToLower());
-                    await _groupRepository.RemoveRange(x => !groupNames.Contains(x.Name)); // Write
-                }
-
-                using (var searcher = new DirectorySearcher(entry))
-                {
-                    searcher.Filter = _ldapSettings.SearchFilter;
-
-                    // Handle referrals explicitly
-                    searcher.ReferralChasing = ReferralChasingOption.All;
-
-                    // Perform the search
-                    SearchResultCollection results = searcher.FindAll();
-
-                    foreach (SearchResult result in results)
+                    // Get the user's groups directly from DirectoryEntry
+                    using (DirectoryEntry userEntry = result.GetDirectoryEntry())
                     {
-                        if (result.Properties["sAMAccountName"]?.Count > 0 &&
-                            result.Properties["givenName"]?.Count > 0 &&
-                            result.Properties["sn"]?.Count > 0)
+                        if (userEntry.Properties.Contains("memberOf"))
                         {
-                            users.Add(new ApplicationUser
+                            foreach (string groupPath in userEntry.Properties["memberOf"])
                             {
-                                UserName = result.Properties["sAMAccountName"][0].ToString(),
-                                NormalizedUserName = result.Properties["sAMAccountName"][0].ToString().ToUpper(),
-                                FirstName = result.Properties["givenName"][0].ToString(),
-                                LastName = result.Properties["sn"][0].ToString(),
-                                PasswordHash = Guid.NewGuid().ToString()
-                            });
+                                string groupName = groupPath.Split(',')[0].Substring(3);
 
-                            // Get the user's groups directly from DirectoryEntry
-                            using (DirectoryEntry userEntry = result.GetDirectoryEntry())
-                            {
-                                // Check if the user has the "memberOf" attribute
-                                if (userEntry.Properties.Contains("memberOf"))
-                                {
-                                    foreach (string groupPath in userEntry.Properties["memberOf"])
-                                    {
-                                        // Extract the group name from the LDAP path
-                                        string groupName = groupPath.Split(',')[0].Substring(3);
-
-                                        if (!groupUsers.Any(x => x.Item1 == groupName && x.Item2 == result.Properties["sAMAccountName"][0].ToString()))
-                                            groupUsers.Add(new Tuple<string, string>(groupName, result.Properties["sAMAccountName"][0].ToString()));
-                                    }
-                                }
+                                if (!groupUsers.Any(x => x.Item1 == groupName && x.Item2 == result.Properties["sAMAccountName"][0].ToString()))
+                                    groupUsers.Add(new Tuple<string, string>(groupName, result.Properties["sAMAccountName"][0].ToString()));
                             }
                         }
                     }
                 }
-
-                // Users
-                var toBeAddedUsers = users.Where(x => !_userRepository.Any(y => y.UserName == x.UserName).Result);
-                await _userRepository.AddRange(toBeAddedUsers, false);
-
-                var usernames = users.Select(x => x.UserName.ToLower());
-                await _userRepository.RemoveRange(x => !usernames.Contains(x.UserName), false);               
-
-                // GroupUsers
-                var guList = (from gu in groupUsers
-                             join u in await _userRepository.Find(default) on gu.Item2 equals u.UserName
-                             join g in await _groupRepository.Find(default) on gu.Item1 equals g.Name
-                             select new GroupUser
-                             {
-                                 GroupId = g.GroupId,
-                                 UserId = u.Id
-                             });
-                var toBeAddedGroupUsers = guList.Where(x => !_groupUserRepository.Any(y => y.UserId == x.UserId && y.GroupId == x.GroupId).Result);
-                await _groupUserRepository.AddRange(toBeAddedGroupUsers, false);
-
-                var concatenatedIds = guList.Select(x => $"{x.GroupId},{x.UserId}"); // Because Expression<Func<T, bool>> doesn't support .Any(). Need to find a way to compare
-                await _groupUserRepository.RemoveRange(x => !concatenatedIds.Contains(x.GroupId + "," + x.UserId)); // Write
             }
+
+            var toBeAddedUsers = users.Where(x => !_userRepository.Any(y => y.UserName == x.UserName).Result);
+            await _userRepository.AddRange(toBeAddedUsers, false);
+
+            var usernames = users.Select(x => x.UserName.ToLower());
+            await _userRepository.RemoveRange(x => !usernames.Contains(x.UserName), false);
+
+            var guList = (from gu in groupUsers
+                          join u in await _userRepository.Find(default) on gu.Item2 equals u.UserName
+                          join g in await _groupRepository.Find(default) on gu.Item1 equals g.Name
+                          select new GroupUser
+                          {
+                              GroupId = g.GroupId,
+                              UserId = u.Id
+                          });
+
+            var toBeAddedGroupUsers = guList.Where(x => !_groupUserRepository.Any(y => y.UserId == x.UserId && y.GroupId == x.GroupId).Result);
+            await _groupUserRepository.AddRange(toBeAddedGroupUsers, false);
+
+            var concatenatedIds = guList.Select(x => $"{x.GroupId},{x.UserId}");
+            await _groupUserRepository.RemoveRange(x => !concatenatedIds.Contains(x.GroupId + "," + x.UserId)); // Write
+        }
+
+        private DirectorySearcher CreateDirectorySearcher(DirectoryEntry entry, string filter, string[] propertiesToLoad = null)
+        {
+            var searcher = new DirectorySearcher(entry)
+            {
+                Filter = filter,
+                SearchScope = SearchScope.Subtree
+            };
+
+            if (propertiesToLoad != null)
+            {
+                foreach (var property in propertiesToLoad)
+                {
+                    searcher.PropertiesToLoad.Add(property);
+                }
+            }
+
+            return searcher;
         }
     }
 }
