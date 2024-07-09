@@ -30,7 +30,11 @@ namespace SSO.Infrastructure.LDAP
         public override async Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
             CreateUserInLDAP(param);
-            await UpdateUserInContext(param, saveChanges);
+
+            await _context.AddAsync(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
 
             return param;
         }
@@ -52,8 +56,16 @@ namespace SSO.Infrastructure.LDAP
         public override async Task Delete(ApplicationUser param, bool? saveChanges = true)
         {
             var userEntry = FindUserEntry(param.UserName);
-            DeleteUserEntry(userEntry);
-            await UpdateUserInContext(param, saveChanges);
+
+            if (userEntry != null)
+            {
+                DeleteUserEntry(userEntry);
+
+                _context.Remove(param);
+
+                if (saveChanges!.Value)
+                    await _context.SaveChangesAsync();
+            }
         }
 
         public override async Task RemoveRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null)
@@ -73,7 +85,6 @@ namespace SSO.Infrastructure.LDAP
             var userEntry = FindUserEntry(param.UserName);
             RenameAndUpdateUserEntry(userEntry, param);
 
-            await UpdateUserInContext(param, saveChanges);
             await ManageUserSecurity(param);
 
             return param;
@@ -115,14 +126,6 @@ namespace SSO.Infrastructure.LDAP
             newUser.CommitChanges();
 
             param.NormalizedUserName = param.UserName.ToUpper();
-        }
-
-        private async Task UpdateUserInContext(ApplicationUser param, bool? saveChanges)
-        {
-            _context.Add(param);
-
-            if (saveChanges!.Value)
-                await _context.SaveChangesAsync();
         }
 
         private DirectoryEntry FindUserEntry(string userName)
@@ -188,6 +191,8 @@ namespace SSO.Infrastructure.LDAP
             rec.UserName = param.UserName;
             rec.NormalizedUserName = param.UserName.ToUpper();
             rec.Email = param.Email;
+
+            _context.SaveChanges();
         }
 
         private async Task ManageUserSecurity(ApplicationUser user)

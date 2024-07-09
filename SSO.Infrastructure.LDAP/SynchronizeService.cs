@@ -129,7 +129,8 @@ namespace SSO.Infrastructure.LDAP
             await _userRepository.AddRange(toBeAddedUsers, false);
 
             var usernames = users.Select(x => x.UserName.ToLower());
-            await _userRepository.RemoveRange(x => !usernames.Contains(x.UserName), false);
+            var toBeDeletedUsers = await _userRepository.Find(x => !usernames.Contains(x.UserName));
+            await _userRepository.RemoveRange(toBeDeletedUsers, false);
 
             var guList = (from gu in groupUsers
                           join u in await _userRepository.Find(default) on gu.Item2 equals u.UserName
