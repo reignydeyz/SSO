@@ -98,7 +98,7 @@ namespace SSO.Infrastructure.LDAP
             GC.SuppressFinalize(this);
         }
 
-        private DirectoryEntry CreateUserInLDAP(ApplicationUser param)
+        private void CreateUserInLDAP(ApplicationUser param)
         {
             var newUser = _dirEntry.Children.Add($"CN={param.UserName}", "user");
             newUser.Properties["samAccountName"].Value = param.UserName;
@@ -115,8 +115,6 @@ namespace SSO.Infrastructure.LDAP
             newUser.CommitChanges();
 
             param.NormalizedUserName = param.UserName.ToUpper();
-
-            return newUser;
         }
 
         private async Task UpdateUserInContext(ApplicationUser param, bool? saveChanges)
