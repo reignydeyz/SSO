@@ -29,7 +29,7 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            var newUser = CreateUserInLDAP(param);
+            CreateUserInLDAP(param);
             await UpdateUserInContext(param, saveChanges);
 
             return param;
