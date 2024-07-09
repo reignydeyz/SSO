@@ -38,21 +38,35 @@ namespace SSO.Infrastructure.LDAP
 
         private async Task<List<Group>> FetchGroupsFromLDAP()
         {
-            var groups = new List<Group>();
-
             using (var entry = new DirectoryEntry(_ldapConnectionString, _ldapSettings.Username, _ldapSettings.Password))
             {
                 var searcher = CreateDirectorySearcher(entry, "(objectClass=group)", new[] { "cn", "sAMAccountName", "description", "distinguishedName" });
-                SearchResultCollection results = searcher.FindAll();
+                var groups = await ExecuteSearchAndExtractGroups(searcher);
+                return groups;
+            }
+        }
 
-                foreach (SearchResult searchResult in results)
-                {
-                    var rec = searchResult.GetDirectoryEntry();
-                    groups.Add(new Group { GroupId = Guid.NewGuid(), Name = rec.Properties["cn"].Value?.ToString() ?? string.Empty });
-                }
+        private async Task<List<Group>> ExecuteSearchAndExtractGroups(DirectorySearcher searcher)
+        {
+            var groups = new List<Group>();
+            SearchResultCollection results = searcher.FindAll();
+
+            foreach (SearchResult searchResult in results)
+            {
+                var rec = searchResult.GetDirectoryEntry();
+                groups.Add(new Group { GroupId = Guid.NewGuid(), Name = rec.Properties["cn"].Value?.ToString() ?? string.Empty });
             }
 
             return groups;
+        }
+
+        private async Task SyncGroupsToDatabase(List<Group> groups)
+        {
+            var toBeAddedGroups = groups.Where(x => !_groupRepository.Any(y => y.Name == x.Name).Result);
+            await _groupRepository.AddRange(toBeAddedGroups, false);
+
+            var groupNames = groups.Select(x => x.Name.ToLower());
+            await _groupRepository.RemoveRange(x => !groupNames.Contains(x.Name));
         }
 
         private async Task<(List<ApplicationUser>, List<Tuple<string, string>>)> FetchUsersAndGroupUsersFromLDAP()
@@ -72,28 +86,10 @@ namespace SSO.Infrastructure.LDAP
                         result.Properties["givenName"]?.Count > 0 &&
                         result.Properties["sn"]?.Count > 0)
                     {
-                        users.Add(new ApplicationUser
-                        {
-                            UserName = result.Properties["sAMAccountName"][0].ToString(),
-                            NormalizedUserName = result.Properties["sAMAccountName"][0].ToString().ToUpper(),
-                            FirstName = result.Properties["givenName"][0].ToString(),
-                            LastName = result.Properties["sn"][0].ToString(),
-                            PasswordHash = Guid.NewGuid().ToString()
-                        });
+                        var user = ExtractUserFromSearchResult(result);
+                        users.Add(user);
 
-                        using (DirectoryEntry userEntry = result.GetDirectoryEntry())
-                        {
-                            if (userEntry.Properties.Contains("memberOf"))
-                            {
-                                foreach (string groupPath in userEntry.Properties["memberOf"])
-                                {
-                                    string groupName = groupPath.Split(',')[0].Substring(3);
-
-                                    if (!groupUsers.Any(x => x.Item1 == groupName && x.Item2 == result.Properties["sAMAccountName"][0].ToString()))
-                                        groupUsers.Add(new Tuple<string, string>(groupName, result.Properties["sAMAccountName"][0].ToString()));
-                                }
-                            }
-                        }
+                        await ExtractGroupUsersFromUserEntry(result.GetDirectoryEntry(), user.UserName, groupUsers);
                     }
                 }
             }
@@ -101,13 +97,30 @@ namespace SSO.Infrastructure.LDAP
             return (users, groupUsers);
         }
 
-        private async Task SyncGroupsToDatabase(List<Group> groups)
+        private ApplicationUser ExtractUserFromSearchResult(SearchResult result)
         {
-            var toBeAddedGroups = groups.Where(x => !_groupRepository.Any(y => y.Name == x.Name).Result);
-            await _groupRepository.AddRange(toBeAddedGroups, false);
+            return new ApplicationUser
+            {
+                UserName = result.Properties["sAMAccountName"][0].ToString(),
+                NormalizedUserName = result.Properties["sAMAccountName"][0].ToString().ToUpper(),
+                FirstName = result.Properties["givenName"][0].ToString(),
+                LastName = result.Properties["sn"][0].ToString(),
+                PasswordHash = Guid.NewGuid().ToString()
+            };
+        }
 
-            var groupNames = groups.Select(x => x.Name.ToLower());
-            await _groupRepository.RemoveRange(x => !groupNames.Contains(x.Name));
+        private async Task ExtractGroupUsersFromUserEntry(DirectoryEntry userEntry, string userName, List<Tuple<string, string>> groupUsers)
+        {
+            if (userEntry.Properties.Contains("memberOf"))
+            {
+                foreach (string groupPath in userEntry.Properties["memberOf"])
+                {
+                    string groupName = groupPath.Split(',')[0].Substring(3);
+
+                    if (!groupUsers.Any(x => x.Item1 == groupName && x.Item2 == userName))
+                        groupUsers.Add(new Tuple<string, string>(groupName, userName));
+                }
+            }
         }
 
         private async Task SyncUsersToDatabase(List<ApplicationUser> users, List<Tuple<string, string>> groupUsers)
@@ -152,6 +165,5 @@ namespace SSO.Infrastructure.LDAP
 
             return searcher;
         }
-
     }
 }
