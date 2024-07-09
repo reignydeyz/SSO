@@ -46,7 +46,7 @@ namespace SSO.Controllers
                 await (_realm switch
                 {
                     Realm.Default => _mediator.Send(param),
-                    Realm.LDAP => _mediator.Send(_mapper.Map<ChangePasswordLDAPCommand>(param)),
+                    Realm.LDAP => _mediator.Send(_mapper.Map<ChangePasswordLdapCommand>(param)),
                     _ => throw new InvalidOperationException("Unsupported realm type")
                 });
 

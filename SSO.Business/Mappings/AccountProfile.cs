@@ -7,7 +7,7 @@ namespace SSO.Business.Mappings
     {
         public AccountProfile()
         {
-            CreateMap<ChangePasswordCommand, ChangePasswordLDAPCommand>()
+            CreateMap<ChangePasswordCommand, ChangePasswordLdapCommand>()
                 .ReverseMap();
         }
     }

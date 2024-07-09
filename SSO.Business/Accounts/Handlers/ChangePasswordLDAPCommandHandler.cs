@@ -1,30 +1,24 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using SSO.Business.Accounts.Commands;
 using SSO.Domain.Management.Interfaces;
-using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
 using System.DirectoryServices;
 
 namespace SSO.Business.Accounts.Handlers
 {
-    public class ChangePasswordLDAPCommandHandler : IRequestHandler<ChangePasswordLDAPCommand, Unit>
+    public class ChangePasswordLdapCommandHandler : IRequestHandler<ChangePasswordLdapCommand, Unit>
     {
-        readonly LDAPSettings _ldapSettings;
-        readonly UserManager<ApplicationUser> _userManager;
         readonly IUserRepository _userRepository;
         readonly string _ldapConnectionString;
 
-        public ChangePasswordLDAPCommandHandler(UserManager<ApplicationUser> userManager, IUserRepository userRepository, IOptions<LDAPSettings> ldapSettings)
+        public ChangePasswordLdapCommandHandler(IUserRepository userRepository, IOptions<LDAPSettings> ldapSettings)
         {
-            _ldapSettings = ldapSettings.Value;
-            _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
-            _userManager = userManager;
+            _ldapConnectionString = $"{(ldapSettings.Value.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Value.Server}:{ldapSettings.Value.Port}/{ldapSettings.Value.SearchBase}";
             _userRepository = userRepository;
         }
 
-        public async Task<Unit> Handle(ChangePasswordLDAPCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ChangePasswordLdapCommand request, CancellationToken cancellationToken)
         {
             try
             {

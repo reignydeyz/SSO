@@ -1,6 +1,6 @@
 ﻿namespace SSO.Business.Accounts.Commands
 {
-    public class ChangePasswordLDAPCommand : ChangePasswordCommand
+    public class ChangePasswordLdapCommand : ChangePasswordCommand
     {
     }
 }
