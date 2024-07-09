@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Hangfire.MySql;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,8 @@ namespace SSO.Infrastructure.Db.MySql
 
             services.AddIdentityCore<ApplicationUser>()
                 .AddRoles<ApplicationRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
 #if !DEBUG
 using (var scope = services.BuildServiceProvider().CreateScope())
