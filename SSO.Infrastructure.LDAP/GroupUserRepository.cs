@@ -48,7 +48,7 @@ namespace SSO.Infrastructure.LDAP
                 }
             }
 
-            _context.Add(param);
+            await _context.AddAsync(param);
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();
             return param;

@@ -19,7 +19,7 @@ namespace SSO.Infrastructure.Management
 
         public async Task AddRange(IEnumerable<Group> param, bool? saveChanges = true, object? args = null)
         {
-            _context.AddRange(param);
+            await _context.AddRangeAsync(param);
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();

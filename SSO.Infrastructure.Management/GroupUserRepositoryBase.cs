@@ -10,7 +10,7 @@ namespace SSO.Infrastructure.Management
     {
         readonly IAppDbContext _context;
 
-        public GroupUserRepositoryBase(IAppDbContext context)
+        protected GroupUserRepositoryBase(IAppDbContext context)
         {
             _context = context;
         }
@@ -19,7 +19,7 @@ namespace SSO.Infrastructure.Management
 
         public async Task AddRange(IEnumerable<GroupUser> param, bool? saveChanges = true, object? args = null)
         {
-            _context.AddRange(param);
+            await _context.AddRangeAsync(param);
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();

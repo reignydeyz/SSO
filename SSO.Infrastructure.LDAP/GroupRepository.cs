@@ -33,7 +33,7 @@ namespace SSO.Infrastructure.LDAP
             newGroup.Properties["description"].Value = param.Description ?? string.Empty;
             newGroup.CommitChanges();
 
-            _context.Add(param);
+            await _context.AddAsync(param);
 
             if (saveChanges!.Value)
                 await _context.SaveChangesAsync();

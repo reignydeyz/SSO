@@ -117,7 +117,7 @@ namespace SSO.Infrastructure.LDAP
                 {
                     string groupName = groupPath.Split(',')[0].Substring(3);
 
-                    if (!groupUsers.Any(x => x.Item1 == groupName && x.Item2 == userName))
+                    if (!groupUsers.Exists(x => x.Item1 == groupName && x.Item2 == userName))
                         groupUsers.Add(new Tuple<string, string>(groupName, userName));
                 }
             }

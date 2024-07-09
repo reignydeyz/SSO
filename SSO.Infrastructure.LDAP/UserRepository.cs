@@ -93,7 +93,7 @@ namespace SSO.Infrastructure.LDAP
             rec.DateModified = DateTime.Now;
             rec.ModifiedBy = author == null ? $"{applicationUser.FirstName} {applicationUser.LastName}" : $"{author.FirstName} {author.LastName}";
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public override async Task Delete(ApplicationUser param, bool? saveChanges = true)

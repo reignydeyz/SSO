@@ -37,7 +37,7 @@ namespace SSO.Business.Accounts.Handlers
             }
             catch (Exception)
             {
-                throw new ArgumentException(message: "Incorrect password.", paramName: "InvalidPassword");
+                throw new ArgumentException(message: "Incorrect password.");
             }
         }
     }
