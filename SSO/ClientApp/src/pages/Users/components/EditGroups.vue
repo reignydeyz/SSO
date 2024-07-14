@@ -22,7 +22,7 @@
     </div>
 
     <div v-show="groups.length > 0">
-        <hr class="mb-4" v-if="isInRealm('Default')" />
+        <hr class="mb-4" v-if="isInIdp('Default')" />
         <h5 class="section-title mb-3">Groups</h5>
         <div class="row g-4 settings-section mb-4">
             <div class="col-md-4" v-for="i in groups" :key="i.groupId">
@@ -60,7 +60,7 @@ export default {
         }
     },
     mounted() {
-        if (this.isInRealm('Default')) {
+        if (this.isInIdp('Default')) {
             autocomplete({
                 input: this.$refs.group,
                 minLength: 3,
@@ -111,8 +111,8 @@ export default {
             }
         },
 
-        isInRealm(realm) {
-            return getAccount().authmethod === realm;
+        isInIdp(idp) {
+            return getAccount().authmethod === idp;
         },
     }
 }

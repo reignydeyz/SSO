@@ -10,7 +10,7 @@ const canActivate = (to) => {
             return false;
         }
         
-        if (to?.meta?.realm && to.meta.realm !== claims.authmethod) {
+        if (to?.meta?.idp && to.meta.idp !== claims.authmethod) {
             return false;
         }
 

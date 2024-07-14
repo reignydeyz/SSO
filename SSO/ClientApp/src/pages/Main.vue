@@ -144,8 +144,8 @@ export default {
         navbar.init(this.$route);
     },
     methods: {
-        isInRealm(realm) {
-            return getAccount().authmethod === realm;
+        isInIdp(idp) {
+            return getAccount().authmethod === idp;
         }
     }
 }

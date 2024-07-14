@@ -5,15 +5,15 @@ using SSO.Infrastructure.Settings.Services;
 
 namespace SSO.Filters
 {
-    public class RealmValidatorAttribute : ActionFilterAttribute, IAsyncActionFilter
+    public class IdpValidatorAttribute : ActionFilterAttribute, IAsyncActionFilter
     {
-        public Realm Realm { get; set; }
+        public IdentityProvider IdentityProvider { get; set; }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var realmSvc = context.HttpContext.RequestServices.GetService<RealmService>();
+            var idpSvc = context.HttpContext.RequestServices.GetService<IdpService>();
 
-            if (realmSvc.Realm != Realm) context.Result = new StatusCodeResult(503);
+            if (idpSvc.IdentityProvider != IdentityProvider) context.Result = new StatusCodeResult(503);
             else await next();
         }
     }

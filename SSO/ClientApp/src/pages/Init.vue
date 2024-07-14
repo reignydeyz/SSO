@@ -32,8 +32,8 @@ export default {
 		signout() {
             this.$router.push('/logout');
         },
-		isInRealm(realm) {
-			return this.account.authmethod === realm;
+		isInIdp(idp) {
+			return this.account.authmethod === idp;
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace SSO.Infrastructure.LDAP
     {
         public static void ApplyLdapServiceCollection(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton(_ => new RealmService(Realm.LDAP));
+            services.AddSingleton(_ => new IdpService(IdentityProvider.LDAP));
 
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<IUserRepository, UserRepository>();

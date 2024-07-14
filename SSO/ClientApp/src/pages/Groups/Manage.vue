@@ -28,7 +28,7 @@
                                         class="bi bi-plus-lg"></i>&nbsp;Create
                                     New</router-link>
                             </div>
-                            <div class="col-auto" v-if="isInRealm('LDAP')">
+                            <div class="col-auto" v-if="isInIdp('LDAP')">
                                 <button class="btn app-btn-primary" @click="syncGroups"><i class="fa fa-refresh"></i>&nbsp;Sync</button>
                             </div>
                         </div>
@@ -212,8 +212,8 @@ export default {
             }
         },
 
-        isInRealm(realm) {
-            return getAccount().authmethod === realm;
+        isInIdp(idp) {
+            return getAccount().authmethod === idp;
         },
 
         syncGroups() {

@@ -19,14 +19,14 @@ namespace SSO.Controllers
         readonly IMediator _mediator;
         readonly IUserRepository _userRepository;
         readonly IMapper _mapper;
-        readonly Realm _realm;
+        readonly IdentityProvider _idp;
 
-        public AccountController(IMediator mediator, IUserRepository userRepository, IMapper mapper, RealmService realmService)
+        public AccountController(IMediator mediator, IUserRepository userRepository, IMapper mapper, IdpService idpService)
         {
             _mediator = mediator;
             _userRepository = userRepository;
             _mapper = mapper;
-            _realm = realmService.Realm;
+            _idp = idpService.IdentityProvider;
         }
 
         /// <summary>
@@ -43,11 +43,11 @@ namespace SSO.Controllers
 
                 param.User = await _userRepository.FindOne(x => x.Id == userId);
 
-                await (_realm switch
+                await (_idp switch
                 {
-                    Realm.Default => _mediator.Send(param),
-                    Realm.LDAP => _mediator.Send(_mapper.Map<ChangePasswordLdapCommand>(param)),
-                    _ => throw new InvalidOperationException("Unsupported realm type")
+                    IdentityProvider.Default => _mediator.Send(param),
+                    IdentityProvider.LDAP => _mediator.Send(_mapper.Map<ChangePasswordLdapCommand>(param)),
+                    _ => throw new InvalidOperationException("Unsupported IDP")
                 });
 
                 return Ok();

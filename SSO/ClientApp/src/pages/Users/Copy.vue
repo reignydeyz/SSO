@@ -70,7 +70,7 @@
                                         {{ errorMessage }}
                                     </div>
                                 </div>
-                                <div class="mb-3" v-if="isInRealm('Default')">
+                                <div class="mb-3" v-if="isInIdp('Default')">
                                     <label class="form-label">Password</label>
                                     <div class="input-group">
                                         <input v-model="user.password" id="password" type="password"
@@ -85,7 +85,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="mb-3" v-if="isInRealm('Default')">
+                                <div class="mb-3" v-if="isInIdp('Default')">
                                     <label class="form-label">Repeat password</label>
                                     <div class="input-group">
                                         <input type="password" id="re-password" class="form-control signin-password"
@@ -179,8 +179,8 @@ export default {
             });
         },
 
-        isInRealm(realm) {
-            return getAccount().authmethod === realm;
+        isInIdp(idp) {
+            return getAccount().authmethod === idp;
         }
     }
 }

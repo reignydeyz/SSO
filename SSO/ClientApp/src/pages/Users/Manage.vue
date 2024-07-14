@@ -28,7 +28,7 @@
                                         class="bi bi-plus-lg"></i>&nbsp;Create
                                     New</router-link>
                             </div>
-                            <div class="col-auto" v-if="isInRealm('LDAP')">
+                            <div class="col-auto" v-if="isInIdp('LDAP')">
                                 <button class="btn app-btn-primary" @click="syncUsers"><i class="fa fa-refresh"></i>&nbsp;Sync</button>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                                                         <router-link :to="'/users/edit/' + i.userId"
                                                             class="dropdown-item">Edit/View</router-link>
                                                     </li>
-                                                    <li v-if="isInRealm('Default')">
+                                                    <li v-if="isInIdp('Default')">
                                                         <router-link :to="'/users/copy/' + i.userId"
                                                             class="dropdown-item">Copy</router-link>
                                                     </li>
@@ -235,8 +235,8 @@ export default {
             }
         },
 
-        isInRealm(realm) {
-            return getAccount().authmethod === realm;
+        isInIdp(idp) {
+            return getAccount().authmethod === idp;
         },
 
         syncUsers() {

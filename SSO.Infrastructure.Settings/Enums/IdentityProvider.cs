@@ -1,6 +1,6 @@
 ﻿namespace SSO.Infrastructure.Settings.Enums
 {
-    public enum Realm
+    public enum IdentityProvider
     {
         Default,
         LDAP

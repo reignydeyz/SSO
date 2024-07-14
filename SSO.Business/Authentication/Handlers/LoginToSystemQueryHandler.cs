@@ -11,7 +11,7 @@ namespace SSO.Business.Authentication.Handlers
 {
     public class LoginToSystemQueryHandler : IRequestHandler<LoginToSystemQuery, TokenDto>
     {
-        readonly Realm _realm;
+        readonly IdentityProvider _idp;
         readonly IAuthenticationService _authenticationService;
         readonly ITokenService _tokenService;
         readonly IApplicationRoleRepository _roleRepo;
@@ -20,12 +20,12 @@ namespace SSO.Business.Authentication.Handlers
         readonly IGroupRoleRepository _groupRoleRepo;
         readonly Application _root;
 
-        public LoginToSystemQueryHandler(RealmService realmService,
+        public LoginToSystemQueryHandler(IdpService idpService,
             IAuthenticationService authenticationService, ITokenService tokenService,
             IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo,
             IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository)
         {
-            _realm = realmService.Realm;
+            _idp = idpService.IdentityProvider;
             _authenticationService = authenticationService;
             _tokenService = tokenService;
             _roleRepo = roleRepo;
@@ -49,7 +49,7 @@ namespace SSO.Business.Authentication.Handlers
                 roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, _root.ApplicationId));
 
             var claims = new List<Claim>() {
-                new Claim(ClaimTypes.AuthenticationMethod, _realm.ToString()),
+                new Claim(ClaimTypes.AuthenticationMethod, _idp.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
             };

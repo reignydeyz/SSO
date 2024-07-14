@@ -53,8 +53,8 @@ export default {
             );
         },
 
-        isInRealm(realm) {
-            return getAccount().authmethod === realm;
+        isInIdp(idp) {
+            return getAccount().authmethod === idp;
         }
     }
 }

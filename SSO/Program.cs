@@ -89,7 +89,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton(_ => new JwtSecretService(privateKey));
-builder.Services.AddSingleton(_ => new RealmService(Realm.Default));
+builder.Services.AddSingleton(_ => new IdpService(IdentityProvider.Default));
 
 builder.Services.AddScoped<IAuthenticationService, SSO.Infrastructure.Authentication.AuthenticationService>();
 builder.Services.AddScoped<ITokenService, TokenService>();

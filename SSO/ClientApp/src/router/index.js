@@ -116,7 +116,7 @@ const routes = [
     {
         path: "/users/copy/:id",
         name: "Copy User",
-        meta: { mustBeRoot: true, realm: 'Default' },
+        meta: { mustBeRoot: true, idp: 'Default' },
         component: () => import('@/pages/Users/Copy.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))

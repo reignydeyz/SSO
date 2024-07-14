@@ -10,7 +10,7 @@ namespace SSO.Controllers
     [ApiExplorerSettings(GroupName = "System")]
     [Route("api/[controller]")]
     [ApiController]
-    [RealmValidator(Realm = Realm.LDAP)]
+    [IdpValidator(IdentityProvider = IdentityProvider.LDAP)]
     [Authorize(Policy = "RootPolicy")]
     public class LDAPController : ControllerBase
     {

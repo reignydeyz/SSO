@@ -18,7 +18,7 @@
                 <div class="col-auto">
                     <h1 class="app-page-title mb-0">Update</h1>
                 </div>
-                <div class="col-auto" v-if="isInRealm('Default')">
+                <div class="col-auto" v-if="isInIdp('Default')">
                     <div class="row g-2 justify-content-start justify-content-md-end align-items-center">
                         <router-link :to="'../../users/copy/' + this.$route.params.id" class="btn app-btn-outline-primary">Copy</router-link>
                     </div>
@@ -87,8 +87,8 @@ export default {
         });
     },
     methods: {
-        isInRealm(realm) {
-            return getAccount().authmethod === realm;
+        isInIdp(idp) {
+            return getAccount().authmethod === idp;
         },
     }
 }

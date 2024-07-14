@@ -10,19 +10,19 @@ namespace SSO.Business.Users.Handlers
 {
     public class CopyUserCommandHandler : IRequestHandler<CopyUserCommand, UserDto>
     {
-        readonly Realm _realm;
+        readonly IdentityProvider _idp;
         readonly IUserRepository _userRepository;
         readonly IUserRoleRepository _userRoleRepository;
         readonly IGroupUserRepository _groupUserRepository;
         readonly IMapper _mapper;
 
-        public CopyUserCommandHandler(RealmService realmService,
+        public CopyUserCommandHandler(IdpService idpService,
             IUserRepository userRepository, 
             IUserRoleRepository userRoleRepository,
             IGroupUserRepository groupUserRepository,
             IMapper mapper)
         {
-            _realm = realmService.Realm;
+            _idp = idpService.IdentityProvider;
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
             _groupUserRepository = groupUserRepository;
@@ -35,7 +35,7 @@ namespace SSO.Business.Users.Handlers
 
             ApplicationUser? existingUser = null;
 
-            if (_realm == Realm.Default)
+            if (_idp == IdentityProvider.Default)
                 existingUser = await _userRepository.FindOne(x => x.UserName == request.Username);
             else
             {
@@ -55,7 +55,7 @@ namespace SSO.Business.Users.Handlers
             newUser.ModifiedBy = request.Author!;
             newUser.DateModified = DateTime.Now;
 
-            if (_realm == Realm.Default)
+            if (_idp == IdentityProvider.Default)
             {
                 if (existingUser == null)
                     await _userRepository.Add(newUser);
