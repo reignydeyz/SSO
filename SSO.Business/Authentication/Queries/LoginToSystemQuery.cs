@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SSO.Business.Authentication.Queries
 {
@@ -10,5 +11,8 @@ namespace SSO.Business.Authentication.Queries
 
         [Required]
         public string Password { get; set; }
+
+        [JsonIgnore]
+        public Guid RealmId { get; set; }
     }
 }

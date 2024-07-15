@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using SSO.Business.Applications;
 using SSO.Domain.Management.Interfaces;
+using System.Security.Claims;
 
 namespace SSO.Filters
 {
@@ -22,10 +23,11 @@ namespace SSO.Filters
         {
             var repo = context.HttpContext.RequestServices.GetService<IApplicationRepository>();
             var form = context.ActionArguments[ParameterName] as ApplicationIdDto;
+            var realm = new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.System).Value);
 
             bool condition = Relevant
-                ? await repo.Any(x => x.ApplicationId == form.ApplicationId! && x.DateInactive == null)
-                : await repo.Any(x => x.ApplicationId == form.ApplicationId!);
+                ? await repo.Any(x => x.ApplicationId == form.ApplicationId! && x.DateInactive == null && x.RealmId == realm && x.Realm.DateInactive == null)
+                : await repo.Any(x => x.ApplicationId == form.ApplicationId! && x.RealmId == realm && x.Realm.DateInactive == null);
 
             if (!condition) context.Result = new StatusCodeResult(404);
             else await next();

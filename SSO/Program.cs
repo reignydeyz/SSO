@@ -104,6 +104,7 @@ builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaim
 builder.Services.AddScoped<IGroupRepository, SSO.Infrastructure.Management.GroupRepository>();
 builder.Services.AddScoped<IGroupUserRepository, SSO.Infrastructure.Management.GroupUserRepository>();
 builder.Services.AddScoped<IGroupRoleRepository, GroupRoleRepository>();
+builder.Services.AddScoped<IRealmUserRepository, RealmUserRepository>();
 
 var ldapSettings = builder.Configuration.GetSection("LDAPSettings").Get<LDAPSettings>();
 
