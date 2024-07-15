@@ -112,6 +112,11 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<Guid>("RealmId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)")
+                        .HasDefaultValue(new Guid("afb6d3ad-92a3-4ea3-aa90-88071a3ee8aa"));
+
                     b.Property<int>("RefreshTokenExpiration")
                         .HasColumnType("int");
 
@@ -120,7 +125,7 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
 
                     b.HasKey("ApplicationId");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("RealmId", "Name")
                         .IsUnique();
 
                     b.ToTable("Applications");
@@ -432,9 +437,14 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
+                    b.Property<Guid>("RealmId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)")
+                        .HasDefaultValue(new Guid("afb6d3ad-92a3-4ea3-aa90-88071a3ee8aa"));
+
                     b.HasKey("GroupId");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("RealmId", "Name")
                         .IsUnique();
 
                     b.ToTable("Groups");
@@ -470,6 +480,63 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                     b.ToTable("GroupUsers");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.Realm", b =>
+                {
+                    b.Property<Guid>("RealmId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime?>("DateInactive")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DateModified")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.HasKey("RealmId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Realms");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.RealmUser", b =>
+                {
+                    b.Property<Guid>("RealmId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("RealmId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RealmUsers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("SSO.Domain.Models.ApplicationUser", null)
@@ -501,6 +568,17 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.Application", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Realm", "Realm")
+                        .WithMany("Applications")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationCallback", b =>
@@ -570,6 +648,17 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                     b.Navigation("Permission");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.Group", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Realm", "Realm")
+                        .WithMany("Groups")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.GroupRole", b =>
                 {
                     b.HasOne("SSO.Domain.Models.Group", "Group")
@@ -608,6 +697,25 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.RealmUser", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Realm", "Realm")
+                        .WithMany("Users")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.Application", b =>
                 {
                     b.Navigation("Callbacks");
@@ -623,6 +731,15 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.Group", b =>
                 {
                     b.Navigation("Roles");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.Realm", b =>
+                {
+                    b.Navigation("Applications");
+
+                    b.Navigation("Groups");
 
                     b.Navigation("Users");
                 });

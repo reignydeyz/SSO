@@ -21,6 +21,8 @@ namespace SSO.Infrastructure
             builder.ApplyConfiguration(new GroupConfig());
             builder.ApplyConfiguration(new GroupUserConfig());
             builder.ApplyConfiguration(new GroupRoleConfig());
+            builder.ApplyConfiguration(new RealmConfig());
+            builder.ApplyConfiguration(new RealmUserConfig());
 
             base.OnModelCreating(builder);
         }

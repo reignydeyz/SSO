@@ -5,47 +5,60 @@ using SSO.Infrastructure.Enums;
 
 namespace SSO.Infrastructure.Configs
 {
-    public class GroupConfig : IEntityTypeConfiguration<Group>
+    public class RealmConfig : IEntityTypeConfiguration<Realm>
     {
         readonly DatabaseType _dbType;
 
-        public GroupConfig(DatabaseType? dbType = DatabaseType.SqlServer)
+        public RealmConfig(DatabaseType? dbType = DatabaseType.SqlServer)
         {
             _dbType = dbType.Value;
         }
 
-        public void Configure(EntityTypeBuilder<Group> builder)
+        public void Configure(EntityTypeBuilder<Realm> builder)
         {
-            builder.HasKey(x => x.GroupId);
+            builder.HasKey(x => x.RealmId);
 
-            builder.Property(x => x.RealmId).HasDefaultValue(new Guid("afb6d3ad-92a3-4ea3-aa90-88071a3ee8aa"));
             builder.Property(x => x.Name).HasMaxLength(200);
-            builder.Property(x => x.Description).HasMaxLength(500);
             builder.Property(x => x.CreatedBy).HasMaxLength(200);
             builder.Property(x => x.ModifiedBy).HasMaxLength(200);
 
-            builder.HasIndex(x => new { x.RealmId, x.Name }).IsUnique();
+            builder.HasIndex(x => x.Name).IsUnique();
 
             (_dbType switch
             {
-                DatabaseType.MySql => (Action<EntityTypeBuilder<Group>>)UseMySql,
+                DatabaseType.MySql => (Action<EntityTypeBuilder<Realm>>)UseMySql,
                 DatabaseType.Postgres => UsePostgres,
                 _ => UseSqlServer
             })(builder);
+
+            builder.HasMany(x => x.Applications)
+                .WithOne(x => x.Realm)
+                .HasForeignKey(x => x.RealmId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.Groups)
+                .WithOne(x => x.Realm)
+                .HasForeignKey(x => x.RealmId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.Users)
+                .WithOne(x => x.Realm)
+                .HasForeignKey(x => x.RealmId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
-        void UseSqlServer(EntityTypeBuilder<Group> builder)
+        void UseSqlServer(EntityTypeBuilder<Realm> builder)
         {
-            builder.Property(x => x.GroupId).HasDefaultValueSql("NEWID()");
+            builder.Property(x => x.RealmId).HasDefaultValueSql("NEWID()");
         }
 
-        void UseMySql(EntityTypeBuilder<Group> builder)
+        void UseMySql(EntityTypeBuilder<Realm> builder)
         {
             builder.Property(x => x.DateCreated).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
             builder.Property(x => x.DateModified).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
         }
 
-        void UsePostgres(EntityTypeBuilder<Group> builder)
+        void UsePostgres(EntityTypeBuilder<Realm> builder)
         {
             builder.Property(x => x.DateCreated)
                 .HasColumnType("timestamp with time zone")
