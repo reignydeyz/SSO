@@ -30,6 +30,7 @@ namespace SSO.Domain.Interfaces
         DbSet<GroupRole> GroupRoles { get; set; }
         DbSet<Realm> Realms { get; set; }
         DbSet<RealmUser> RealmUsers { get; set; }
+        DbSet<RealmIdpSettings> RealmIdpSettings { get; set; }
 
         // Database property from DbContext
         DatabaseFacade Database { get; }

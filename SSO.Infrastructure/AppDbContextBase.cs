@@ -33,6 +33,7 @@ namespace SSO.Infrastructure
         public DbSet<GroupRole> GroupRoles { get; set; }
         public DbSet<Realm> Realms { get; set; }
         public DbSet<RealmUser> RealmUsers { get; set; }
+        public DbSet<RealmIdpSettings> RealmIdpSettings { get; set; }
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => base.SaveChangesAsync(cancellationToken);
         public int SaveChanges() => base.SaveChanges();
