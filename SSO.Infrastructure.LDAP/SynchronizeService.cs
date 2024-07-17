@@ -15,20 +15,16 @@ namespace SSO.Infrastructure.LDAP
         readonly LDAPSettings _ldapSettings;
         readonly string _ldapConnectionString;
 
-        public SynchronizeService(IGroupRepository groupRepository,
-            IGroupUserRepository groupUserRepository,
-            IUserRepository userRepository,
+        public SynchronizeService(
             IOptions<LDAPSettings> ldapSettings)
         {
-            _groupRepository = groupRepository;
-            _groupUserRepository = groupUserRepository;
-            _userRepository = userRepository;
             _ldapSettings = ldapSettings.Value;
             _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
         }
 
         public async Task Begin()
         {
+            // TODO: Fix repos
             var groups = await FetchGroupsFromLDAP();
             await SyncGroupsToDatabase(groups);
 

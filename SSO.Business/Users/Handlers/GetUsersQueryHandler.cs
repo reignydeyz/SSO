@@ -1,24 +1,25 @@
 ﻿using AutoMapper;
 using MediatR;
 using SSO.Business.Users.Queries;
-using SSO.Domain.Management.Interfaces;
 
 namespace SSO.Business.Users.Handlers
 {
     public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, IQueryable<UserDto>>
     {
         readonly IMapper _mapper;
-        readonly IUserRepository _userRepository;
+        readonly RepositoryFactory _repoFactory;
 
-        public GetUsersQueryHandler(IMapper mapper, IUserRepository userRepository)
+        public GetUsersQueryHandler(IMapper mapper, RepositoryFactory repoFactory)
         {
             _mapper = mapper;
-            _userRepository = userRepository;
+            _repoFactory = repoFactory;
         }
 
         public async Task<IQueryable<UserDto>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
         {
-            var res = await _userRepository.Find(default);
+            var userRepo = await _repoFactory.GetRepository(request.RealmId);
+
+            var res = await userRepo.Find(x => x.Realms.Any(x => x.RealmId == request.RealmId));
 
             return _mapper.ProjectTo<UserDto>(res);
         }

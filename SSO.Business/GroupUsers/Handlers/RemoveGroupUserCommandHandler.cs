@@ -1,26 +1,27 @@
 ﻿using MediatR;
 using SSO.Business.GroupUsers.Commands;
-using SSO.Domain.Management.Interfaces;
 
 namespace SSO.Business.GroupUsers.Handlers
 {
     public class RemoveGroupUserCommandHandler : IRequestHandler<RemoveGroupUserCommand, Unit>
     {
-        readonly IGroupUserRepository _groupUserRepository;
+        readonly RepositoryFactory _groupUserRepoFactory;
 
-        public RemoveGroupUserCommandHandler(IGroupUserRepository groupUserRepository)
+        public RemoveGroupUserCommandHandler(RepositoryFactory groupUserRepoFactory)
         {
-            _groupUserRepository = groupUserRepository;
+            _groupUserRepoFactory = groupUserRepoFactory;
         }
 
         public async Task<Unit> Handle(RemoveGroupUserCommand request, CancellationToken cancellationToken)
         {
-            var rec = await _groupUserRepository.FindOne(x => x.GroupId == request.GroupId && x.UserId == request.UserId.ToString());
+            var repo = await _groupUserRepoFactory.GetRepository(request.RealmId);
+
+            var rec = await repo.FindOne(x => x.GroupId == request.GroupId && x.UserId == request.UserId.ToString());
 
             if (rec is null)
                 throw new ArgumentNullException();
 
-            await _groupUserRepository.Delete(rec!);
+            await repo.Delete(rec!);
 
             return new Unit();
         }
