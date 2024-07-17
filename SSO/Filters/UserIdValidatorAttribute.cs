@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using SSO.Business.Users;
-using SSO.Domain.Management.Interfaces;
+using SSO.Infrastructure.Management;
 using System.Security.Claims;
 
 namespace SSO.Filters
@@ -21,7 +21,7 @@ namespace SSO.Filters
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var repo = context.HttpContext.RequestServices.GetService<IUserRepository>();
+            var repo = context.HttpContext.RequestServices.GetService<UserRepository>();
             var form = context.ActionArguments[ParameterName] as UserIdDto;
             var realmId = new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.System).Value);
 

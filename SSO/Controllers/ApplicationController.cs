@@ -51,6 +51,7 @@ namespace SSO.Controllers
         [HttpGet("{appId}")]
         [ProducesResponseType(typeof(ApplicationDetailDto), 200)]
         [ODataIgnored]
+        [AppIdValidator<GetAppByIdQuery>(ParameterName = "param")]
         public async Task<IActionResult> Get([FromRoute] GetAppByIdQuery param)
         {
             try
@@ -98,7 +99,7 @@ namespace SSO.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPut("{applicationId}")]
-        [AppIdValidator(Relevant = false)]
+        [AppIdValidator<ApplicationIdDto>(Relevant = false)]
         [Authorize(Policy = "RootPolicy")]
         public async Task<IActionResult> Update([FromRoute] ApplicationIdDto form, [FromBody] UpdateAppCommand param)
         {
@@ -123,7 +124,7 @@ namespace SSO.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpDelete("{applicationId}")]
-        [AppIdValidator]
+        [AppIdValidator<ApplicationIdDto>]
         [Authorize(Policy = "RootPolicy")]
         public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form)
         {
@@ -147,7 +148,7 @@ namespace SSO.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost("{applicationId}")]
-        [AppIdValidator]
+        [AppIdValidator<ApplicationIdDto>]
         [Authorize(Policy = "RootPolicy")]
         public async Task<IActionResult> Copy([FromRoute] ApplicationIdDto form, [FromBody] CopyAppCommand param)
         {

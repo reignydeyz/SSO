@@ -24,7 +24,7 @@ namespace SSO.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpGet]
-        [AppIdValidator]
+        [AppIdValidator<InitLoginQuery>]
         [ApiExplorerSettings(GroupName = "Client")]
         [EnableCors("AllowAnyOrigin")]
         public async Task<IActionResult> Init([FromQuery] InitLoginQuery form)
@@ -63,12 +63,13 @@ namespace SSO.Controllers
         /// Authentication for app user
         /// </summary>
         /// <param name="form"></param>
+        /// <param name="realmId"></param>
         /// <returns></returns>
         [HttpPost]
-        [AppIdValidator]
+        [AppIdValidator<LoginQuery>]
         [ProducesResponseType(typeof(string), 200)]
         [ApiExplorerSettings(GroupName = "System")]
-        public async Task<IActionResult> Login([FromBody] LoginQuery form)
+        public async Task<IActionResult> Login([FromBody] LoginQuery form, [FromQuery] Guid? realmId = null)
         {
             try
             {

@@ -14,7 +14,7 @@ namespace SSO.Controllers
     [ApiExplorerSettings(GroupName = "System")]
     [Route("api/application/{applicationId}/callback")]
     [ApiController]
-    [AppIdValidator]
+    [AppIdValidator<ApplicationIdDto>]
     [Authorize(Policy = "RootPolicy")]
     public class ApplicationCallbackController : ControllerBase
     {

@@ -13,7 +13,7 @@ namespace SSO.Controllers
     [ApiExplorerSettings(GroupName = "System")]
     [Route("api/application/{applicationId}/permission")]
     [ApiController]
-    [AppIdValidator]
+    [AppIdValidator<ApplicationIdDto>]
     [Authorize(Policy = "RootPolicy")]
     public class ApplicationPermissionController : ControllerBase
     {
