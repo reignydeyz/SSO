@@ -10,36 +10,39 @@ namespace SSO.Business.Users.Handlers
 {
     public class CopyUserCommandHandler : IRequestHandler<CopyUserCommand, UserDto>
     {
-        readonly IdentityProvider _idp;
-        readonly IUserRepository _userRepository;
+        readonly IdentityProvider _idp;        
         readonly IUserRoleRepository _userRoleRepository;
-        readonly IGroupUserRepository _groupUserRepository;
         readonly IMapper _mapper;
+        readonly RepositoryFactory _userRepoFactory;
+        readonly GroupUsers.RepositoryFactory _groupRepoFactory;
 
         public CopyUserCommandHandler(IdpService idpService,
-            IUserRepository userRepository, 
             IUserRoleRepository userRoleRepository,
-            IGroupUserRepository groupUserRepository,
-            IMapper mapper)
+            IMapper mapper,
+            RepositoryFactory userRepoFactory,
+            GroupUsers.RepositoryFactory groupRepoFactory)
         {
             _idp = idpService.IdentityProvider;
-            _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
-            _groupUserRepository = groupUserRepository;
-            _mapper = mapper;            
+            _mapper = mapper;
+            _userRepoFactory = userRepoFactory;
+            _groupRepoFactory = groupRepoFactory;
         }
 
         public async Task<UserDto> Handle(CopyUserCommand request, CancellationToken cancellationToken)
         {
-            var srcUser = await _userRepository.FindOne(x => x.Id == request.UserId);
+            var userRepo = await _userRepoFactory.GetRepository(request.RealmId);
+            var groupUserRepo = await _groupRepoFactory.GetRepository(request.RealmId);
+
+            var srcUser = await userRepo.FindOne(x => x.Id == request.UserId);
 
             ApplicationUser? existingUser = null;
 
             if (_idp == IdentityProvider.Default)
-                existingUser = await _userRepository.FindOne(x => x.UserName == request.Username);
+                existingUser = await userRepo.FindOne(x => x.UserName == request.Username);
             else
             {
-                existingUser = await _userRepository.FindOne(x => x.FirstName == request.FirstName
+                existingUser = await userRepo.FindOne(x => x.FirstName == request.FirstName
                     && x.LastName == request.LastName
                     && x.Email == request.Email
                     && x.UserName == request.Username);
@@ -55,21 +58,18 @@ namespace SSO.Business.Users.Handlers
             newUser.ModifiedBy = request.Author!;
             newUser.DateModified = DateTime.Now;
 
-            if (_idp == IdentityProvider.Default)
-            {
-                if (existingUser == null)
-                    await _userRepository.Add(newUser);
-                else
-                    await _userRepository.Update(newUser);
-            }
+            if (existingUser == null)
+                await userRepo.Add(newUser);
+            else
+                await userRepo.Update(newUser);
 
             // Apps
-            var apps = await _userRepository.GetApplications(new Guid(srcUser.Id));
+            var apps = await userRepo.GetApplications(new Guid(srcUser.Id));
 
             // Clear apps associated to the user being updated (existing user)
             if (existingUser != null)
             {
-                var exApps = await _userRepository.GetApplications(new Guid(existingUser.Id));
+                var exApps = await userRepo.GetApplications(new Guid(existingUser.Id));
 
                 foreach (var app in exApps)
                 {
@@ -92,11 +92,11 @@ namespace SSO.Business.Users.Handlers
             await _userRoleRepository.AddRoles(new Guid(newUser.Id), newRoles);
 
             // User groups
-            var groups = await _userRepository.GetGroups(new Guid(srcUser.Id));
+            var groups = await userRepo.GetGroups(new Guid(srcUser.Id));
             if (existingUser != null)
-                await _groupUserRepository.RemoveRange(x => x.UserId == existingUser.Id, false);
+                await groupUserRepo.RemoveRange(x => x.UserId == existingUser.Id, false);
 
-            await _groupUserRepository.AddRange(groups.Select(x => new GroupUser { GroupId = x.GroupId, UserId = newUser.Id }));
+            await groupUserRepo.AddRange(groups.Select(x => new GroupUser { GroupId = x.GroupId, UserId = newUser.Id }));
 
             return _mapper.Map<UserDto>(newUser);
         }

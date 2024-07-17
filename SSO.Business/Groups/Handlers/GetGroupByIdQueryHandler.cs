@@ -1,24 +1,25 @@
 ﻿using AutoMapper;
 using MediatR;
 using SSO.Business.Groups.Queries;
-using SSO.Domain.Management.Interfaces;
 
 namespace SSO.Business.Groups.Handlers
 {
     public class GetGroupByIdQueryHandler : IRequestHandler<GetGroupByIdQuery, GroupDto>
     {
-        readonly IGroupRepository _groupRepository;
+        readonly RepositoryFactory _groupRepoFactory;
         readonly IMapper _mapper;
 
-        public GetGroupByIdQueryHandler(IGroupRepository groupRepository, IMapper mapper)
+        public GetGroupByIdQueryHandler(RepositoryFactory groupRepoFactory, IMapper mapper)
         {
-            _groupRepository = groupRepository;
+            _groupRepoFactory = groupRepoFactory;
             _mapper = mapper;
         }
 
         public async Task<GroupDto> Handle(GetGroupByIdQuery request, CancellationToken cancellationToken)
         {
-            var res = await _groupRepository.FindOne(x => x.GroupId == request.GroupId);
+            var groupRepo = await _groupRepoFactory.GetRepository();
+
+            var res = await groupRepo.FindOne(x => x.GroupId == request.GroupId);
 
             if (res is null)
                 throw new ArgumentNullException();

@@ -10,14 +10,11 @@ using SSO;
 using SSO.Business;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Mappings;
-using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Infrastructure;
-using SSO.Infrastructure.Authentication;
 using SSO.Infrastructure.Db.MySql;
 using SSO.Infrastructure.Db.Postgres;
 using SSO.Infrastructure.LDAP;
-using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
 using SSO.Infrastructure.Settings.Enums;
@@ -91,25 +88,18 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSingleton(_ => new JwtSecretService(privateKey));
 builder.Services.AddSingleton(_ => new IdpService(IdentityProvider.Default));
 
-builder.Services.AddScoped<IAuthenticationService, SSO.Infrastructure.Authentication.AuthenticationService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-builder.Services.AddScoped<IUserRepository, SSO.Infrastructure.Management.UserRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IApplicationRoleRepository, ApplicationRoleRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IApplicationCallbackRepository, ApplicationCallbackRepository>();
 builder.Services.AddScoped<IApplicationPermissionRepository, ApplicationPermissionRepository>();
 builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaimRepository>();
-builder.Services.AddScoped<IGroupRepository, SSO.Infrastructure.Management.GroupRepository>();
-builder.Services.AddScoped<IGroupUserRepository, SSO.Infrastructure.Management.GroupUserRepository>();
 builder.Services.AddScoped<IGroupRoleRepository, GroupRoleRepository>();
+builder.Services.AddScoped<IRealmRepository, RealmRepository>();
 builder.Services.AddScoped<IRealmUserRepository, RealmUserRepository>();
 
-var ldapSettings = builder.Configuration.GetSection("LDAPSettings").Get<LDAPSettings>();
-
-if (ldapSettings != null)
-    builder.Services.ApplyLdapServiceCollection(builder.Configuration);
+builder.Services.ApplyBusinessServiceCollection(builder.Configuration);
+builder.Services.ApplyLdapServiceCollection(builder.Configuration);
 
 builder.Services.AddSpaStaticFiles(configuration =>
 {

@@ -12,32 +12,33 @@ namespace SSO.Business.Authentication.Handlers
     public class LoginToSystemQueryHandler : IRequestHandler<LoginToSystemQuery, TokenDto>
     {
         readonly IdentityProvider _idp;
-        readonly IAuthenticationService _authenticationService;
         readonly ITokenService _tokenService;
         readonly IMapper _mapper;
         readonly IApplicationRepository _applicationRepository;
         readonly IApplicationRoleRepository _roleRepo;
-        readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
         readonly IRealmUserRepository _realmUserRepo;
+        readonly ServiceFactory _authServiceFactory;
+        readonly Users.RepositoryFactory _userRepoFactory;
 
         public LoginToSystemQueryHandler(IdpService idpService,
-            IAuthenticationService authenticationService, ITokenService tokenService, IMapper mapper,
-            IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo,
-            IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository,
-            IRealmUserRepository realmUserRepository)
+            ITokenService tokenService, IMapper mapper,
+            IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo,
+            IGroupRoleRepository groupRoleRepository,
+            IRealmUserRepository realmUserRepository,
+            ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _idp = idpService.IdentityProvider;
-            _authenticationService = authenticationService;
             _tokenService = tokenService;
             _mapper = mapper;
             _applicationRepository = applicationRepository;
             _roleRepo = roleRepo;
-            _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
             _groupRoleRepo = groupRoleRepository;
             _realmUserRepo = realmUserRepository;
+            _authServiceFactory = authServiceFactory;
+            _userRepoFactory = userRepoFactory;
         }
 
         public async Task<TokenDto> Handle(LoginToSystemQuery request, CancellationToken cancellationToken)
@@ -45,14 +46,17 @@ namespace SSO.Business.Authentication.Handlers
             var root = await _applicationRepository.FindOne(x => x.RealmId == request.RealmId && x.Name == "root");
             root ??= await _applicationRepository.FindOne(x => x.Realm.Name == "Default" && x.Name == "root");
 
-            await _authenticationService.Login(request.Username, request.Password, root);
+            var authenticationService = await _authServiceFactory.GetService(root.RealmId);
+            var userRepo = await _userRepoFactory.GetRepository(root.RealmId);
 
-            var user = await _userRepo.GetByUsername(request.Username);
+            await authenticationService.Login(request.Username, request.Password, root);
+
+            var user = await userRepo.GetByUsername(request.Username);
 
             // Checks root access
             var roles = await _userRoleRepo.Roles(request.Username, root.ApplicationId);
 
-            var groups = await _userRepo.GetGroups(new Guid(user.Id));
+            var groups = await userRepo.GetGroups(new Guid(user.Id));
             foreach (var group in groups)
                 roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, root.ApplicationId));
 

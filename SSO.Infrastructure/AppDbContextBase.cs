@@ -35,6 +35,8 @@ namespace SSO.Infrastructure
         public DbSet<RealmUser> RealmUsers { get; set; }
         public DbSet<RealmIdpSettings> RealmIdpSettings { get; set; }
 
+        public new DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
+
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => base.SaveChangesAsync(cancellationToken);
         public int SaveChanges() => base.SaveChanges();
 

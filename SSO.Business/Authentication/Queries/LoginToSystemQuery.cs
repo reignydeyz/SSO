@@ -13,6 +13,6 @@ namespace SSO.Business.Authentication.Queries
         public string Password { get; set; }
 
         [JsonIgnore]
-        public Guid RealmId { get; set; }
+        public Guid? RealmId { get; set; }
     }
 }

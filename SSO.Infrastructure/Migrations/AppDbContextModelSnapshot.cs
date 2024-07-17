@@ -128,7 +128,7 @@ namespace SSO.Infrastructure.Migrations
                     b.HasIndex("RealmId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Applications");
+                    b.ToTable("Applications", (string)null);
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationCallback", b =>
@@ -142,7 +142,7 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasKey("ApplicationId", "Url");
 
-                    b.ToTable("ApplicationCallbacks");
+                    b.ToTable("ApplicationCallbacks", (string)null);
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationPermission", b =>
@@ -169,7 +169,7 @@ namespace SSO.Infrastructure.Migrations
                     b.HasIndex("ApplicationId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ApplicationPermissions");
+                    b.ToTable("ApplicationPermissions", (string)null);
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationRole", b =>
@@ -450,7 +450,7 @@ namespace SSO.Infrastructure.Migrations
                     b.HasIndex("RealmId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.GroupRole", b =>
@@ -465,7 +465,7 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("GroupRoles");
+                    b.ToTable("GroupRoles", (string)null);
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.GroupUser", b =>
@@ -480,7 +480,7 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GroupUsers");
+                    b.ToTable("GroupUsers", (string)null);
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.Realm", b =>
@@ -519,7 +519,7 @@ namespace SSO.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Realms");
+                    b.ToTable("Realms", (string)null);
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.RealmIdpSettings", b =>
@@ -536,7 +536,7 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasKey("RealmId", "IdentityProvider");
 
-                    b.ToTable("RealmIdpSettings");
+                    b.ToTable("RealmIdpSettings", (string)null);
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.RealmUser", b =>
@@ -551,7 +551,7 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RealmUsers");
+                    b.ToTable("RealmUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>

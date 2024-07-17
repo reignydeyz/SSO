@@ -100,6 +100,7 @@ namespace SSO.Controllers
             try
             {
                 var param = new RemoveGroupCommand { GroupId = form.GroupId };
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
 
                 var res = await _mediator.Send(param);
 
@@ -125,6 +126,7 @@ namespace SSO.Controllers
             {
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
                 param.GroupId = form.GroupId;
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
 
                 var res = await _mediator.Send(param);
 

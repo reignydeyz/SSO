@@ -13,6 +13,6 @@
         public virtual ICollection<Application> Applications { get; set; }
         public virtual ICollection<Group> Groups { get; set; }
         public virtual ICollection<RealmUser> Users { get; set; }
-        public virtual ICollection<RealmIdpSettings> Settings { get; set; }
+        public virtual ICollection<RealmIdpSettings> IdpSettingsCollection { get; set; }
     }
 }

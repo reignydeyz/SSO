@@ -35,6 +35,8 @@ namespace SSO.Domain.Interfaces
         // Database property from DbContext
         DatabaseFacade Database { get; }
 
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
+
         // Method signatures for saving changes
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         int SaveChanges();

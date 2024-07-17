@@ -92,6 +92,7 @@ namespace SSO.Controllers
         [HttpPost("system")]
         [ProducesResponseType(typeof(string), 200)]
         [ApiExplorerSettings(GroupName = "System")]
+        [RealmIdValidator<LoginToSystemQuery>]
         public async Task<IActionResult> LoginToSystem([FromBody] LoginToSystemQuery form)
         {
             try
