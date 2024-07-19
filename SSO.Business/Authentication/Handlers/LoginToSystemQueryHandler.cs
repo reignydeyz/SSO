@@ -43,8 +43,14 @@ namespace SSO.Business.Authentication.Handlers
 
         public async Task<TokenDto> Handle(LoginToSystemQuery request, CancellationToken cancellationToken)
         {
-            var root = await _applicationRepository.FindOne(x => x.RealmId == request.RealmId && x.Name == "root");
-            root ??= await _applicationRepository.FindOne(x => x.Realm.Name == "Default" && x.Name == "root");
+           var root = await _applicationRepository.FindOne(
+                x => request.RealmId.HasValue ?
+                        x.RealmId == request.RealmId && x.Name == "root" :
+                        x.Realm.Name == "Default" && x.Name == "root"
+            );
+
+            if (root is null)
+                throw new ArgumentException("Invalid realm.");
 
             var authenticationService = await _authServiceFactory.GetService(root.RealmId);
             var userRepo = await _userRepoFactory.GetRepository(root.RealmId);

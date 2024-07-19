@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSO.Filters;
 using SSO.Infrastructure.LDAP;
 using SSO.Infrastructure.Settings.Enums;
+using System.Security.Claims;
 
 namespace SSO.Controllers
 {
@@ -30,12 +31,12 @@ namespace SSO.Controllers
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         public IActionResult GetSyncStatus()
         {
-            var api = JobStorage.Current.GetMonitoringApi();
+            /*var api = JobStorage.Current.GetMonitoringApi();
 
             var processingJobs = api.ProcessingJobs(0, int.MaxValue);
 
             if (processingJobs.Any(x => x.Value.Job.ToString() == $"{nameof(SynchronizeService)}.{nameof(_synchronizeService.Begin)}"))
-                return Accepted(new { status = "Processing", message = $"The request is being processed. Check the status at /hangfire/jobs/enqueued" });
+                return Accepted(new { status = "Processing", message = $"The request is being processed. Check the status at /hangfire/jobs/enqueued" });*/
 
             return Ok(new { status = "Ready", message = "Process is ready for further action." });
         }
@@ -54,7 +55,12 @@ namespace SSO.Controllers
             if (status is AcceptedResult)
                 return status;
 
-            BackgroundJob.Enqueue(() => _synchronizeService.Begin());
+            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+            var jobId = BackgroundJob.Enqueue(() => _synchronizeService.Begin(realmId));
+            using (var connection = JobStorage.Current.GetConnection())
+            {
+                connection.SetJobParameter(jobId, "Tags", realmId.ToString());
+            }
 
             return Ok();
         }

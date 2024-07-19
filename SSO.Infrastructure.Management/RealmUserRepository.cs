@@ -20,6 +20,14 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
+        public async Task AddRange(IEnumerable<RealmUser> param, bool? saveChanges = true, object? args = null)
+        {
+            _context.AddRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
         public Task<bool> Any(Expression<Func<RealmUser, bool>> predicate)
         {
             throw new NotImplementedException();
@@ -42,6 +50,22 @@ namespace SSO.Infrastructure.Management
         public Task<RealmUser> FindOne(Expression<Func<RealmUser, bool>> predicate)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task RemoveRange(IEnumerable<RealmUser> param, bool? saveChanges = true, object? args = null)
+        {
+            _context.RemoveRange(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+        }
+
+        public async Task RemoveRange(Expression<Func<RealmUser, bool>> predicate, bool? saveChanges = true, object? args = null)
+        {
+            _context.RemoveRange(_context.RealmUsers.Where(predicate));
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public Task<RealmUser> Update(RealmUser param, bool? saveChanges = true, object? args = null)
