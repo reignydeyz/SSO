@@ -28,9 +28,9 @@ namespace SSO.Infrastructure.Management
                 await _context.SaveChangesAsync();
         }
 
-        public Task<bool> Any(Expression<Func<RealmUser, bool>> predicate)
+        public async Task<bool> Any(Expression<Func<RealmUser, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.RealmUsers.AnyAsync(predicate);
         }
 
         public Task Delete(RealmUser param, bool? saveChanges = true)
@@ -47,9 +47,9 @@ namespace SSO.Infrastructure.Management
                 return _context.RealmUsers.AsQueryable().AsNoTracking();
         }
 
-        public Task<RealmUser> FindOne(Expression<Func<RealmUser, bool>> predicate)
+        public async Task<RealmUser> FindOne(Expression<Func<RealmUser, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.RealmUsers.FirstOrDefaultAsync(predicate);
         }
 
         public async Task RemoveRange(IEnumerable<RealmUser> param, bool? saveChanges = true, object? args = null)

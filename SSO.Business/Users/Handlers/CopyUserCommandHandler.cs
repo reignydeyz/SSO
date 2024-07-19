@@ -3,26 +3,21 @@ using MediatR;
 using SSO.Business.Users.Commands;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
-using SSO.Infrastructure.Settings.Enums;
-using SSO.Infrastructure.Settings.Services;
 
 namespace SSO.Business.Users.Handlers
 {
     public class CopyUserCommandHandler : IRequestHandler<CopyUserCommand, UserDto>
-    {
-        readonly IdentityProvider _idp;        
+    { 
         readonly IUserRoleRepository _userRoleRepository;
         readonly IMapper _mapper;
         readonly RepositoryFactory _userRepoFactory;
         readonly GroupUsers.RepositoryFactory _groupRepoFactory;
 
-        public CopyUserCommandHandler(IdpService idpService,
-            IUserRoleRepository userRoleRepository,
+        public CopyUserCommandHandler(IUserRoleRepository userRoleRepository,
             IMapper mapper,
             RepositoryFactory userRepoFactory,
             GroupUsers.RepositoryFactory groupRepoFactory)
         {
-            _idp = idpService.IdentityProvider;
             _userRoleRepository = userRoleRepository;
             _mapper = mapper;
             _userRepoFactory = userRepoFactory;
@@ -38,18 +33,7 @@ namespace SSO.Business.Users.Handlers
 
             ApplicationUser? existingUser = null;
 
-            if (_idp == IdentityProvider.Default)
-                existingUser = await userRepo.FindOne(x => x.UserName == request.Username);
-            else
-            {
-                existingUser = await userRepo.FindOne(x => x.FirstName == request.FirstName
-                    && x.LastName == request.LastName
-                    && x.Email == request.Email
-                    && x.UserName == request.Username);
-
-                if (existingUser == null)
-                    throw new ArgumentException(message: "Input may trigger \"core\" data modification which is currently not allowed.", paramName: "NotAllowed");
-            }
+            existingUser = await userRepo.FindOne(x => x.UserName == request.Username);
 
             var newUser = _mapper.Map<ApplicationUser>(request);
             newUser.Id = existingUser?.Id ?? Guid.NewGuid().ToString();

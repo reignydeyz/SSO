@@ -3,15 +3,12 @@ using MediatR;
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
-using SSO.Infrastructure.Settings.Enums;
-using SSO.Infrastructure.Settings.Services;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
 {
     public class LoginToSystemQueryHandler : IRequestHandler<LoginToSystemQuery, TokenDto>
     {
-        readonly IdentityProvider _idp;
         readonly ITokenService _tokenService;
         readonly IMapper _mapper;
         readonly IApplicationRepository _applicationRepository;
@@ -22,14 +19,12 @@ namespace SSO.Business.Authentication.Handlers
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
 
-        public LoginToSystemQueryHandler(IdpService idpService,
-            ITokenService tokenService, IMapper mapper,
+        public LoginToSystemQueryHandler(ITokenService tokenService, IMapper mapper,
             IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo,
             IGroupRoleRepository groupRoleRepository,
             IRealmUserRepository realmUserRepository,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
-            _idp = idpService.IdentityProvider;
             _tokenService = tokenService;
             _mapper = mapper;
             _applicationRepository = applicationRepository;
@@ -67,7 +62,6 @@ namespace SSO.Business.Authentication.Handlers
                 roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, root.ApplicationId));
 
             var claims = new List<Claim>() {
-                new Claim(ClaimTypes.AuthenticationMethod, _idp.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
             };

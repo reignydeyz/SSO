@@ -86,7 +86,6 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton(_ => new JwtSecretService(privateKey));
-builder.Services.AddSingleton(_ => new IdpService(IdentityProvider.Default));
 
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IApplicationRoleRepository, ApplicationRoleRepository>();

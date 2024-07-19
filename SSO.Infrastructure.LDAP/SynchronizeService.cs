@@ -36,7 +36,7 @@ namespace SSO.Infrastructure.LDAP
 
             if (realm is not null)
             {
-                _ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(realm.IdpSettingsCollection.First().Value);
+                _ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(realm.IdpSettingsCollection.First(x => x.IdentityProvider == IdentityProvider.LDAP).Value);
                 _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
                 _realmId = realmId;
 
@@ -145,7 +145,8 @@ namespace SSO.Infrastructure.LDAP
             await _realmUserRepository.AddRange(toBeAddedRealmUsers, false);
 
             var usernames = users.Select(x => x.UserName.ToLower());
-            var toBeDeletedRealmUsers = await _realmUserRepository.Find(x => !usernames.Contains(x.User.UserName));
+            var toBeDeletedRealmUsers = (await _realmUserRepository.Find(x => !usernames.Contains(x.User.UserName)))
+                .Select(x => new RealmUser { RealmId = _realmId, UserId = x.UserId });
             await _realmUserRepository.RemoveRange(toBeDeletedRealmUsers, false);
 
             var guList = (from gu in groupUsers
@@ -157,7 +158,7 @@ namespace SSO.Infrastructure.LDAP
                               UserId = u.Id
                           });
 
-            var toBeAddedGroupUsers = guList.Where(x => !_groupUserRepository.Any(y => y.UserId == x.UserId && y.GroupId == x.GroupId && x.Group.RealmId == _realmId).Result);
+            var toBeAddedGroupUsers = guList.Where(x => !_groupUserRepository.Any(y => y.UserId == x.UserId && y.GroupId == x.GroupId).Result);
             await _groupUserRepository.AddRange(toBeAddedGroupUsers, false);
 
             var concatenatedIds = guList.Select(x => $"{x.GroupId},{x.UserId}");
