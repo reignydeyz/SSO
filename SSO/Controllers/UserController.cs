@@ -32,7 +32,8 @@ namespace SSO.Controllers
         [EnableQuery(MaxTop = 1000)]
         public IQueryable<UserDto> Get()
         {
-            var res = _mediator.Send(new GetUsersQuery { }).Result;
+            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+            var res = _mediator.Send(new GetUsersQuery { RealmId = realmId }).Result;
 
             if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
                 return res;
@@ -72,6 +73,7 @@ namespace SSO.Controllers
         {
             try
             {
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
                 var res = await _mediator.Send(param);

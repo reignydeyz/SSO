@@ -3,6 +3,7 @@ using MediatR;
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
+using SSO.Infrastructure.Settings.Enums;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
@@ -15,6 +16,7 @@ namespace SSO.Business.Authentication.Handlers
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
+        readonly IRealmRepository _realmRepo;
         readonly IRealmUserRepository _realmUserRepo;
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
@@ -22,7 +24,7 @@ namespace SSO.Business.Authentication.Handlers
         public LoginToSystemQueryHandler(ITokenService tokenService, IMapper mapper,
             IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo,
             IGroupRoleRepository groupRoleRepository,
-            IRealmUserRepository realmUserRepository,
+            IRealmRepository realmRepository, IRealmUserRepository realmUserRepository,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
@@ -31,6 +33,7 @@ namespace SSO.Business.Authentication.Handlers
             _roleRepo = roleRepo;
             _userRoleRepo = userRoleRepo;
             _groupRoleRepo = groupRoleRepository;
+            _realmRepo = realmRepository;
             _realmUserRepo = realmUserRepository;
             _authServiceFactory = authServiceFactory;
             _userRepoFactory = userRepoFactory;
@@ -47,6 +50,7 @@ namespace SSO.Business.Authentication.Handlers
             if (root is null)
                 throw new ArgumentException("Invalid realm.");
 
+            var isLdap = await _realmRepo.Any(x => x.RealmId == request.RealmId && x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider.LDAP));
             var authenticationService = await _authServiceFactory.GetService(root.RealmId);
             var userRepo = await _userRepoFactory.GetRepository(root.RealmId);
 
@@ -62,6 +66,7 @@ namespace SSO.Business.Authentication.Handlers
                 roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, root.ApplicationId));
 
             var claims = new List<Claim>() {
+                new Claim(ClaimTypes.AuthenticationMethod, (isLdap ? IdentityProvider.LDAP.ToString() : IdentityProvider.Default.ToString())),
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
             };

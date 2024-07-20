@@ -23,18 +23,22 @@ namespace SSO.Business.Users.Handlers
         {
             var userRepo = await _repoFactory.GetRepository(request.RealmId);
 
-            var rec = _mapper.Map<ApplicationUser>(request);
-            rec.CreatedBy = request.Author!;
-            rec.DateCreated = DateTime.Now;
-            rec.ModifiedBy = request.Author!;
-            rec.DateModified = rec.DateCreated;
+            var user = await userRepo.FindOne(x => x.UserName == request.Username);
 
-            var res = await userRepo.Add(rec);
+            if (user is null)
+            {
+                var rec = _mapper.Map<ApplicationUser>(request);
+                rec.CreatedBy = request.Author!;
+                rec.DateCreated = DateTime.Now;
+                rec.ModifiedBy = request.Author!;
+                rec.DateModified = rec.DateCreated;
 
-            if (await _realmUserRepository.Any(x => x.UserId == res.Id && x.RealmId == request.RealmId))
-                await _realmUserRepository.Add(new RealmUser { RealmId = request.RealmId, UserId = res.Id });
+                user = await userRepo.Add(rec);
+            }
 
-            return _mapper.Map<UserDto>(res);
+            await _realmUserRepository.Add(new RealmUser { RealmId = request.RealmId, UserId = user.Id });
+
+            return _mapper.Map<UserDto>(user);
         }
     }
 }

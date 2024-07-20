@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
-using SSO.Infrastructure.Management.Helpers;
 using System.Linq.Expressions;
 
 namespace SSO.Infrastructure.Management
@@ -20,28 +18,15 @@ namespace SSO.Infrastructure.Management
 
         public override async Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            try
-            {
-                var password = param.PasswordHash ?? Guid.NewGuid().ToString();
-                param.PasswordHash = null;
+            var password = param.PasswordHash ?? Guid.NewGuid().ToString();
+            param.PasswordHash = null;
 
-                var res = await _userManager.CreateAsync(param, password);
+            var res = await _userManager.CreateAsync(param, password);
 
-                if (!res.Succeeded && res.Errors.Any())
-                    throw new ArgumentException(res.Errors.First().Description);
+            if (!res.Succeeded && res.Errors.Any())
+                throw new ArgumentException(res.Errors.First().Description);
 
-                return await _userManager.FindByNameAsync(param.UserName);
-            }
-            catch (DbUpdateException ex)
-            {
-                var conflictingRecord = UniqueConstraintHelper.HandleUniqueConstraintViolation(_context, param, ex);
-                if (conflictingRecord != null)
-                {
-                    // Handle the conflicting record, e.g., return it or log it
-                    return conflictingRecord;
-                }
-                throw;
-            }
+            return await _userManager.FindByNameAsync(param.UserName);
         }
 
         public override async Task Delete(ApplicationUser param, bool? saveChanges = true)

@@ -9,16 +9,19 @@ namespace SSO.Business.Users.Handlers
     public class CopyUserCommandHandler : IRequestHandler<CopyUserCommand, UserDto>
     { 
         readonly IUserRoleRepository _userRoleRepository;
+        readonly IRealmUserRepository _realmUserRepository;
         readonly IMapper _mapper;
         readonly RepositoryFactory _userRepoFactory;
         readonly GroupUsers.RepositoryFactory _groupRepoFactory;
 
-        public CopyUserCommandHandler(IUserRoleRepository userRoleRepository,
+        public CopyUserCommandHandler(IUserRoleRepository userRoleRepository, 
+            IRealmUserRepository realmUserRepository,
             IMapper mapper,
             RepositoryFactory userRepoFactory,
             GroupUsers.RepositoryFactory groupRepoFactory)
         {
             _userRoleRepository = userRoleRepository;
+            _realmUserRepository = realmUserRepository;
             _mapper = mapper;
             _userRepoFactory = userRepoFactory;
             _groupRepoFactory = groupRepoFactory;
@@ -43,7 +46,10 @@ namespace SSO.Business.Users.Handlers
             newUser.DateModified = DateTime.Now;
 
             if (existingUser == null)
+            {
                 await userRepo.Add(newUser);
+                await _realmUserRepository.Add(new RealmUser { RealmId = request.RealmId, UserId = newUser.Id });
+            }
             else
                 await userRepo.Update(newUser);
 
