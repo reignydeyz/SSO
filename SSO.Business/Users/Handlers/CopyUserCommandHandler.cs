@@ -51,7 +51,7 @@ namespace SSO.Business.Users.Handlers
             else
                 await userRepo.Update(newUser);
 
-            if (await _realmUserRepository.Any(x => x.RealmId == request.RealmId && x.UserId == newUser.Id))
+            if (!(await _realmUserRepository.Any(x => x.RealmId == request.RealmId && x.UserId == newUser.Id)))
                 await _realmUserRepository.Add(new RealmUser { RealmId = request.RealmId, UserId = newUser.Id });
 
             // Apps

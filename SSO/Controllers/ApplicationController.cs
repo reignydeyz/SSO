@@ -51,7 +51,7 @@ namespace SSO.Controllers
         [HttpGet("{appId}")]
         [ProducesResponseType(typeof(ApplicationDetailDto), 200)]
         [ODataIgnored]
-        [AppIdValidator<GetAppByIdQuery>(ParameterName = "param")]
+        [AppIdValidator<GetAppByIdQuery>(ParameterName = "param", PropertyName = "AppId")]
         public async Task<IActionResult> Get([FromRoute] GetAppByIdQuery param)
         {
             try

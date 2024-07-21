@@ -15,9 +15,14 @@ namespace SSO.Infrastructure.Management
             _context = context;
         }
 
-        public Task<RealmUser> Add(RealmUser param, bool? saveChanges = true, object? args = null)
+        public async Task<RealmUser> Add(RealmUser param, bool? saveChanges = true, object? args = null)
         {
-            throw new NotImplementedException();
+            _context.Add(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
+
+            return param;
         }
 
         public async Task AddRange(IEnumerable<RealmUser> param, bool? saveChanges = true, object? args = null)
@@ -33,9 +38,12 @@ namespace SSO.Infrastructure.Management
             return await _context.RealmUsers.AnyAsync(predicate);
         }
 
-        public Task Delete(RealmUser param, bool? saveChanges = true)
+        public async Task Delete(RealmUser param, bool? saveChanges = true)
         {
-            throw new NotImplementedException();
+            _context.Remove(param);
+
+            if (saveChanges!.Value)
+                await _context.SaveChangesAsync();
         }
 
         public async Task<IQueryable<RealmUser>> Find(Expression<Func<RealmUser, bool>>? predicate)

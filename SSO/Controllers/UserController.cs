@@ -133,6 +133,7 @@ namespace SSO.Controllers
         {
             try
             {
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
                 param.UserId = form.UserId.ToString();
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
