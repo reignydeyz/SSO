@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Cryptography.X509Certificates;
+using AutoMapper;
 using MediatR;
 using SSO.Business.Users.Commands;
 using SSO.Domain.Management.Interfaces;
@@ -36,7 +37,7 @@ namespace SSO.Business.Users.Handlers
 
             ApplicationUser? existingUser = null;
 
-            existingUser = await userRepo.FindOne(x => x.UserName == request.Username);
+            existingUser = await userRepo.FindOne(x => x.UserName == request.Username && x.Realms.Any(y => y.RealmId == request.RealmId));
 
             var newUser = _mapper.Map<ApplicationUser>(request);
             newUser.Id = existingUser?.Id ?? Guid.NewGuid().ToString();
@@ -46,12 +47,12 @@ namespace SSO.Business.Users.Handlers
             newUser.DateModified = DateTime.Now;
 
             if (existingUser == null)
-            {
                 await userRepo.Add(newUser);
-                await _realmUserRepository.Add(new RealmUser { RealmId = request.RealmId, UserId = newUser.Id });
-            }
             else
                 await userRepo.Update(newUser);
+
+            if (await _realmUserRepository.Any(x => x.RealmId == request.RealmId && x.UserId == newUser.Id))
+                await _realmUserRepository.Add(new RealmUser { RealmId = request.RealmId, UserId = newUser.Id });
 
             // Apps
             var apps = await userRepo.GetApplications(new Guid(srcUser.Id));
