@@ -89,15 +89,18 @@ namespace SSO.Controllers
         /// Authentication for system
         /// </summary>
         /// <param name="form"></param>
+        /// <param name="realmId"></param>
         /// <returns></returns>
         [HttpPost("system")]
         [ProducesResponseType(typeof(string), 200)]
         [ApiExplorerSettings(GroupName = "System")]
         [RealmIdValidator<LoginToSystemQuery>]
-        public async Task<IActionResult> LoginToSystem([FromBody] LoginToSystemQuery form)
+        public async Task<IActionResult> LoginToSystem([FromBody] LoginToSystemQuery form, [FromQuery] Guid? realmId = null)
         {
             try
             {
+                form.RealmId = realmId;
+
                 var res = await _mediator.Send(form);
 
                 Response.Cookies.Append("system", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
