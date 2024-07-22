@@ -68,7 +68,8 @@ namespace SSO.Business.Authentication.Handlers
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.AuthenticationMethod, (isLdap ? IdentityProvider.LDAP.ToString() : IdentityProvider.Default.ToString())),
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
-                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
+                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.System, root.RealmId.ToString())
             };
 
             if (user.Email is not null)
@@ -77,8 +78,6 @@ namespace SSO.Business.Authentication.Handlers
             // Has root access
             if (roles.Any())
             {
-                claims.Add(new Claim(ClaimTypes.System, root.RealmId.ToString()));
-
                 foreach (var role in roles.ToList())
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role.Name!));

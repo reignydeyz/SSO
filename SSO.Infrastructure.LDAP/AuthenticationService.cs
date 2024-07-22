@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
@@ -15,7 +14,7 @@ namespace SSO.Infrastructure.LDAP
         readonly IRealmRepository _realmRepository;
         readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthenticationService(IRealmRepository realmRepository, UserManager<ApplicationUser> userManager, IOptions<LDAPSettings> ldapSettings)
+        public AuthenticationService(IRealmRepository realmRepository, UserManager<ApplicationUser> userManager)
         {
             _realmRepository = realmRepository;
             _userManager = userManager;

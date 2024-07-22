@@ -3,8 +3,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Accounts.Commands;
-using SSO.Domain.Management.Interfaces;
-using SSO.Infrastructure.Settings.Enums;
+using SSO.Domain.Models;
+using System.Security.Claims;
 
 namespace SSO.Controllers
 {
@@ -15,14 +15,11 @@ namespace SSO.Controllers
     public class AccountController : ControllerBase
     {
         readonly IMediator _mediator;
-        readonly IUserRepository _userRepository;
         readonly IMapper _mapper;
-        readonly IdentityProvider _idp;
 
-        public AccountController(IMediator mediator, IUserRepository userRepository, IMapper mapper)
+        public AccountController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
-            _userRepository = userRepository;
             _mapper = mapper;
         }
 
@@ -34,7 +31,21 @@ namespace SSO.Controllers
         [HttpPost("changepassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand param)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+                param.User = new ApplicationUser { Id = userId! };
+
+                await _mediator.Send(param);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

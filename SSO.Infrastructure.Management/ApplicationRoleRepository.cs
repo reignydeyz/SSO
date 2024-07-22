@@ -37,7 +37,7 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationRoles.AnyAsync(predicate);
         }
 
-        public async Task Delete(ApplicationRole param, bool? saveChanges = true)
+        public async Task Delete(ApplicationRole param, bool? saveChanges = true, object? args = null)
         {
             _context.Remove(param);
 

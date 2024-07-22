@@ -7,7 +7,7 @@ namespace SSO.Domain.Management.Interfaces
     {
         Task<ApplicationUser> GetByUsername(string username);
 
-        Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null);
+        Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null, object? args = null);
 
         Task<IEnumerable<Application>> GetApplications(Guid userId);
 

@@ -27,7 +27,8 @@ namespace SSO.Domain.Interfaces
         /// </summary>
         /// <param name="param"></param>
         /// <param name="saveChanges"></param>
-        Task Delete(T param, bool? saveChanges = true);
+        /// <param name="args"></param>
+        Task Delete(T param, bool? saveChanges = true, object? args = null);
 
         /// <summary>
         /// Filters entities

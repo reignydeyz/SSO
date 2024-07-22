@@ -27,9 +27,9 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationUsers.AnyAsync(predicate);
         }
 
-        public abstract Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null);
+        public abstract Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null, object? args = null);
 
-        public abstract Task Delete(ApplicationUser param, bool? saveChanges = true);
+        public abstract Task Delete(ApplicationUser param, bool? saveChanges = true, object? args = null);
 
         public async Task<IQueryable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
         {

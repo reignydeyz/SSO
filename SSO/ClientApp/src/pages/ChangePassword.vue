@@ -70,6 +70,7 @@
 
 <script>
 import { changePassword } from "@/services/account.service";
+import { emitter } from '@/services/emitter.service';
 export default {
 	data: () => ({
 		param: new Object(),
@@ -77,6 +78,8 @@ export default {
 	}),
 	methods: {
 		submit() {
+			emitter.emit('showLoader', true);
+
 			// Clear error messages
 			const allInputs = document.querySelectorAll('.is-invalid');
 
@@ -85,8 +88,10 @@ export default {
 			});
 
 			changePassword(this.param).then(r => {
+				emitter.emit('showLoader', false);
 				this.$router.push("/");
 			}, error => {
+				emitter.emit('showLoader', false);
 
 				// Check if the error is related to a specific input field
 				if (error && error.response && error.response.data && error.response.data.errors) {

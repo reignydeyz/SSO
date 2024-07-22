@@ -23,7 +23,7 @@ namespace SSO.Infrastructure.Management
             return param;
         }
 
-        public override async Task Delete(Group param, bool? saveChanges = true)
+        public override async Task Delete(Group param, bool? saveChanges = true, object? args = null)
         {
             _context.Remove(param);
 

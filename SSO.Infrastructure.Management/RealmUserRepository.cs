@@ -38,7 +38,7 @@ namespace SSO.Infrastructure.Management
             return await _context.RealmUsers.AnyAsync(predicate);
         }
 
-        public async Task Delete(RealmUser param, bool? saveChanges = true)
+        public async Task Delete(RealmUser param, bool? saveChanges = true, object? args = null)
         {
             _context.Remove(param);
 
