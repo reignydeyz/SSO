@@ -50,7 +50,7 @@ namespace SSO.Business.Authentication.Handlers
             if (root is null)
                 throw new ArgumentException("Invalid realm.");
 
-            var isLdap = await _realmRepo.Any(x => x.RealmId == request.RealmId && x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider.LDAP));
+            var isLdap = await _realmRepo.Any(x => x.RealmId == root.RealmId && x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider.LDAP));
             var authenticationService = await _authServiceFactory.GetService(root.RealmId);
             var userRepo = await _userRepoFactory.GetRepository(root.RealmId);
 

@@ -6,7 +6,7 @@ const loginToSystem = async (form) => {
     if (form.realmId !== null) {
         url += `?realmId=${form.realmId}`;
     }
-    await axios.post(url, form);
+    return await axios.post(url, form);
 }
 
 export {

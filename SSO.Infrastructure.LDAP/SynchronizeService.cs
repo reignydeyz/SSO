@@ -140,15 +140,23 @@ namespace SSO.Infrastructure.LDAP
             var toBeAddedUsers = users.Where(x => !_userRepository.Any(y => y.UserName == x.UserName).Result);
             await _userRepository.AddRange(toBeAddedUsers, false);
 
+            var usernames = users.Select(x => x.UserName.ToLower());
+
             var toBeAddedRealmUsers = toBeAddedUsers.Where(x => !_realmUserRepository.Any(y => y.UserId == x.Id && y.RealmId == _realmId).Result)
                 .Select(x => new RealmUser { RealmId = _realmId, UserId = x.Id });
-            await _realmUserRepository.AddRange(toBeAddedRealmUsers, false);
+            var existingUsersNotInRealm = (await _userRepository.Find(x => usernames.Contains(x.UserName) && !x.Realms.Any(y => y.RealmId == _realmId)))
+                .Select(x => new RealmUser { RealmId = _realmId, UserId = x.Id });
+            await _realmUserRepository.AddRange(toBeAddedRealmUsers.Union(existingUsersNotInRealm), false);
 
-            var usernames = users.Select(x => x.UserName.ToLower());
             var toBeDeletedRealmUsers = (await _realmUserRepository.Find(x => !usernames.Contains(x.User.UserName)))
                 .Select(x => new RealmUser { RealmId = _realmId, UserId = x.UserId });
             await _realmUserRepository.RemoveRange(toBeDeletedRealmUsers, false);
 
+            await SyncGroupUsers(groupUsers);
+        }
+
+        private async Task SyncGroupUsers(List<Tuple<string, string>> groupUsers)
+        {
             var guList = (from gu in groupUsers
                           join u in await _userRepository.Find(x => x.Realms.Any(y => y.RealmId == _realmId)) on gu.Item2 equals u.UserName
                           join g in await _groupRepository.Find(x => x.RealmId == _realmId) on gu.Item1 equals g.Name

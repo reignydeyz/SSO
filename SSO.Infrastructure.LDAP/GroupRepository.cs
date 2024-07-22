@@ -27,18 +27,27 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<Group> Add(Group param, bool? saveChanges = true, object? args = null)
         {
-            var newGroup = _dirEntry.Children.Add($"CN={param.Name}", "group");
+            try
+            {
+                var newGroup = _dirEntry.Children.Add($"CN={param.Name}", "group");
 
-            newGroup.Properties["sAMAccountName"].Value = param.Name;
-            newGroup.Properties["description"].Value = param.Description ?? string.Empty;
-            newGroup.CommitChanges();
+                newGroup.Properties["sAMAccountName"].Value = param.Name;
 
-            await _context.AddAsync(param);
+                if (!string.IsNullOrEmpty(param.Description))
+                    newGroup.Properties["description"].Value = param.Description;
 
-            if (saveChanges!.Value)
-                await _context.SaveChangesAsync();
+                newGroup.CommitChanges();
 
-            return param;
+                await _context.AddAsync(param);
+
+                if (saveChanges!.Value)
+                    await _context.SaveChangesAsync();
+
+                return param;
+            }
+            catch (Exception ex) {
+                throw;
+            }
         }
 
         public override async Task Delete(Group param, bool? saveChanges = true)
