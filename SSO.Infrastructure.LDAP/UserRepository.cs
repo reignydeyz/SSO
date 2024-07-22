@@ -98,6 +98,8 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task Delete(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
+            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+
             _dirSearcher.Filter = $"(samAccountName={param.UserName})";
             _dirSearcher.SearchScope = SearchScope.Subtree;
 
@@ -134,6 +136,8 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
+            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+
             _dirSearcher.Filter = $"(samAccountName={param.UserName})";
             _dirSearcher.SearchScope = SearchScope.Subtree;
 
