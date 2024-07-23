@@ -52,7 +52,8 @@ namespace SSO.Controllers
         {
             try
             {
-                var res = await _mediator.Send(new GetUserByIdQuery { UserId = id.ToString() });
+                var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+                var res = await _mediator.Send(new GetUserByIdQuery { UserId = id.ToString(), RealmId = realmId });
 
                 return Ok(res);
             }
@@ -160,7 +161,8 @@ namespace SSO.Controllers
         [UserIdValidator]
         public async Task<IActionResult> Delete([FromRoute] UserIdDto form)
         {
-            var param = new RemoveUserCommand { UserId = form.UserId.ToString() };
+            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+            var param = new RemoveUserCommand { UserId = form.UserId.ToString(), RealmId = realmId };
 
             var res = await _mediator.Send(param);
 

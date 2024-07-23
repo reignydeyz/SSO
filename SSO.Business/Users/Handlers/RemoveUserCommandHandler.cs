@@ -25,7 +25,7 @@ namespace SSO.Business.Users.Handlers
             if (rec is null)
                 throw new ArgumentNullException();
 
-            await userRepo.Delete(rec, default, realm);
+            await userRepo.Delete(rec, true, realm);
 
             return new Unit();
         }
