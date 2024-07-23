@@ -45,6 +45,9 @@ namespace SSO.Infrastructure.LDAP
 
                 var (users, groupUsers) = await FetchUsersAndGroupUsersFromLDAP();
                 await SyncUsersToDatabase(users, groupUsers);
+
+                // Cleanup
+                await _userRepository.RemoveRange(x => !x.Realms.Any());
             }
         }
 
