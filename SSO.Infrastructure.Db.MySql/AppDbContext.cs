@@ -23,6 +23,7 @@ namespace SSO.Infrastructure.Db.MySql
             builder.ApplyConfiguration(new GroupRoleConfig());
             builder.ApplyConfiguration(new RealmConfig(DatabaseType.MySql));
             builder.ApplyConfiguration(new RealmUserConfig());
+            builder.ApplyConfiguration(new RealmIdpSettingsConfig(DatabaseType.MySql));
 
             base.OnModelCreating(builder);
         }

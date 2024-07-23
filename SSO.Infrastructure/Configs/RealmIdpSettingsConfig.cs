@@ -33,12 +33,12 @@ namespace SSO.Infrastructure.Configs
 
         void UseMySql(EntityTypeBuilder<RealmIdpSettings> builder)
         {
-            // Implementation
+            builder.Property(x => x.IdentityProvider).HasColumnType("tinyint");
         }
 
         void UsePostgres(EntityTypeBuilder<RealmIdpSettings> builder)
         {
-            // Implementation
+            builder.Property(x => x.IdentityProvider).HasColumnType("smallint");
         }
     }
 }

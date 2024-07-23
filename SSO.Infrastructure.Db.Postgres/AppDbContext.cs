@@ -23,6 +23,7 @@ namespace SSO.Infrastructure.Db.Postgres
             builder.ApplyConfiguration(new GroupRoleConfig());
             builder.ApplyConfiguration(new RealmConfig(DatabaseType.Postgres));
             builder.ApplyConfiguration(new RealmUserConfig());
+            builder.ApplyConfiguration(new RealmIdpSettingsConfig(DatabaseType.Postgres));
 
             base.OnModelCreating(builder);
         }

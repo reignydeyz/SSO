@@ -17,7 +17,7 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.6")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -529,6 +529,23 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
                     b.ToTable("Realms");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.RealmIdpSettings", b =>
+                {
+                    b.Property<Guid>("RealmId")
+                        .HasColumnType("uuid");
+
+                    b.Property<short>("IdentityProvider")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("RealmId", "IdentityProvider");
+
+                    b.ToTable("RealmIdpSettings");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.RealmUser", b =>
                 {
                     b.Property<Guid>("RealmId")
@@ -704,6 +721,17 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.RealmIdpSettings", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Realm", "Realm")
+                        .WithMany("IdpSettingsCollection")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.RealmUser", b =>
                 {
                     b.HasOne("SSO.Domain.Models.Realm", "Realm")
@@ -713,7 +741,7 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
                         .IsRequired();
 
                     b.HasOne("SSO.Domain.Models.ApplicationUser", "User")
-                        .WithMany()
+                        .WithMany("Realms")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -733,6 +761,8 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
             modelBuilder.Entity("SSO.Domain.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Groups");
+
+                    b.Navigation("Realms");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.Group", b =>
@@ -747,6 +777,8 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
                     b.Navigation("Applications");
 
                     b.Navigation("Groups");
+
+                    b.Navigation("IdpSettingsCollection");
 
                     b.Navigation("Users");
                 });
