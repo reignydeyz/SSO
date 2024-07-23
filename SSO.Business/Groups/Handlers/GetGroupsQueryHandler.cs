@@ -19,7 +19,7 @@ namespace SSO.Business.Groups.Handlers
         {
             var groupRepo = await _groupRepoFactory.GetRepository();
 
-            var res = await groupRepo.Find(default);
+            var res = await groupRepo.Find(x => x.RealmId == request.RealmId);
 
             return _mapper.ProjectTo<GroupDto>(res);
         }

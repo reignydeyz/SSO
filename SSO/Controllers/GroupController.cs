@@ -33,7 +33,8 @@ namespace SSO.Controllers
         [EnableQuery(MaxTop = 1000)]
         public IQueryable<GroupDto> Get()
         {
-            var res = _mediator.Send(new GetGroupsQuery { }).Result;
+            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+            var res = _mediator.Send(new GetGroupsQuery { RealmId = realmId }).Result;
 
             if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
                 return res;

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using SSO.Business.GroupUsers.Commands;
 using SSO.Business.GroupUsers.Queries;
 using SSO.Business.Users;
+using System.Security.Claims;
 
 namespace SSO.Controllers
 {
@@ -67,6 +68,7 @@ namespace SSO.Controllers
             {
                 var param = new CreateGroupUserCommand
                 {
+                    RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value),
                     GroupId = groupId,
                     UserId = userId
                 };
@@ -91,6 +93,7 @@ namespace SSO.Controllers
         public async Task<IActionResult> Delete(Guid groupId, Guid userId)
         {
             var param = new RemoveGroupUserCommand { UserId = userId, GroupId = groupId };
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
 
             await _mediator.Send(param);
 
