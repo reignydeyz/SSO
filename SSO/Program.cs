@@ -17,7 +17,6 @@ using SSO.Infrastructure.Db.Postgres;
 using SSO.Infrastructure.LDAP;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
-using SSO.Infrastructure.Settings.Enums;
 using SSO.Infrastructure.Settings.Services;
 using System.Data.Common;
 using System.Reflection;
