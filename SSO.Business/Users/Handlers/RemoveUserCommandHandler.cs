@@ -26,12 +26,10 @@ namespace SSO.Business.Users.Handlers
 
             var userRepo = await _repoFactory.GetRepository(request.RealmId);
 
-            var rec = await userRepo.FindOne(x => x.Id == request.UserId);
+            var rec = await userRepo.FindOne(x => x.Id == request.UserId && !x.Realms.Any());
 
-            if (rec is null)
-                throw new ArgumentNullException();
-
-            await userRepo.Delete(rec, true, realm);
+            if (rec != null)
+                await userRepo.Delete(rec, true, realm);
 
             return new Unit();
         }
