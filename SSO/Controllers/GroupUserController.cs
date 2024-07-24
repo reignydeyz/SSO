@@ -68,7 +68,7 @@ namespace SSO.Controllers
             {
                 var param = new CreateGroupUserCommand
                 {
-                    RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value),
+                    RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value),
                     GroupId = groupId,
                     UserId = userId
                 };
@@ -93,7 +93,7 @@ namespace SSO.Controllers
         public async Task<IActionResult> Delete(Guid groupId, Guid userId)
         {
             var param = new RemoveGroupUserCommand { UserId = userId, GroupId = groupId };
-            param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
 
             await _mediator.Send(param);
 

@@ -13,7 +13,7 @@ namespace SSO.Filters
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var realmRepo = context.HttpContext.RequestServices.GetService<IRealmRepository>();
-            var realmId = new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+            var realmId = new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
 
             bool condition = await realmRepo.Any(x => x.RealmId == realmId && x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider));
 

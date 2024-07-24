@@ -64,7 +64,7 @@ namespace SSO.Business.Authentication.Handlers
                 new Claim(ClaimTypes.AuthenticationMethod, (isLdap ? IdentityProvider.LDAP.ToString() : IdentityProvider.Default.ToString())),
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.System, root.RealmId.ToString())
+                new Claim(ClaimTypes.PrimaryGroupSid, root.RealmId.ToString())
             };
 
             if (user.Email is not null)
@@ -76,6 +76,7 @@ namespace SSO.Business.Authentication.Handlers
                 foreach (var role in roles.ToList())
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role.Name!));
+                    claims.Add(new Claim(ClaimTypes.System, root.RealmId.ToString()));
 
                     claims.AddRange(await _roleRepo.GetClaims(new Guid(role.Id)));
                 }

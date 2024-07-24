@@ -33,7 +33,7 @@ namespace SSO.Controllers
         [EnableQuery(MaxTop = 1000)]
         public IQueryable<ApplicationDto> Get()
         {
-            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
 
             var res = _mediator.Send(new GetApplicationsQuery { RealmId = realmId }).Result;
 
@@ -79,7 +79,7 @@ namespace SSO.Controllers
         {
             try
             {
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
                 var res = await _mediator.Send(param);

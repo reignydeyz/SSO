@@ -33,7 +33,7 @@ namespace SSO.Controllers
         [EnableQuery(MaxTop = 1000)]
         public IQueryable<GroupDto> Get()
         {
-            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
             var res = _mediator.Send(new GetGroupsQuery { RealmId = realmId }).Result;
 
             if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
@@ -76,7 +76,7 @@ namespace SSO.Controllers
         {
             try
             {
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
                 var res = await _mediator.Send(param);
@@ -101,7 +101,7 @@ namespace SSO.Controllers
             try
             {
                 var param = new RemoveGroupCommand { GroupId = form.GroupId };
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
 
                 var res = await _mediator.Send(param);
 
@@ -127,7 +127,7 @@ namespace SSO.Controllers
             {
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
                 param.GroupId = form.GroupId;
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.System).Value);
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
 
                 var res = await _mediator.Send(param);
 
