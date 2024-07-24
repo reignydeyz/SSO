@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using SSO.Domain.Authentication.Interfaces;
-using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Settings.Enums;
@@ -11,12 +10,10 @@ namespace SSO.Infrastructure.LDAP
 {
     public class AuthenticationService : IAuthenticationService
     {
-        readonly IRealmRepository _realmRepository;
         readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthenticationService(IRealmRepository realmRepository, UserManager<ApplicationUser> userManager)
+        public AuthenticationService(UserManager<ApplicationUser> userManager)
         {
-            _realmRepository = realmRepository;
             _userManager = userManager;
         }
 

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Accounts.Commands;
@@ -15,12 +14,10 @@ namespace SSO.Controllers
     public class AccountController : ControllerBase
     {
         readonly IMediator _mediator;
-        readonly IMapper _mapper;
 
-        public AccountController(IMediator mediator, IMapper mapper)
+        public AccountController(IMediator mediator)
         {
             _mediator = mediator;
-            _mapper = mapper;
         }
 
         /// <summary>

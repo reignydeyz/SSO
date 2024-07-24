@@ -15,7 +15,7 @@ namespace SSO.Filters
             var realmRepo = context.HttpContext.RequestServices.GetService<IRealmRepository>();
             var realmId = new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.System).Value);
 
-            bool condition = await realmRepo.Any(x => x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider));
+            bool condition = await realmRepo.Any(x => x.RealmId == realmId && x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider));
 
             if (!condition) context.Result = new StatusCodeResult(503);
             else await next();

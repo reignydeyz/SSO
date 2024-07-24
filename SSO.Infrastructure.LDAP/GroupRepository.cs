@@ -23,7 +23,7 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<Group> Add(Group param, bool? saveChanges = true, object? args = null)
         {
-            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
 
             var newGroup = _dirEntry.Children.Add($"CN={param.Name}", "group");
 
@@ -44,7 +44,7 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task Delete(Group param, bool? saveChanges = true, object? args = null)
         {
-            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
 
             _dirSearcher.Filter = $"(&(objectClass=group)(sAMAccountName={param.Name}))";
             _dirSearcher.SearchScope = SearchScope.Subtree;
@@ -66,7 +66,7 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<Group> Update(Group param, bool? saveChanges = true, object? args = null)
         {
-            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
 
             var rec = await _context.Groups.FirstAsync(x => x.GroupId == param.GroupId);
 
@@ -115,7 +115,7 @@ namespace SSO.Infrastructure.LDAP
             GC.SuppressFinalize(this);
         }
 
-        private async Task<(string ldapConnectionString, DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(Guid realmId)
+        private async Task<(DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(Guid realmId)
         {
             var realm = await _context.Realms.Include(x => x.IdpSettingsCollection).FirstAsync(x => x.RealmId == realmId);
             var idpSettings = realm.IdpSettingsCollection.FirstOrDefault(x => x.IdentityProvider == IdentityProvider.LDAP) ?? throw new ArgumentException("LDAP is not configured.");
@@ -124,7 +124,7 @@ namespace SSO.Infrastructure.LDAP
             _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Username, ldapSettings.Password);
             _dirSearcher = new DirectorySearcher(_dirEntry);
 
-            return (ldapConnectionString, _dirEntry, _dirSearcher);
+            return (_dirEntry, _dirSearcher);
         }
     }
 }

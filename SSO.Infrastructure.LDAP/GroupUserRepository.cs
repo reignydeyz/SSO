@@ -58,7 +58,7 @@ namespace SSO.Infrastructure.LDAP
 
         private (DirectoryEntry?, DirectoryEntry?) FindUserAndGroupEntries(GroupUser param)
         {
-            (string ldapConnectionString, _dirEntry, _dirSearcher) = GetLdapConnectionAsync(param).Result;
+            (_dirEntry, _dirSearcher) = GetLdapConnectionAsync(param).Result;
 
             var group = _context.Groups.First(x => x.GroupId == param.GroupId).Name;
             var userName = _context.Users.First(x => x.Id == param.UserId).UserName;
@@ -105,7 +105,7 @@ namespace SSO.Infrastructure.LDAP
             GC.SuppressFinalize(this);
         }
 
-        private async Task<(string ldapConnectionString, DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(GroupUser groupUser)
+        private async Task<(DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(GroupUser groupUser)
         {
             var realmId = (await _context.Groups.FirstAsync(x => x.GroupId == groupUser.GroupId)).RealmId;
             var realm = await _context.Realms.Include(x => x.IdpSettingsCollection).FirstAsync(x => x.RealmId == realmId);
@@ -115,7 +115,7 @@ namespace SSO.Infrastructure.LDAP
             _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Username, ldapSettings.Password);
             _dirSearcher = new DirectorySearcher(_dirEntry);
 
-            return (ldapConnectionString, _dirEntry, _dirSearcher);
+            return (_dirEntry, _dirSearcher);
         }
     }
 }

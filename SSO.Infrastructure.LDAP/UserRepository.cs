@@ -28,7 +28,7 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
 
             var newUser = _dirEntry.Children.Add($"CN={param.UserName}", "user");
             newUser.Properties["samAccountName"].Value = param.UserName;
@@ -65,7 +65,7 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null, object? args = null)
         {
-            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
 
             _dirSearcher.Filter = $"(samAccountName={applicationUser.UserName})";
             _dirSearcher.SearchScope = SearchScope.Subtree;
@@ -98,7 +98,7 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task Delete(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
 
             _dirSearcher.Filter = $"(samAccountName={param.UserName})";
             _dirSearcher.SearchScope = SearchScope.Subtree;
@@ -136,7 +136,7 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
-            (string ldapConnectionString, _dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
 
             _dirSearcher.Filter = $"(samAccountName={param.UserName})";
             _dirSearcher.SearchScope = SearchScope.Subtree;
@@ -192,7 +192,7 @@ namespace SSO.Infrastructure.LDAP
             GC.SuppressFinalize(this);
         }
 
-        private async Task<(string ldapConnectionString, DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(object? args)
+        private async Task<(DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(object? args)
         {
             if (args is null || args.GetType() != typeof(Realm))
                 throw new ArgumentException(nameof(args));
@@ -204,7 +204,7 @@ namespace SSO.Infrastructure.LDAP
             _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Username, ldapSettings.Password);
             _dirSearcher = new DirectorySearcher(_dirEntry);
 
-            return (ldapConnectionString, _dirEntry, _dirSearcher);
+            return (_dirEntry, _dirSearcher);
         }
     }
 }
