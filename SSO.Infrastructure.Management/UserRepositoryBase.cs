@@ -74,6 +74,15 @@ namespace SSO.Infrastructure.Management
             return await groups.Distinct().ToListAsync();
         }
 
+        public async Task<IEnumerable<Realm>> GetRealms(Guid userId)
+        {
+            var user = await _context.Users
+                .Include(x => x.Realms).ThenInclude(x => x.Realm)
+                .FirstAsync(x => x.Id == userId.ToString());
+
+            return user.Realms.Select(x => x.Realm);
+        }
+
         public abstract Task RemoveRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null);
 
         public abstract Task RemoveRange(Expression<Func<ApplicationUser, bool>> predicate, bool? saveChanges = true, object? args = null);

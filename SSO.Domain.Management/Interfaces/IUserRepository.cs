@@ -12,5 +12,7 @@ namespace SSO.Domain.Management.Interfaces
         Task<IEnumerable<Application>> GetApplications(Guid userId);
 
         Task<IEnumerable<Group>> GetGroups(Guid userId);
+
+        Task<IEnumerable<Realm>> GetRealms(Guid userId);
     }
 }
