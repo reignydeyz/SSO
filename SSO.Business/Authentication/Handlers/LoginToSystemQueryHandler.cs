@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
@@ -11,30 +10,26 @@ namespace SSO.Business.Authentication.Handlers
     public class LoginToSystemQueryHandler : IRequestHandler<LoginToSystemQuery, TokenDto>
     {
         readonly ITokenService _tokenService;
-        readonly IMapper _mapper;
         readonly IApplicationRepository _applicationRepository;
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
         readonly IRealmRepository _realmRepo;
-        readonly IRealmUserRepository _realmUserRepo;
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
 
-        public LoginToSystemQueryHandler(ITokenService tokenService, IMapper mapper,
+        public LoginToSystemQueryHandler(ITokenService tokenService,
             IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo,
             IGroupRoleRepository groupRoleRepository,
-            IRealmRepository realmRepository, IRealmUserRepository realmUserRepository,
+            IRealmRepository realmRepository,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
-            _mapper = mapper;
             _applicationRepository = applicationRepository;
             _roleRepo = roleRepo;
             _userRoleRepo = userRoleRepo;
             _groupRoleRepo = groupRoleRepository;
             _realmRepo = realmRepository;
-            _realmUserRepo = realmUserRepository;
             _authServiceFactory = authServiceFactory;
             _userRepoFactory = userRepoFactory;
         }
