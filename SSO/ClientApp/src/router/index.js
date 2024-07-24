@@ -44,7 +44,7 @@ const routes = [
     {
         path: "/main",
         name: "Main",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Main.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -53,7 +53,7 @@ const routes = [
     {
         path: "/applications",
         name: "Applications",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Applications/Manage.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -62,7 +62,7 @@ const routes = [
     {
         path: "/applications/new",
         name: "New Application",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Applications/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -71,7 +71,7 @@ const routes = [
     {
         path: "/applications/edit/:id",
         name: "Update Application",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Applications/Edit.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -80,7 +80,7 @@ const routes = [
     {
         path: "/applications/copy/:id",
         name: "Copy Application",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Applications/Copy.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -89,7 +89,7 @@ const routes = [
     {
         path: "/users",
         name: "Users",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Users/Manage.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -98,7 +98,7 @@ const routes = [
     {
         path: "/users/new",
         name: "New User",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Users/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -107,7 +107,7 @@ const routes = [
     {
         path: "/users/edit/:id",
         name: "Update User",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Users/Edit.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -116,7 +116,7 @@ const routes = [
     {
         path: "/users/copy/:id",
         name: "Copy User",
-        meta: { mustBeRoot: true, idp: 'Default' },
+        meta: { mustHaveRealmAccess: true, idp: 'Default' },
         component: () => import('@/pages/Users/Copy.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -125,7 +125,7 @@ const routes = [
     {
         path: "/groups",
         name: "Groups",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Groups/Manage.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -134,7 +134,7 @@ const routes = [
     {
         path: "/groups/new",
         name: "New Group",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Groups/New.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))
@@ -143,7 +143,7 @@ const routes = [
     {
         path: "/groups/edit/:id",
         name: "Update Group",
-        meta: { mustBeRoot: true },
+        meta: { mustHaveRealmAccess: true },
         component: () => import('@/pages/Groups/Edit.vue'),
         beforeEnter: (to, from, next) => {
             next(canActivate(to))

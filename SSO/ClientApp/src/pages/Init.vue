@@ -17,13 +17,13 @@
 </template>
 
 <script>
-import { hasRootAccess, getAccount } from '@/services/account.service';
+import { hasRealmAccess, getAccount } from '@/services/account.service';
 export default {
     data() {
         return { account: new Object() };
     },
     created() {
-		if (hasRootAccess()) {
+		if (hasRealmAccess()) {
 			window.location.replace("main");
 		}
         this.account = getAccount();

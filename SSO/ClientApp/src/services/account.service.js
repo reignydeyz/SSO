@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import { jwtDecode } from "jwt-decode";
 import axios from 'axios';
 
-const hasRootAccess = () => {
+const hasRealmAccess = () => {
     const token = Cookies.get('system');
 
     if (!token) {
@@ -27,7 +27,7 @@ const getAccount = () => {
 const changePassword = async (param) => await axios.post("/api/account/changepassword", param);
 
 export {
-    hasRootAccess,
+    hasRealmAccess,
     getAccount,
     changePassword
 }
