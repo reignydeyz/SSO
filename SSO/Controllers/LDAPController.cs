@@ -12,7 +12,7 @@ namespace SSO.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [IdpValidator(IdentityProvider = IdentityProvider.LDAP)]
-    [Authorize(Policy = "RootPolicy")]
+    [Authorize(Policy = "RealmAccessPolicy")]
     public class LDAPController : ControllerBase
     {
         readonly SynchronizeService _synchronizeService;

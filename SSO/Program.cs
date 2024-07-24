@@ -77,10 +77,11 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser()
         .Build();
 
-    options.AddPolicy("RootPolicy", policy =>
+    options.AddPolicy("RealmAccessPolicy", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim(ClaimTypes.System);
+        policy.RequireClaim(ClaimTypes.PrimaryGroupSid);
+        policy.RequireClaim(ClaimTypes.Role);
     });
 });
 
@@ -109,6 +110,7 @@ builder.Services.AddSwaggerGen(x =>
 {
     x.SwaggerDoc("Client", new OpenApiInfo { Title = "Client", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
     x.SwaggerDoc("System", new OpenApiInfo { Title = "System", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
+    x.SwaggerDoc("Root", new OpenApiInfo { Title = "Root", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
 
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -192,6 +194,7 @@ app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/Client/swagger.json", "Client");
     options.SwaggerEndpoint("/swagger/System/swagger.json", "System");
+    options.SwaggerEndpoint("/swagger/Root/swagger.json", "Root");
 });
 
 #pragma warning disable CS0618 // Type or member is obsolete

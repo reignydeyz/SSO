@@ -29,7 +29,7 @@ namespace SSO.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Policy = "RootPolicy")]
+        [Authorize(Policy = "RealmAccessPolicy")]
         [EnableQuery(MaxTop = 1000)]
         public IQueryable<ApplicationDto> Get()
         {
@@ -74,7 +74,7 @@ namespace SSO.Controllers
         /// <exception cref="NotImplementedException"></exception>
         [HttpPost]
         [ProducesResponseType(typeof(ApplicationDto), 200)]
-        [Authorize(Policy = "RootPolicy")]
+        [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Create([FromBody] CreateAppCommand param)
         {
             try
@@ -100,7 +100,7 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPut("{applicationId}")]
         [AppIdValidator<ApplicationIdDto>(Relevant = false)]
-        [Authorize(Policy = "RootPolicy")]
+        [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Update([FromRoute] ApplicationIdDto form, [FromBody] UpdateAppCommand param)
         {
             try
@@ -125,7 +125,7 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpDelete("{applicationId}")]
         [AppIdValidator<ApplicationIdDto>]
-        [Authorize(Policy = "RootPolicy")]
+        [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form)
         {
             try
@@ -149,7 +149,7 @@ namespace SSO.Controllers
         /// <returns></returns>
         [HttpPost("{applicationId}")]
         [AppIdValidator<ApplicationIdDto>]
-        [Authorize(Policy = "RootPolicy")]
+        [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Copy([FromRoute] ApplicationIdDto form, [FromBody] CopyAppCommand param)
         {
             try

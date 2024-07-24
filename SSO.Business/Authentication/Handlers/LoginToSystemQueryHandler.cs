@@ -76,8 +76,6 @@ namespace SSO.Business.Authentication.Handlers
                 foreach (var role in roles.ToList())
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role.Name!));
-                    claims.Add(new Claim(ClaimTypes.System, root.RealmId.ToString()));
-
                     claims.AddRange(await _roleRepo.GetClaims(new Guid(role.Id)));
                 }
             }

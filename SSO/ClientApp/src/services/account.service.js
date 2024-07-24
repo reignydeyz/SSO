@@ -11,7 +11,7 @@ const hasRootAccess = () => {
 
     const decoded = jwtDecode(token);
 
-    return !!decoded.role;
+    return !!(decoded.role && decoded.primarygroupsid);
 }
 
 const getAccount = () => {

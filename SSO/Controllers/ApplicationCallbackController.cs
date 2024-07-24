@@ -15,7 +15,7 @@ namespace SSO.Controllers
     [Route("api/application/{applicationId}/callback")]
     [ApiController]
     [AppIdValidator<ApplicationIdDto>]
-    [Authorize(Policy = "RootPolicy")]
+    [Authorize(Policy = "RealmAccessPolicy")]
     public class ApplicationCallbackController : ControllerBase
     {
         readonly IMediator _mediator;
