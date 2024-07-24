@@ -95,6 +95,7 @@ builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaim
 builder.Services.AddScoped<IGroupRoleRepository, GroupRoleRepository>();
 builder.Services.AddScoped<IRealmRepository, RealmRepository>();
 builder.Services.AddScoped<IRealmUserRepository, RealmUserRepository>();
+builder.Services.AddScoped<IRealmIdpSettingsRepository, RealmIdpSettingsRepository>();
 
 builder.Services.ApplyBusinessServiceCollection(builder.Configuration);
 builder.Services.ApplyLdapServiceCollection(builder.Configuration);
