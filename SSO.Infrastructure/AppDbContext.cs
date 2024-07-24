@@ -24,6 +24,7 @@ namespace SSO.Infrastructure
             builder.ApplyConfiguration(new RealmConfig());
             builder.ApplyConfiguration(new RealmUserConfig());
             builder.ApplyConfiguration(new RealmIdpSettingsConfig());
+            builder.ApplyConfiguration(new RootUserConfig());
 
             base.OnModelCreating(builder);
         }
