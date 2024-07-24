@@ -554,6 +554,16 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                     b.ToTable("RealmUsers");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.RootUser", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("RootUsers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.HasOne("SSO.Domain.Models.ApplicationUser", null)
@@ -744,6 +754,17 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.RootUser", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", "User")
+                        .WithOne("RootUser")
+                        .HasForeignKey("SSO.Domain.Models.RootUser", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.Application", b =>
                 {
                     b.Navigation("Callbacks");
@@ -756,6 +777,9 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                     b.Navigation("Groups");
 
                     b.Navigation("Realms");
+
+                    b.Navigation("RootUser")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.Group", b =>
