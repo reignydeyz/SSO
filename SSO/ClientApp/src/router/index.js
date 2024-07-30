@@ -149,6 +149,15 @@ const routes = [
             next(canActivate(to))
         }
     },
+    {
+        path: "/settings",
+        name: "Settings",
+        meta: { mustHaveRealmAccess: true },
+        component: () => import('@/pages/Settings/Main.vue'),
+        beforeEnter: (to, from, next) => {
+            next(canActivate(to))
+        }
+    },
 ];
 
 const router = createRouter({
