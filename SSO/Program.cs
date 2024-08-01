@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OwaspHeaders.Core.Enums;
+using OwaspHeaders.Core.Extensions;
+using OwaspHeaders.Core.Models;
 using SSO;
 using SSO.Business;
 using SSO.Business.Authentication.Handlers;
@@ -164,6 +167,7 @@ app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseCors();
 #endif
 
+app.UseSecureHeadersMiddleware(CustomConfiguration());
 app.UseSpaStaticFiles();
 app.UseAuthorization();
 
@@ -203,3 +207,15 @@ app.UseHangfireServer();
 app.UseHangfireDashboard();
 
 app.Run();
+
+SecureHeadersMiddlewareConfiguration CustomConfiguration()
+{
+    return SecureHeadersMiddlewareBuilder
+        .CreateBuilder()
+        .UseHsts(1200, false)
+        .UseContentSecurityPolicy(blockAllMixedContent: false)
+        .UsePermittedCrossDomainPolicies(XPermittedCrossDomainOptionValue.masterOnly)
+        .UseReferrerPolicy(ReferrerPolicyOptions.sameOrigin)
+        .UseXFrameOptions()
+        .Build();
+}
