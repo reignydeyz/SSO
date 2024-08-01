@@ -180,7 +180,7 @@
                             <!--//nav-item-->
                             <li class="nav-item">
                                 <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
-                                <a class="nav-link" href="https://periapsys.com/#contact" target="_blank">
+                                <a class="nav-link" href="https://periapsys.com/#contact" target="_blank" rel="noopener">
                                     <span class="nav-icon">
                                         <i class="bi bi-info-circle"></i>
                                     </span>
