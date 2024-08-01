@@ -6,17 +6,22 @@ using SSO.Infrastructure.Settings.Enums;
 
 namespace SSO.Business.RealmIdpSettings.Handlers
 {
-    public class CreateRealmLdapSettingsCommandHandler : IRequestHandler<CreateRealmLdapSettingsCommand, Unit>
+    public class ModifyRealmLdapSettingsCommandHandler : IRequestHandler<ModifyRealmLdapSettingsCommand, Unit>
     {
         IRealmIdpSettingsRepository _realmIdpSettingsRepository;
 
-        public CreateRealmLdapSettingsCommandHandler(IRealmIdpSettingsRepository realmIdpSettingsRepository)
+        public ModifyRealmLdapSettingsCommandHandler(IRealmIdpSettingsRepository realmIdpSettingsRepository)
         {
             _realmIdpSettingsRepository = realmIdpSettingsRepository;
         }
 
-        public async Task<Unit> Handle(CreateRealmLdapSettingsCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ModifyRealmLdapSettingsCommand request, CancellationToken cancellationToken)
         {
+            var rec = await _realmIdpSettingsRepository.FindOne(x => x.RealmId == request.RealmId && x.IdentityProvider == IdentityProvider.LDAP);
+
+            if (rec is not null)
+                await _realmIdpSettingsRepository.Delete(rec, false);
+
             var entry = new Domain.Models.RealmIdpSettings
             {
                 RealmId = request.RealmId,
