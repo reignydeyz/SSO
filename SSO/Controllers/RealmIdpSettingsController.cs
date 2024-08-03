@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.RealmIdpSettings.Commands;
@@ -15,10 +16,12 @@ namespace SSO.Controllers
     public class RealmIdpSettingsController : ControllerBase
     {
         readonly IMediator _mediator;
+        readonly IMapper _mapper;
 
-        public RealmIdpSettingsController(IMediator mediator)
+        public RealmIdpSettingsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -29,6 +32,12 @@ namespace SSO.Controllers
         [HttpPost("ldap")]
         public async Task<IActionResult> CreateOrUpdateLdapSettings([FromBody] LDAPSettings param)
         {
+            var qry = _mapper.Map<TestLdapSettingsQuery>(param);
+            var test = await TestLdapSettings(qry);
+
+            if (test is not OkResult)
+                return test;
+
             var cmd = new ModifyRealmLdapSettingsCommand
             {
                 RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value),

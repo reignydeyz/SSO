@@ -43,9 +43,9 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public Task<RealmIdpSettings> FindOne(Expression<Func<RealmIdpSettings, bool>> predicate)
+        public async Task<RealmIdpSettings> FindOne(Expression<Func<RealmIdpSettings, bool>> predicate)
         {
-            throw new NotImplementedException();
+            return await _context.RealmIdpSettings.FirstOrDefaultAsync(predicate);
         }
 
         public async Task<RealmIdpSettings> Update(RealmIdpSettings param, bool? saveChanges = true, object? args = null)
