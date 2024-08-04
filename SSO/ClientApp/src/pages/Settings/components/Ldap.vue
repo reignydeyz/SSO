@@ -47,5 +47,7 @@
 </template>
 
 <script>
-
+export default {
+    props: ["realm"],
+}
 </script>

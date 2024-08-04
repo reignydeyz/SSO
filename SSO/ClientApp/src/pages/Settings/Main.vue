@@ -7,16 +7,31 @@
         </div>
       </div>
       <hr class="mb-4" />
-      <Ldap />
+      <Ldap :realm="realm"/>
     </div>
   </div>
 </template>
 <script>
 
+import * as navbar from "@/services/navbar.service";
+import { emitter } from "@/services/emitter.service";
+import { getCurrentRealm } from "@/services/realm.service";
 import Ldap from "@/pages/Settings/components/Ldap.vue";
 export default {
   components: {
     Ldap,
   },
+  data: () => ({
+    realm: new Object(),
+  }),
+  async mounted() {
+    navbar.init(this.$route);
+
+    emitter.emit("showLoader", true);
+
+    this.realm = (await getCurrentRealm()).data;
+
+    emitter.emit("showLoader", false);
+  }
 };
 </script>
