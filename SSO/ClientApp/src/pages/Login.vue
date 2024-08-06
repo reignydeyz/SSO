@@ -15,7 +15,7 @@
 						<div class="input-group mb-4">
 							<input type="password" id="password" class="form-control" placeholder="Password"
 								required="required" v-model="param.password" autocomplete="off">
-							<button class="btn btn-outline-secondary" type="button"
+							<button class="btn btn-outline-secondary" type="button" tabindex="-1"
 								@click="toggleViewKey('password')">
 								<i class="bi bi-eye"></i>
 							</button>

@@ -38,7 +38,7 @@ namespace SSO.Infrastructure.Management
             throw new NotImplementedException();
         }
 
-        public async Task Delete(ApplicationCallback param, bool? saveChanges = true)
+        public async Task Delete(ApplicationCallback param, bool? saveChanges = true, object? args = null)
         {
             _context.Remove(param);
 

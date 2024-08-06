@@ -6,6 +6,9 @@ namespace SSO.Business.Groups.Commands
 {
     public class CreateGroupCommand : IRequest<GroupDto>
     {
+        [JsonIgnore]
+        public Guid RealmId { get; set; }
+
         [Required, MinLength(3), StringLength(200)]
         public string Name { get; set; }
 

@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
+using SSO.Infrastructure.Settings.Enums;
 using System.DirectoryServices;
 
 namespace SSO.Infrastructure.LDAP
@@ -10,17 +12,13 @@ namespace SSO.Infrastructure.LDAP
     public class GroupUserRepository : GroupUserRepositoryBase, IDisposable
     {
         private readonly IAppDbContext _context;
-        private readonly DirectoryEntry _dirEntry;
-        private readonly DirectorySearcher _dirSearcher;
+        private DirectoryEntry _dirEntry;
+        private DirectorySearcher _dirSearcher;
         private bool _disposed;
 
-        public GroupUserRepository(IAppDbContext context, IOptions<LDAPSettings> ldapSettings) : base(context)
+        public GroupUserRepository(IAppDbContext context) : base(context)
         {
             _context = context;
-
-            var ldapConnectionString = $"{(ldapSettings.Value.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Value.Server}:{ldapSettings.Value.Port}/{ldapSettings.Value.SearchBase}";
-            _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Value.Username, ldapSettings.Value.Password);
-            _dirSearcher = new DirectorySearcher(_dirEntry);
         }
 
         public override Task<GroupUser> Add(GroupUser param, bool? saveChanges = true, object? args = null)
@@ -40,7 +38,7 @@ namespace SSO.Infrastructure.LDAP
             return Task.FromResult(param);
         }
 
-        public override Task Delete(GroupUser param, bool? saveChanges = true)
+        public override Task Delete(GroupUser param, bool? saveChanges = true, object? args = null)
         {
             var (userEntry, groupEntry) = FindUserAndGroupEntries(param);
 
@@ -60,6 +58,8 @@ namespace SSO.Infrastructure.LDAP
 
         private (DirectoryEntry?, DirectoryEntry?) FindUserAndGroupEntries(GroupUser param)
         {
+            (_dirEntry, _dirSearcher) = GetLdapConnectionAsync(param).Result;
+
             var group = _context.Groups.First(x => x.GroupId == param.GroupId).Name;
             var userName = _context.Users.First(x => x.Id == param.UserId).UserName;
 
@@ -103,6 +103,19 @@ namespace SSO.Infrastructure.LDAP
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        private async Task<(DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(GroupUser groupUser)
+        {
+            var realmId = (await _context.Groups.FirstAsync(x => x.GroupId == groupUser.GroupId)).RealmId;
+            var realm = await _context.Realms.Include(x => x.IdpSettingsCollection).FirstAsync(x => x.RealmId == realmId);
+            var idpSettings = realm.IdpSettingsCollection.FirstOrDefault(x => x.IdentityProvider == IdentityProvider.LDAP) ?? throw new ArgumentException("LDAP is not configured.");
+            var ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(idpSettings.Value);
+            var ldapConnectionString = $"{(ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Server}:{ldapSettings.Port}/{ldapSettings.SearchBase}";
+            _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Username, ldapSettings.Password);
+            _dirSearcher = new DirectorySearcher(_dirEntry);
+
+            return (_dirEntry, _dirSearcher);
         }
     }
 }

@@ -13,21 +13,21 @@ namespace SSO.Business.Authentication.Handlers
     {
         readonly ITokenService _tokenService;
         readonly IApplicationRoleRepository _roleRepo;
-        readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
         readonly UserManager<ApplicationUser> _userManager;
+        readonly Users.RepositoryFactory _userRepoFactory;
 
         public SwitchAppQueryHandler(ITokenService tokenService,
-            IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository,
-            UserManager<ApplicationUser> userManager)
+            IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository,
+            UserManager<ApplicationUser> userManager, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
             _roleRepo = roleRepo;
-            _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
             _userManager = userManager;
             _groupRoleRepo = groupRoleRepository;
+            _userRepoFactory = userRepoFactory;
         }
 
         public async Task<TokenDto> Handle(SwitchAppQuery request, CancellationToken cancellationToken)
@@ -37,12 +37,14 @@ namespace SSO.Business.Authentication.Handlers
 
             var userId = jsonToken!.Claims.First(x => x.Type == "nameid").Value;
 
-            var user = await _userRepo.FindOne(x => x.Id == userId);
+            var userRepo = await _userRepoFactory.GetRepository();
+
+            var user = await userRepo.FindOne(x => x.Id == userId);
 
             if (user is null)
                 throw new UnauthorizedAccessException("User not found.");
 
-            var apps = await _userRepo.GetApplications(new Guid(userId));
+            var apps = await userRepo.GetApplications(new Guid(userId));
             if (!apps.Any(x => x.ApplicationId == request.ApplicationId))
                 throw new UnauthorizedAccessException("User doesn't have access to the app.");
 
@@ -54,7 +56,7 @@ namespace SSO.Business.Authentication.Handlers
 
             var roles = await _userRoleRepo.Roles(user.UserName, request.ApplicationId.Value);
 
-            var groups = await _userRepo.GetGroups(new Guid(user.Id));
+            var groups = await userRepo.GetGroups(new Guid(user.Id));
             foreach (var group in groups)
                 roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, request.ApplicationId.Value));
 

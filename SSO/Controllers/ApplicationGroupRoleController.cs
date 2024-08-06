@@ -13,7 +13,7 @@ namespace SSO.Controllers
     [ApiExplorerSettings(GroupName = "System")]
     [Route("api/application/{applicationId}/group/{groupId}/role")]
     [ApiController]    
-    [Authorize(Policy = "RootPolicy")]
+    [Authorize(Policy = "RealmAccessPolicy")]
     [GroupIdValidator<AppGroupIdDto>]
     public class ApplicationGroupRoleController : ControllerBase
     {

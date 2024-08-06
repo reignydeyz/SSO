@@ -33,7 +33,7 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationRoleClaims.AnyAsync(predicate);
         }
 
-        public Task Delete(ApplicationRoleClaim param, bool? saveChanges = true)
+        public Task Delete(ApplicationRoleClaim param, bool? saveChanges = true, object? args = null)
         {
             throw new NotImplementedException();
         }

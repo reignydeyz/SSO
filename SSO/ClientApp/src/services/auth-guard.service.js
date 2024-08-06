@@ -6,7 +6,7 @@ const canActivate = (to) => {
         const token = Cookies.get('system');
         const claims = jwtDecode(token);
 
-        if (to?.meta?.mustBeRoot && !claims.role) {
+        if (to?.meta?.mustHaveRealmAccess && !(claims.role && claims.primarygroupsid)) {
             return false;
         }
         

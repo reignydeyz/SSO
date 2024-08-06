@@ -230,7 +230,8 @@ export default {
                 deleteUser(id).then(r => {
                     this.search();
                 }, err => {
-                    emitter.emit("showLoader", true);
+                    emitter.emit("showLoader", false);
+                    alert('Failed to delete user.');
                 });
             }
         },

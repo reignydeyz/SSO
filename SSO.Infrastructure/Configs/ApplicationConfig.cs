@@ -18,7 +18,12 @@ namespace SSO.Infrastructure.Configs
         {
             builder.HasKey(x => x.ApplicationId);
 
-            builder.HasIndex(x => x.Name).IsUnique();
+            builder.Property(x => x.RealmId).HasDefaultValue(new Guid("afb6d3ad-92a3-4ea3-aa90-88071a3ee8aa"));
+            builder.Property(x => x.Name).HasMaxLength(200);
+            builder.Property(x => x.CreatedBy).HasMaxLength(200);
+            builder.Property(x => x.ModifiedBy).HasMaxLength(200);
+
+            builder.HasIndex(x => new {x.RealmId, x.Name}).IsUnique();
 
             (_dbType switch
             {

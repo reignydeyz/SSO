@@ -2,56 +2,69 @@
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
-using SSO.Domain.Models;
 using SSO.Infrastructure.Settings.Enums;
-using SSO.Infrastructure.Settings.Services;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
 {
     public class LoginToSystemQueryHandler : IRequestHandler<LoginToSystemQuery, TokenDto>
     {
-        readonly IdentityProvider _idp;
-        readonly IAuthenticationService _authenticationService;
         readonly ITokenService _tokenService;
+        readonly IApplicationRepository _applicationRepository;
         readonly IApplicationRoleRepository _roleRepo;
-        readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
-        readonly Application _root;
+        readonly IRealmRepository _realmRepo;
+        readonly ServiceFactory _authServiceFactory;
+        readonly Users.RepositoryFactory _userRepoFactory;
 
-        public LoginToSystemQueryHandler(IdpService idpService,
-            IAuthenticationService authenticationService, ITokenService tokenService,
-            IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo,
-            IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository)
+        public LoginToSystemQueryHandler(ITokenService tokenService,
+            IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo,
+            IGroupRoleRepository groupRoleRepository,
+            IRealmRepository realmRepository,
+            ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
-            _idp = idpService.IdentityProvider;
-            _authenticationService = authenticationService;
             _tokenService = tokenService;
+            _applicationRepository = applicationRepository;
             _roleRepo = roleRepo;
-            _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
             _groupRoleRepo = groupRoleRepository;
-            _root = applicationRepository.FindOne(x => x.Name == "root").Result;
+            _realmRepo = realmRepository;
+            _authServiceFactory = authServiceFactory;
+            _userRepoFactory = userRepoFactory;
         }
 
         public async Task<TokenDto> Handle(LoginToSystemQuery request, CancellationToken cancellationToken)
         {
-            await _authenticationService.Login(request.Username, request.Password, _root);
+           var root = await _applicationRepository.FindOne(
+                x => request.RealmId.HasValue ?
+                        x.RealmId == request.RealmId && x.Name == "root" :
+                        x.Realm.Name == "Default" && x.Name == "root"
+            );
 
-            var user = await _userRepo.GetByUsername(request.Username);
+            if (root is null)
+                throw new ArgumentException("Invalid realm.");
+
+            var isLdap = await _realmRepo.Any(x => x.RealmId == root.RealmId && x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider.LDAP));
+            var authenticationService = await _authServiceFactory.GetService(root.RealmId);
+            var userRepo = await _userRepoFactory.GetRepository(root.RealmId);
+
+            await authenticationService.Login(request.Username, request.Password, root);
+
+            var user = await userRepo.GetByUsername(request.Username);
 
             // Checks root access
-            var roles = await _userRoleRepo.Roles(request.Username, _root.ApplicationId);
+            var roles = await _userRoleRepo.Roles(request.Username, root.ApplicationId);
 
-            var groups = await _userRepo.GetGroups(new Guid(user.Id));
+            var groups = await userRepo.GetGroups(new Guid(user.Id));
             foreach (var group in groups)
-                roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, _root.ApplicationId));
+                roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, root.ApplicationId));
 
             var claims = new List<Claim>() {
-                new Claim(ClaimTypes.AuthenticationMethod, _idp.ToString()),
+                new Claim(ClaimTypes.AuthenticationMethod, (isLdap ? IdentityProvider.LDAP.ToString() : IdentityProvider.Default.ToString())),
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
-                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
+                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
+                new Claim(ClaimTypes.PrimaryGroupSid, root.RealmId.ToString())
             };
 
             if (user.Email is not null)
@@ -60,17 +73,14 @@ namespace SSO.Business.Authentication.Handlers
             // Has root access
             if (roles.Any())
             {
-                claims.Add(new Claim(ClaimTypes.System, _root.ApplicationId.ToString()));
-
                 foreach (var role in roles.ToList())
                 {
                     claims.Add(new Claim(ClaimTypes.Role, role.Name!));
-
                     claims.AddRange(await _roleRepo.GetClaims(new Guid(role.Id)));
                 }
             }
 
-            var expires = DateTime.Now.AddMinutes(_root.TokenExpiration);
+            var expires = DateTime.Now.AddMinutes(root.TokenExpiration);
             var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires);
 
             return new TokenDto { AccessToken = token, Expires = expires };

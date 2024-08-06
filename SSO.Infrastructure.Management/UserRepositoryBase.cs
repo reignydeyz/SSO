@@ -27,9 +27,9 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationUsers.AnyAsync(predicate);
         }
 
-        public abstract Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null);
+        public abstract Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null, object? args = null);
 
-        public abstract Task Delete(ApplicationUser param, bool? saveChanges = true);
+        public abstract Task Delete(ApplicationUser param, bool? saveChanges = true, object? args = null);
 
         public async Task<IQueryable<ApplicationUser>> Find(Expression<Func<ApplicationUser, bool>>? predicate)
         {
@@ -72,6 +72,15 @@ namespace SSO.Infrastructure.Management
                             .Select(x => x.Group);
 
             return await groups.Distinct().ToListAsync();
+        }
+
+        public async Task<IEnumerable<Realm>> GetRealms(Guid userId)
+        {
+            var user = await _context.Users
+                .Include(x => x.Realms).ThenInclude(x => x.Realm)
+                .FirstAsync(x => x.Id == userId.ToString());
+
+            return user.Realms.Select(x => x.Realm);
         }
 
         public abstract Task RemoveRange(IEnumerable<ApplicationUser> param, bool? saveChanges = true, object? args = null);

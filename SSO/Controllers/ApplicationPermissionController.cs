@@ -13,8 +13,8 @@ namespace SSO.Controllers
     [ApiExplorerSettings(GroupName = "System")]
     [Route("api/application/{applicationId}/permission")]
     [ApiController]
-    [AppIdValidator]
-    [Authorize(Policy = "RootPolicy")]
+    [AppIdValidator<ApplicationIdDto>]
+    [Authorize(Policy = "RealmAccessPolicy")]
     public class ApplicationPermissionController : ControllerBase
     {
         readonly IMediator _mediator;

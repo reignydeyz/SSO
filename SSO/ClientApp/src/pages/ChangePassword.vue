@@ -13,7 +13,7 @@
 								<input type="password" id="password" class="form-control signin-password"
 									placeholder="Password" required="required" v-model="param.currentPassword"
 									autocomplete="off" ref="CurrentPassword">
-								<button class="btn app-btn-outline-secondary" type="button"
+								<button class="btn app-btn-outline-secondary" type="button" tabindex="-1"
 									@click="toggleViewKey('password')">
 									<i class="bi bi-eye"></i>
 								</button>
@@ -29,7 +29,7 @@
 								<input type="password" id="new-password" class="form-control signin-password"
 									placeholder="New password" required="required" v-model="param.newPassword"
 									autocomplete="off" ref="NewPassword">
-								<button class="btn app-btn-outline-secondary" type="button"
+								<button class="btn app-btn-outline-secondary" type="button" tabindex="-1"
 									@click="toggleViewKey('new-password')">
 									<i class="bi bi-eye"></i>
 								</button>
@@ -45,7 +45,7 @@
 								<input type="password" id="re-new-password" class="form-control signin-password"
 									placeholder="New password" required="required" v-model="param.repeatPassword"
 									autocomplete="off" ref="RepeatPassword">
-								<button class="btn app-btn-outline-secondary" type="button"
+								<button class="btn app-btn-outline-secondary" type="button" tabindex="-1"
 									@click="toggleViewKey('re-new-password')">
 									<i class="bi bi-eye"></i>
 								</button>
@@ -70,6 +70,7 @@
 
 <script>
 import { changePassword } from "@/services/account.service";
+import { emitter } from '@/services/emitter.service';
 export default {
 	data: () => ({
 		param: new Object(),
@@ -77,6 +78,8 @@ export default {
 	}),
 	methods: {
 		submit() {
+			emitter.emit('showLoader', true);
+
 			// Clear error messages
 			const allInputs = document.querySelectorAll('.is-invalid');
 
@@ -85,8 +88,10 @@ export default {
 			});
 
 			changePassword(this.param).then(r => {
+				emitter.emit('showLoader', false);
 				this.$router.push("/");
 			}, error => {
+				emitter.emit('showLoader', false);
 
 				// Check if the error is related to a specific input field
 				if (error && error.response && error.response.data && error.response.data.errors) {

@@ -29,7 +29,7 @@ namespace SSO.Infrastructure.Management
             return await _userManager.FindByNameAsync(param.UserName);
         }
 
-        public override async Task Delete(ApplicationUser param, bool? saveChanges = true)
+        public override async Task Delete(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
             await _userManager.DeleteAsync(param);
         }
@@ -55,7 +55,7 @@ namespace SSO.Infrastructure.Management
             return await _userManager.FindByNameAsync(param.UserName);
         }
 
-        public override async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author)
+        public override async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author, object? args = null)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
 

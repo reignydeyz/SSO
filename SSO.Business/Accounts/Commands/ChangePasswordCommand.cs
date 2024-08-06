@@ -24,5 +24,8 @@ namespace SSO.Business.Accounts.Commands
 
         [JsonIgnore]
         public ApplicationUser? Author { get; set; }
+
+        [JsonIgnore]
+        public Guid? RealmId { get; set; }
     }
 }

@@ -49,21 +49,7 @@ These instructions will get you a copy of the project up and running on your loc
       ```
       Host=myServerAddress;Port=myPortNumber;Database=myDataBase;Username=myUsername;Password=myPassword;
       ```
-    
-  LDAP settings ~ If present, will use LDAP modules instead of the default ones...
-  ```json
-  "LDAPSettings": 
-  {
-    "Server": "example.com", // provide only the domain
-    "Port": 389, // or the appropriate port for your LDAP server
-    "Username": "your-ldap-username",
-    "Password": "your-ldap-password",
-    "SearchBase": "ou=users,dc=example,dc=com",
-    "SearchFilter": "(sAMAccountName={0})", // or an appropriate LDAP filter for your system
-    "UseSSL": false // set to true if using LDAPS (LDAP over SSL)
-  }
-  ```
-
+  
 - Update database (EF)...
   - PMC
     - From **Package Manager Console**, choose the Default project...

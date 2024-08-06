@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using SSO.Domain.Management.Interfaces;
 using SSO.Infrastructure.Settings.Enums;
-using SSO.Infrastructure.Settings.Services;
+using System.Security.Claims;
 
 namespace SSO.Filters
 {
@@ -11,9 +12,12 @@ namespace SSO.Filters
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var idpSvc = context.HttpContext.RequestServices.GetService<IdpService>();
+            var realmRepo = context.HttpContext.RequestServices.GetService<IRealmRepository>();
+            var realmId = new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
 
-            if (idpSvc.IdentityProvider != IdentityProvider) context.Result = new StatusCodeResult(503);
+            bool condition = await realmRepo.Any(x => x.RealmId == realmId && x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider));
+
+            if (!condition) context.Result = new StatusCodeResult(503);
             else await next();
         }
     }

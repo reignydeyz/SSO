@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
+using SSO.Infrastructure.Settings.Enums;
 using System.DirectoryServices;
 
 namespace SSO.Infrastructure.LDAP
@@ -10,18 +11,20 @@ namespace SSO.Infrastructure.LDAP
     public class AuthenticationService : IAuthenticationService
     {
         readonly UserManager<ApplicationUser> _userManager;
-        readonly LDAPSettings _ldapSettings;
-        readonly string _ldapConnectionString;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager, IOptions<LDAPSettings> ldapSettings)
+        public AuthenticationService(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
-            _ldapSettings = ldapSettings.Value;
-            _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
         }
 
         public async Task Login(string username, string password, Application app)
         {
+            if (app.Realm.IdpSettingsCollection == null || !app.Realm.IdpSettingsCollection.Any(x => x.IdentityProvider == IdentityProvider.LDAP))
+                throw new ArgumentException("LDAP is not configured.");
+
+            var ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(app.Realm.IdpSettingsCollection.First(x => x.IdentityProvider == IdentityProvider.LDAP).Value);
+            var ldapConnectionString = $"{(ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Server}:{ldapSettings.Port}/{ldapSettings.SearchBase}";
+
             var user = await _userManager.FindByNameAsync(username);
 
             if (user is null)
@@ -35,7 +38,7 @@ namespace SSO.Infrastructure.LDAP
 
             try
             {
-                using (DirectoryEntry entry = new DirectoryEntry(_ldapConnectionString, username, password, AuthenticationTypes.Secure))
+                using (DirectoryEntry entry = new DirectoryEntry(ldapConnectionString, username, password, AuthenticationTypes.Secure))
                 {
                     // Attempt to bind to the directory using the provided credentials
                     object nativeObject = entry.NativeObject;

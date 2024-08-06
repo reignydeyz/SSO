@@ -6,6 +6,9 @@ namespace SSO.Business.Users.Commands
 {
     public class CreateUserCommand : IRequest<UserDto>
     {
+        [JsonIgnore]
+        public Guid RealmId { get; set; }
+
         [Required, MinLength(3)]
         public string FirstName { get; set; }
 

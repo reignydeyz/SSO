@@ -22,6 +22,7 @@ namespace SSO
                 { "dateTime", new { DateTime.UtcNow, DateTime.Now } },
                 { "cultureInfo", CultureInfo.CurrentCulture.Name },
                 { "appDbContext", _context.Database.CanConnect() },
+                { "platform", Environment.OSVersion.Platform },
             };
 
             return Task.FromResult(HealthCheckResult.Healthy(string.Empty, data));

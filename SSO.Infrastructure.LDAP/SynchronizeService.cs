@@ -1,39 +1,54 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
+using SSO.Infrastructure.Settings.Enums;
 using System.DirectoryServices;
 
 namespace SSO.Infrastructure.LDAP
 {
     public class SynchronizeService
     {
+        readonly IRealmRepository _realmRepository;
+        readonly IRealmUserRepository _realmUserRepository;
         readonly IGroupRepository _groupRepository;
         readonly IGroupUserRepository _groupUserRepository;
         readonly IUserRepository _userRepository;
-        readonly LDAPSettings _ldapSettings;
-        readonly string _ldapConnectionString;
 
-        public SynchronizeService(IGroupRepository groupRepository,
-            IGroupUserRepository groupUserRepository,
-            IUserRepository userRepository,
-            IOptions<LDAPSettings> ldapSettings)
+        LDAPSettings _ldapSettings;
+        string _ldapConnectionString;
+        Guid _realmId;
+
+        public SynchronizeService(IRealmRepository realmRepository, IRealmUserRepository realmUserRepository, IServiceProvider serviceProvider)
         {
-            _groupRepository = groupRepository;
-            _groupUserRepository = groupUserRepository;
-            _userRepository = userRepository;
-            _ldapSettings = ldapSettings.Value;
-            _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
+            _realmRepository = realmRepository;
+            _realmUserRepository = realmUserRepository;
+            _groupRepository = serviceProvider.GetRequiredService<Management.GroupRepository>();
+            _groupUserRepository = serviceProvider.GetRequiredService<Management.GroupUserRepository>();
+            _userRepository = serviceProvider.GetRequiredService<Management.UserRepository>();
         }
 
-        public async Task Begin()
+        public async Task Begin(Guid realmId)
         {
-            var groups = await FetchGroupsFromLDAP();
-            await SyncGroupsToDatabase(groups);
+            var realm = await _realmRepository.FindOne(x => x.RealmId == realmId && x.DateInactive == null && x.IdpSettingsCollection.Any(y => y.IdentityProvider == IdentityProvider.LDAP));
 
-            var (users, groupUsers) = await FetchUsersAndGroupUsersFromLDAP();
-            await SyncUsersToDatabase(users, groupUsers);
+            if (realm is not null)
+            {
+                _ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(realm.IdpSettingsCollection.First(x => x.IdentityProvider == IdentityProvider.LDAP).Value);
+                _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
+                _realmId = realmId;
+
+                var groups = await FetchGroupsFromLDAP();
+                await SyncGroupsToDatabase(groups);
+
+                var (users, groupUsers) = await FetchUsersAndGroupUsersFromLDAP();
+                await SyncUsersToDatabase(users, groupUsers);
+
+                // Cleanup
+                await _userRepository.RemoveRange(x => !x.Realms.Any());
+            }
         }
 
         private async Task<List<Group>> FetchGroupsFromLDAP()
@@ -54,7 +69,7 @@ namespace SSO.Infrastructure.LDAP
             foreach (SearchResult searchResult in results)
             {
                 var rec = searchResult.GetDirectoryEntry();
-                groups.Add(new Group { GroupId = Guid.NewGuid(), Name = rec.Properties["cn"].Value?.ToString() ?? string.Empty });
+                groups.Add(new Group { GroupId = Guid.NewGuid(), Name = rec.Properties["cn"].Value?.ToString() ?? string.Empty, RealmId = _realmId });
             }
 
             return groups;
@@ -62,11 +77,11 @@ namespace SSO.Infrastructure.LDAP
 
         private async Task SyncGroupsToDatabase(List<Group> groups)
         {
-            var toBeAddedGroups = groups.Where(x => !_groupRepository.Any(y => y.Name == x.Name).Result);
+            var toBeAddedGroups = groups.Where(x => !_groupRepository.Any(y => y.Name == x.Name && x.RealmId == _realmId).Result);
             await _groupRepository.AddRange(toBeAddedGroups, false);
 
             var groupNames = groups.Select(x => x.Name.ToLower());
-            await _groupRepository.RemoveRange(x => !groupNames.Contains(x.Name));
+            await _groupRepository.RemoveRange(x => !groupNames.Contains(x.Name) && x.RealmId == _realmId);
         }
 
         private async Task<(List<ApplicationUser>, List<Tuple<string, string>>)> FetchUsersAndGroupUsersFromLDAP()
@@ -129,12 +144,25 @@ namespace SSO.Infrastructure.LDAP
             await _userRepository.AddRange(toBeAddedUsers, false);
 
             var usernames = users.Select(x => x.UserName.ToLower());
-            var toBeDeletedUsers = await _userRepository.Find(x => !usernames.Contains(x.UserName));
-            await _userRepository.RemoveRange(toBeDeletedUsers, false);
 
+            var toBeAddedRealmUsers = toBeAddedUsers.Where(x => !_realmUserRepository.Any(y => y.UserId == x.Id && y.RealmId == _realmId).Result)
+                .Select(x => new RealmUser { RealmId = _realmId, UserId = x.Id });
+            var existingUsersNotInRealm = (await _userRepository.Find(x => usernames.Contains(x.UserName) && !x.Realms.Any(y => y.RealmId == _realmId)))
+                .Select(x => new RealmUser { RealmId = _realmId, UserId = x.Id });
+            await _realmUserRepository.AddRange(toBeAddedRealmUsers.Union(existingUsersNotInRealm), false);
+
+            var toBeDeletedRealmUsers = (await _realmUserRepository.Find(x => !usernames.Contains(x.User.UserName)))
+                .Select(x => new RealmUser { RealmId = _realmId, UserId = x.UserId });
+            await _realmUserRepository.RemoveRange(toBeDeletedRealmUsers, false);
+
+            await SyncGroupUsers(groupUsers);
+        }
+
+        private async Task SyncGroupUsers(List<Tuple<string, string>> groupUsers)
+        {
             var guList = (from gu in groupUsers
-                          join u in await _userRepository.Find(default) on gu.Item2 equals u.UserName
-                          join g in await _groupRepository.Find(default) on gu.Item1 equals g.Name
+                          join u in await _userRepository.Find(x => x.Realms.Any(y => y.RealmId == _realmId)) on gu.Item2 equals u.UserName
+                          join g in await _groupRepository.Find(x => x.RealmId == _realmId) on gu.Item1 equals g.Name
                           select new GroupUser
                           {
                               GroupId = g.GroupId,
@@ -145,7 +173,7 @@ namespace SSO.Infrastructure.LDAP
             await _groupUserRepository.AddRange(toBeAddedGroupUsers, false);
 
             var concatenatedIds = guList.Select(x => $"{x.GroupId},{x.UserId}");
-            await _groupUserRepository.RemoveRange(x => !concatenatedIds.Contains(x.GroupId + "," + x.UserId));
+            await _groupUserRepository.RemoveRange(x => !concatenatedIds.Contains(x.GroupId + "," + x.UserId) && x.Group.RealmId == _realmId);
         }
 
         private DirectorySearcher CreateDirectorySearcher(DirectoryEntry entry, string filter, string[] propertiesToLoad = null)

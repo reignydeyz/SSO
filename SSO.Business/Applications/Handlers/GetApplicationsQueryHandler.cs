@@ -18,7 +18,7 @@ namespace SSO.Business.Applications.Handlers
 
         public async Task<IQueryable<ApplicationDto>> Handle(GetApplicationsQuery request, CancellationToken cancellationToken)
         {
-            var res = await _applicationRepository.Find(default);
+            var res = await _applicationRepository.Find(x => x.RealmId == request.RealmId);
 
             return _mapper.ProjectTo<ApplicationDto>(res);
         }

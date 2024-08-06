@@ -1,36 +1,37 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
+using SSO.Infrastructure.Settings.Enums;
 using System.DirectoryServices;
 
 namespace SSO.Infrastructure.LDAP
 {
     public class GroupRepository : GroupRepositoryBase, IDisposable
     {
-        readonly IAppDbContext _context;
-        readonly DirectoryEntry _dirEntry;
-        readonly DirectorySearcher _dirSearcher;
+        private readonly IAppDbContext _context;
+        private bool _disposed = false;
+        private DirectoryEntry _dirEntry;
+        private DirectorySearcher _dirSearcher;
 
-        bool _disposed;
-
-        public GroupRepository(IAppDbContext context, IOptions<LDAPSettings> ldapSettings) : base(context)
+        public GroupRepository(IAppDbContext context) : base(context)
         {
             _context = context;
-
-            var ldapConnectionString = $"{(ldapSettings.Value.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Value.Server}:{ldapSettings.Value.Port}/{ldapSettings.Value.SearchBase}";
-            _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Value.Username, ldapSettings.Value.Password);
-            _dirSearcher = new DirectorySearcher(_dirEntry);
         }
 
         public override async Task<Group> Add(Group param, bool? saveChanges = true, object? args = null)
         {
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
+
             var newGroup = _dirEntry.Children.Add($"CN={param.Name}", "group");
 
             newGroup.Properties["sAMAccountName"].Value = param.Name;
-            newGroup.Properties["description"].Value = param.Description ?? string.Empty;
+
+            if (!string.IsNullOrEmpty(param.Description))
+                newGroup.Properties["description"].Value = param.Description;
+
             newGroup.CommitChanges();
 
             await _context.AddAsync(param);
@@ -41,8 +42,10 @@ namespace SSO.Infrastructure.LDAP
             return param;
         }
 
-        public override async Task Delete(Group param, bool? saveChanges = true)
+        public override async Task Delete(Group param, bool? saveChanges = true, object? args = null)
         {
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
+
             _dirSearcher.Filter = $"(&(objectClass=group)(sAMAccountName={param.Name}))";
             _dirSearcher.SearchScope = SearchScope.Subtree;
 
@@ -63,6 +66,8 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<Group> Update(Group param, bool? saveChanges = true, object? args = null)
         {
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(param.RealmId);
+
             var rec = await _context.Groups.FirstAsync(x => x.GroupId == param.GroupId);
 
             _dirSearcher.Filter = $"(&(objectClass=group)(sAMAccountName={rec.Name}))";
@@ -108,6 +113,18 @@ namespace SSO.Infrastructure.LDAP
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        private async Task<(DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(Guid realmId)
+        {
+            var realm = await _context.Realms.Include(x => x.IdpSettingsCollection).FirstAsync(x => x.RealmId == realmId);
+            var idpSettings = realm.IdpSettingsCollection.FirstOrDefault(x => x.IdentityProvider == IdentityProvider.LDAP) ?? throw new ArgumentException("LDAP is not configured.");
+            var ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(idpSettings.Value);
+            var ldapConnectionString = $"{(ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Server}:{ldapSettings.Port}/{ldapSettings.SearchBase}";
+            _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Username, ldapSettings.Password);
+            _dirSearcher = new DirectorySearcher(_dirEntry);
+
+            return (_dirEntry, _dirSearcher);
         }
     }
 }

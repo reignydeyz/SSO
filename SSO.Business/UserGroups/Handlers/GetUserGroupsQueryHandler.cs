@@ -2,24 +2,25 @@
 using MediatR;
 using SSO.Business.Groups;
 using SSO.Business.UserGroups.Queries;
-using SSO.Domain.Management.Interfaces;
 
 namespace SSO.Business.UserGroups.Handlers
 {
     public class GetUserGroupsQueryHandler : IRequestHandler<GetUserGroupsQuery, IEnumerable<GroupDto>>
     {
-        readonly IUserRepository _userRepository;
+        readonly Users.RepositoryFactory _userRepoFactory;
         readonly IMapper _mapper;
 
-        public GetUserGroupsQueryHandler(IUserRepository userRepository, IMapper mapper)
+        public GetUserGroupsQueryHandler(Users.RepositoryFactory userRepoFactory, IMapper mapper)
         {
-            _userRepository = userRepository;
+            _userRepoFactory = userRepoFactory;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<GroupDto>> Handle(GetUserGroupsQuery request, CancellationToken cancellationToken)
         {
-            var res = await _userRepository.GetGroups(request.UserId);
+            var userRepo = await _userRepoFactory.GetRepository();
+
+            var res = await userRepo.GetGroups(request.UserId);
 
             return _mapper.Map<IEnumerable<GroupDto>>(res.OrderBy(x => x.Name));
         }

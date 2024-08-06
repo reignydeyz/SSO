@@ -1,11 +1,8 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Accounts.Commands;
-using SSO.Domain.Management.Interfaces;
-using SSO.Infrastructure.Settings.Enums;
-using SSO.Infrastructure.Settings.Services;
+using SSO.Domain.Models;
 using System.Security.Claims;
 
 namespace SSO.Controllers
@@ -17,16 +14,10 @@ namespace SSO.Controllers
     public class AccountController : ControllerBase
     {
         readonly IMediator _mediator;
-        readonly IUserRepository _userRepository;
-        readonly IMapper _mapper;
-        readonly IdentityProvider _idp;
 
-        public AccountController(IMediator mediator, IUserRepository userRepository, IMapper mapper, IdpService idpService)
+        public AccountController(IMediator mediator)
         {
             _mediator = mediator;
-            _userRepository = userRepository;
-            _mapper = mapper;
-            _idp = idpService.IdentityProvider;
         }
 
         /// <summary>
@@ -41,14 +32,10 @@ namespace SSO.Controllers
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                param.User = await _userRepository.FindOne(x => x.Id == userId);
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+                param.User = new ApplicationUser { Id = userId! };
 
-                await (_idp switch
-                {
-                    IdentityProvider.Default => _mediator.Send(param),
-                    IdentityProvider.LDAP => _mediator.Send(_mapper.Map<ChangePasswordLdapCommand>(param)),
-                    _ => throw new InvalidOperationException("Unsupported IDP")
-                });
+                await _mediator.Send(param);
 
                 return Ok();
             }

@@ -31,6 +31,12 @@ namespace SSO.Infrastructure
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupUser> GroupUsers { get; set; }
         public DbSet<GroupRole> GroupRoles { get; set; }
+        public DbSet<Realm> Realms { get; set; }
+        public DbSet<RealmUser> RealmUsers { get; set; }
+        public DbSet<RealmIdpSettings> RealmIdpSettings { get; set; }
+        public DbSet<RootUser> RootUsers { get; set; }
+
+        public new DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
 
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) => base.SaveChangesAsync(cancellationToken);
         public int SaveChanges() => base.SaveChanges();

@@ -6,21 +6,30 @@ namespace SSO.Business.Users.Handlers
 {
     public class RemoveUserCommandHandler : IRequestHandler<RemoveUserCommand, Unit>
     {
-        readonly IUserRepository _userRepository;
+        readonly IRealmRepository _realmRepository;
+        readonly IRealmUserRepository _realmUserRepository;
+        readonly RepositoryFactory _repoFactory;
 
-        public RemoveUserCommandHandler(IUserRepository userRepository)
+        public RemoveUserCommandHandler(IRealmRepository realmRepository, IRealmUserRepository realmUserRepository, RepositoryFactory repoFactory)
         {
-            _userRepository = userRepository;
+            _realmRepository = realmRepository;
+            _realmUserRepository = realmUserRepository;
+            _repoFactory = repoFactory;
         }
 
         public async Task<Unit> Handle(RemoveUserCommand request, CancellationToken cancellationToken)
         {
-            var rec = await _userRepository.FindOne(x => x.Id == request.UserId);
+            var realm = await _realmRepository.FindOne(x => x.RealmId == request.RealmId);
 
-            if (rec is null)
-                throw new ArgumentNullException();
+            var realmUser = await _realmUserRepository.FindOne(x => x.RealmId == realm.RealmId && x.UserId == request.UserId);
+            await _realmUserRepository.Delete(realmUser);
 
-            await _userRepository.Delete(rec);
+            var userRepo = await _repoFactory.GetRepository(request.RealmId);
+
+            var rec = await userRepo.FindOne(x => x.Id == request.UserId && !x.Realms.Any());
+
+            if (rec != null)
+                await userRepo.Delete(rec, true, realm);
 
             return new Unit();
         }

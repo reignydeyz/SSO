@@ -17,7 +17,7 @@ namespace SSO.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -112,6 +112,11 @@ namespace SSO.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid>("RealmId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValue(new Guid("afb6d3ad-92a3-4ea3-aa90-88071a3ee8aa"));
+
                     b.Property<int>("RefreshTokenExpiration")
                         .HasColumnType("int");
 
@@ -120,10 +125,10 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasKey("ApplicationId");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("RealmId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Applications", (string)null);
+                    b.ToTable("Applications");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationCallback", b =>
@@ -137,7 +142,7 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasKey("ApplicationId", "Url");
 
-                    b.ToTable("ApplicationCallbacks", (string)null);
+                    b.ToTable("ApplicationCallbacks");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationPermission", b =>
@@ -164,7 +169,7 @@ namespace SSO.Infrastructure.Migrations
                     b.HasIndex("ApplicationId", "Name")
                         .IsUnique();
 
-                    b.ToTable("ApplicationPermissions", (string)null);
+                    b.ToTable("ApplicationPermissions");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationRole", b =>
@@ -435,12 +440,17 @@ namespace SSO.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<Guid>("RealmId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValue(new Guid("afb6d3ad-92a3-4ea3-aa90-88071a3ee8aa"));
+
                     b.HasKey("GroupId");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("RealmId", "Name")
                         .IsUnique();
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.GroupRole", b =>
@@ -455,7 +465,7 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("GroupRoles", (string)null);
+                    b.ToTable("GroupRoles");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.GroupUser", b =>
@@ -470,7 +480,88 @@ namespace SSO.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GroupUsers", (string)null);
+                    b.ToTable("GroupUsers");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.Realm", b =>
+                {
+                    b.Property<Guid>("RealmId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateInactive")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("RealmId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Realms");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.RealmIdpSettings", b =>
+                {
+                    b.Property<Guid>("RealmId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte>("IdentityProvider")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("RealmId", "IdentityProvider");
+
+                    b.ToTable("RealmIdpSettings");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.RealmUser", b =>
+                {
+                    b.Property<Guid>("RealmId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("RealmId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RealmUsers");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.RootUser", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("RootUsers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -504,6 +595,17 @@ namespace SSO.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.Application", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Realm", "Realm")
+                        .WithMany("Applications")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.ApplicationCallback", b =>
@@ -573,6 +675,17 @@ namespace SSO.Infrastructure.Migrations
                     b.Navigation("Permission");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.Group", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Realm", "Realm")
+                        .WithMany("Groups")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.GroupRole", b =>
                 {
                     b.HasOne("SSO.Domain.Models.Group", "Group")
@@ -611,6 +724,47 @@ namespace SSO.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SSO.Domain.Models.RealmIdpSettings", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Realm", "Realm")
+                        .WithMany("IdpSettingsCollection")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.RealmUser", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.Realm", "Realm")
+                        .WithMany("Users")
+                        .HasForeignKey("RealmId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", "User")
+                        .WithMany("Realms")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Realm");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.RootUser", b =>
+                {
+                    b.HasOne("SSO.Domain.Models.ApplicationUser", "User")
+                        .WithOne("RootUser")
+                        .HasForeignKey("SSO.Domain.Models.RootUser", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("SSO.Domain.Models.Application", b =>
                 {
                     b.Navigation("Callbacks");
@@ -621,11 +775,27 @@ namespace SSO.Infrastructure.Migrations
             modelBuilder.Entity("SSO.Domain.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Groups");
+
+                    b.Navigation("Realms");
+
+                    b.Navigation("RootUser")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SSO.Domain.Models.Group", b =>
                 {
                     b.Navigation("Roles");
+
+                    b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("SSO.Domain.Models.Realm", b =>
+                {
+                    b.Navigation("Applications");
+
+                    b.Navigation("Groups");
+
+                    b.Navigation("IdpSettingsCollection");
 
                     b.Navigation("Users");
                 });

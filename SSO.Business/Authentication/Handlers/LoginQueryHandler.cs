@@ -11,36 +11,40 @@ namespace SSO.Business.Authentication.Handlers
     /// </summary>
     public class LoginQueryHandler : IRequestHandler<LoginQuery, TokenDto>
     {
-        readonly IAuthenticationService _authenticationService;
         readonly ITokenService _tokenService;
         readonly IApplicationRepository _appRepo;
         readonly IApplicationRoleRepository _roleRepo;
-        readonly IUserRepository _userRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
+        readonly ServiceFactory _authServiceFactory;
+        readonly Users.RepositoryFactory _userRepoFactory;
 
-        public LoginQueryHandler(IAuthenticationService authenticationService, ITokenService tokenService,
-            IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, IUserRepository userRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo)
+        public LoginQueryHandler(ITokenService tokenService, IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, 
+            IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo, 
+            ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
-            _authenticationService = authenticationService;
             _tokenService = tokenService;
             _appRepo = appRepo;
             _roleRepo = roleRepo;
-            _userRepo = userRepo;
             _userRoleRepo = userRoleRepo;
             _groupRoleRepo = groupRoleRepo;
+            _authServiceFactory = authServiceFactory;
+            _userRepoFactory = userRepoFactory;
         }
 
         public async Task<TokenDto> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
             var app = await _appRepo.FindOne(x => x.ApplicationId == request.ApplicationId);
 
-            await _authenticationService.Login(request.Username, request.Password, app);
+            var authenticationService = await _authServiceFactory.GetService(app.RealmId);
+            var userRepo = await _userRepoFactory.GetRepository(app.RealmId);
 
-            var user = await _userRepo.GetByUsername(request.Username);
+            await authenticationService.Login(request.Username, request.Password, app);
+
+            var user = await userRepo.GetByUsername(request.Username);
             var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId.Value);
 
-            var groups = await _userRepo.GetGroups(new Guid(user.Id));
+            var groups = await userRepo.GetGroups(new Guid(user.Id));
             foreach (var group in groups)
                 roles = roles.Union(await _groupRoleRepo.Roles(group.GroupId, app.ApplicationId));
 

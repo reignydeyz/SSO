@@ -7,6 +7,9 @@ namespace SSO.Business.Users.Commands
     public class UpdateUserCommand : IRequest<UserDto>
     {
         [JsonIgnore]
+        public Guid RealmId { get; set; }
+
+        [JsonIgnore]
         public string? UserId { get; set; }
 
         [Required, MinLength(3)]

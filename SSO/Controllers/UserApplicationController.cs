@@ -11,7 +11,7 @@ namespace SSO.Controllers
     [ApiExplorerSettings(GroupName = "System")]
     [Route("api/user/{userId}/application")]
     [ApiController]
-    [Authorize(Policy = "RootPolicy")]
+    [Authorize(Policy = "RealmAccessPolicy")]
     public class UserApplicationController : ControllerBase
     {
         readonly IMediator _mediator;

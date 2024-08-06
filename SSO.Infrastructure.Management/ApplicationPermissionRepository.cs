@@ -38,7 +38,7 @@ namespace SSO.Infrastructure.Management
             return await _context.ApplicationPermissions.AnyAsync(predicate);
         }
 
-        public async Task Delete(ApplicationPermission param, bool? saveChanges = true)
+        public async Task Delete(ApplicationPermission param, bool? saveChanges = true, object? args = null)
         {
             _context.RemoveRange(_context.ApplicationRoleClaims.Where(x => x.PermissionId == param.PermissionId));
 

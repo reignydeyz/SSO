@@ -27,7 +27,7 @@ axios.interceptors.response.use(response => {
 }, error => {
     // Go back to login page when not authenticated
     if (error.response.status === 401) {
-        if (window.location.pathname != '/login') {
+        if (window.location.pathname != '/login' && window.location.pathname != '/') {
             Cookies.remove("system");
             window.location.href = "/";
         }
