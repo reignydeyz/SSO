@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSO.Business.RealmIdpSettings.Commands;
 using SSO.Business.RealmIdpSettings.Queries;
 using SSO.Infrastructure.LDAP.Models;
+using SSO.Infrastructure.Settings.Enums;
 using System.Security.Claims;
 
 namespace SSO.Controllers
@@ -42,6 +43,24 @@ namespace SSO.Controllers
             {
                 RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value),
                 LDAPSettings = param
+            };
+
+            await _mediator.Send(cmd);
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Removes LDAP settings
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("ldap")]
+        public async Task<IActionResult> RemoveLdapSettings()
+        {
+            var cmd = new RemoveRealmIdpSettingsCommand
+            {
+                RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value),
+                IdentityProvider = IdentityProvider.LDAP
             };
 
             await _mediator.Send(cmd);

@@ -8,7 +8,7 @@
         <div class="col-12 col-md-9">
             <div class="app-card app-card-settings shadow-sm p-4">
                 <div class="app-card-body">
-                    <form class="settings-form">
+                    <form class="settings-form" @submit.prevent="onSubmit">
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Server*</label>
                             <input class="form-control" placeholder="Server" required autocomplete="off"
@@ -16,23 +16,26 @@
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Port*</label>
-                            <input class="form-control" type="number" required autocomplete="off" v-model="ldapSettings.port" />
+                            <input class="form-control" type="number" required autocomplete="off"
+                                v-model="ldapSettings.port" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Username*</label>
-                            <input class="form-control" placeholder="Username" required autocomplete="off" v-model="ldapSettings.username" />
+                            <input class="form-control" placeholder="Username" required autocomplete="off"
+                                v-model="ldapSettings.username" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Password*</label>
-                            <input class="form-control" type="password" required autocomplete="off" v-model="ldapSettings.password"/>
+                            <input class="form-control" type="password" required autocomplete="off"
+                                v-model="ldapSettings.password" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Search base</label>
-                            <input class="form-control" autocomplete="off" v-model="ldapSettings.searchBase"/>
+                            <input class="form-control" autocomplete="off" v-model="ldapSettings.searchBase" />
                         </div>
                         <div class="mb-3">
                             <label for="setting-input-2" class="form-label">Search Filter</label>
-                            <input class="form-control" autocomplete="off" v-model="ldapSettings.searchFilter"/>
+                            <input class="form-control" autocomplete="off" v-model="ldapSettings.searchFilter" />
                         </div>
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" value="" v-model="ldapSettings.useSSL">
@@ -40,9 +43,16 @@
                                 Use SSL
                             </label>
                         </div>
-                        <button type="submit" class="btn app-btn-primary">
+                        <div class="row">
+                            <div class="col-auto">
+                                <button type="submit" class="btn app-btn-primary">
                             Save Changes
                         </button>
+                            </div>
+                            <div class="col-auto ms-auto">
+                                <button type="button" class="btn btn-danger" v-show="showDeleteButton" @click="onDelete()">Remove</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -51,10 +61,13 @@
 </template>
 
 <script>
+import { emitter } from "@/services/emitter.service";
+import { modifyLdapSetting, deleteLdapSetting } from "@/services/realm-idp-settings.service";
 export default {
     props: ["realm"],
     data: () => ({
         ldapSettings: new Object(),
+        showDeleteButton: false
     }),
     watch: {
         realm(newVal, oldVal) {
@@ -62,7 +75,31 @@ export default {
                 .filter(x => x.identityProvider === 1);
 
             this.ldapSettings = res.length > 0 ? res[0].value : new Object();
+            this.showDeleteButton = res.length > 0;
         }
     },
+    methods: {
+        onSubmit() {
+            emitter.emit("showLoader", true);
+
+            modifyLdapSetting(this.ldapSettings).then(r => {
+                emitter.emit("showLoader", false);
+                this.showDeleteButton = true;
+            }, (err) => {
+                alert('Failed to update record.');
+                emitter.emit("showLoader", false);
+            });
+        },
+        onDelete(id) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                emitter.emit("showLoader", true);
+                deleteLdapSetting().then(r => {
+                    window.location.reload();
+                }, err => {
+                    emitter.emit("showLoader", true);
+                });
+            }
+        }
+    }
 }
 </script>
