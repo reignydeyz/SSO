@@ -106,7 +106,6 @@ export default {
             input: this.$refs.app,
             minLength: 3,
             fetch: async function (text, update) {
-                text = text.toLowerCase();
                 var res = await searchApp(
                     { name: text },
                     'name',

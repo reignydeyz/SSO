@@ -65,7 +65,6 @@ export default {
             input: this.$refs.group,
             minLength: 3,
             fetch: async function (text, update) {
-                text = text.toLowerCase();
                 var res = await searchGroup(
                     { name: text },
                     'name',
