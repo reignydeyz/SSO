@@ -1,52 +1,43 @@
-﻿using AutoMapper;
+﻿using System.Security.Cryptography.X509Certificates;
+using AutoMapper;
 using MediatR;
 using SSO.Business.Users.Commands;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
-using SSO.Infrastructure.Settings.Enums;
-using SSO.Infrastructure.Settings.Services;
 
 namespace SSO.Business.Users.Handlers
 {
     public class CopyUserCommandHandler : IRequestHandler<CopyUserCommand, UserDto>
-    {
-        readonly IdentityProvider _idp;
-        readonly IUserRepository _userRepository;
+    { 
         readonly IUserRoleRepository _userRoleRepository;
-        readonly IGroupUserRepository _groupUserRepository;
+        readonly IRealmUserRepository _realmUserRepository;
         readonly IMapper _mapper;
+        readonly RepositoryFactory _userRepoFactory;
+        readonly GroupUsers.RepositoryFactory _groupRepoFactory;
 
-        public CopyUserCommandHandler(IdpService idpService,
-            IUserRepository userRepository, 
-            IUserRoleRepository userRoleRepository,
-            IGroupUserRepository groupUserRepository,
-            IMapper mapper)
+        public CopyUserCommandHandler(IUserRoleRepository userRoleRepository, 
+            IRealmUserRepository realmUserRepository,
+            IMapper mapper,
+            RepositoryFactory userRepoFactory,
+            GroupUsers.RepositoryFactory groupRepoFactory)
         {
-            _idp = idpService.IdentityProvider;
-            _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
-            _groupUserRepository = groupUserRepository;
-            _mapper = mapper;            
+            _realmUserRepository = realmUserRepository;
+            _mapper = mapper;
+            _userRepoFactory = userRepoFactory;
+            _groupRepoFactory = groupRepoFactory;
         }
 
         public async Task<UserDto> Handle(CopyUserCommand request, CancellationToken cancellationToken)
         {
-            var srcUser = await _userRepository.FindOne(x => x.Id == request.UserId);
+            var userRepo = await _userRepoFactory.GetRepository(request.RealmId);
+            var groupUserRepo = await _groupRepoFactory.GetRepository(request.RealmId);
+
+            var srcUser = await userRepo.FindOne(x => x.Id == request.UserId);
 
             ApplicationUser? existingUser = null;
 
-            if (_idp == IdentityProvider.Default)
-                existingUser = await _userRepository.FindOne(x => x.UserName == request.Username);
-            else
-            {
-                existingUser = await _userRepository.FindOne(x => x.FirstName == request.FirstName
-                    && x.LastName == request.LastName
-                    && x.Email == request.Email
-                    && x.UserName == request.Username);
-
-                if (existingUser == null)
-                    throw new ArgumentException(message: "Input may trigger \"core\" data modification which is currently not allowed.", paramName: "NotAllowed");
-            }
+            existingUser = await userRepo.FindOne(x => x.UserName == request.Username && x.Realms.Any(y => y.RealmId == request.RealmId));
 
             var newUser = _mapper.Map<ApplicationUser>(request);
             newUser.Id = existingUser?.Id ?? Guid.NewGuid().ToString();
@@ -55,21 +46,21 @@ namespace SSO.Business.Users.Handlers
             newUser.ModifiedBy = request.Author!;
             newUser.DateModified = DateTime.Now;
 
-            if (_idp == IdentityProvider.Default)
-            {
-                if (existingUser == null)
-                    await _userRepository.Add(newUser);
-                else
-                    await _userRepository.Update(newUser);
-            }
+            if (existingUser == null)
+                await userRepo.Add(newUser);
+            else
+                await userRepo.Update(newUser);
+
+            if (!(await _realmUserRepository.Any(x => x.RealmId == request.RealmId && x.UserId == newUser.Id)))
+                await _realmUserRepository.Add(new RealmUser { RealmId = request.RealmId, UserId = newUser.Id });
 
             // Apps
-            var apps = await _userRepository.GetApplications(new Guid(srcUser.Id));
+            var apps = await userRepo.GetApplications(new Guid(srcUser.Id));
 
             // Clear apps associated to the user being updated (existing user)
             if (existingUser != null)
             {
-                var exApps = await _userRepository.GetApplications(new Guid(existingUser.Id));
+                var exApps = await userRepo.GetApplications(new Guid(existingUser.Id));
 
                 foreach (var app in exApps)
                 {
@@ -92,11 +83,11 @@ namespace SSO.Business.Users.Handlers
             await _userRoleRepository.AddRoles(new Guid(newUser.Id), newRoles);
 
             // User groups
-            var groups = await _userRepository.GetGroups(new Guid(srcUser.Id));
+            var groups = await userRepo.GetGroups(new Guid(srcUser.Id));
             if (existingUser != null)
-                await _groupUserRepository.RemoveRange(x => x.UserId == existingUser.Id, false);
+                await groupUserRepo.RemoveRange(x => x.UserId == existingUser.Id, false);
 
-            await _groupUserRepository.AddRange(groups.Select(x => new GroupUser { GroupId = x.GroupId, UserId = newUser.Id }));
+            await groupUserRepo.AddRange(groups.Select(x => new GroupUser { GroupId = x.GroupId, UserId = newUser.Id }));
 
             return _mapper.Map<UserDto>(newUser);
         }

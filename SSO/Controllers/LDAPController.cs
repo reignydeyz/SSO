@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSO.Filters;
 using SSO.Infrastructure.LDAP;
 using SSO.Infrastructure.Settings.Enums;
+using System.Security.Claims;
 
 namespace SSO.Controllers
 {
@@ -11,7 +12,7 @@ namespace SSO.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [IdpValidator(IdentityProvider = IdentityProvider.LDAP)]
-    [Authorize(Policy = "RootPolicy")]
+    [Authorize(Policy = "RealmAccessPolicy")]
     public class LDAPController : ControllerBase
     {
         readonly SynchronizeService _synchronizeService;
@@ -54,7 +55,9 @@ namespace SSO.Controllers
             if (status is AcceptedResult)
                 return status;
 
-            BackgroundJob.Enqueue(() => _synchronizeService.Begin());
+            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+
+            BackgroundJob.Enqueue(() => _synchronizeService.Begin(realmId));
 
             return Ok();
         }

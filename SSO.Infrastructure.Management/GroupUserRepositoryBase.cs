@@ -30,7 +30,7 @@ namespace SSO.Infrastructure.Management
             return await _context.GroupUsers.AnyAsync(predicate);
         }
 
-        public abstract Task Delete(GroupUser param, bool? saveChanges = true);
+        public abstract Task Delete(GroupUser param, bool? saveChanges = true, object? args = null);
 
         public async Task<IQueryable<GroupUser>> Find(Expression<Func<GroupUser, bool>>? predicate)
         {

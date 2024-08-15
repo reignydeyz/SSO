@@ -19,5 +19,7 @@ namespace SSO.Domain.Models
         public DateTime? DateInactive { get; set; }
 
         public virtual ICollection<GroupUser> Groups { get; set; } = new List<GroupUser>();
+        public virtual ICollection<RealmUser> Realms { get; set; } = new List<RealmUser>();
+        public virtual RootUser RootUser { get; set; }
     }
 }

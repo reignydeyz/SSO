@@ -6,21 +6,20 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OwaspHeaders.Core.Enums;
+using OwaspHeaders.Core.Extensions;
+using OwaspHeaders.Core.Models;
 using SSO;
 using SSO.Business;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Mappings;
-using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Infrastructure;
-using SSO.Infrastructure.Authentication;
 using SSO.Infrastructure.Db.MySql;
 using SSO.Infrastructure.Db.Postgres;
 using SSO.Infrastructure.LDAP;
-using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
 using SSO.Infrastructure.Settings.Constants;
-using SSO.Infrastructure.Settings.Enums;
 using SSO.Infrastructure.Settings.Services;
 using System.Data.Common;
 using System.Reflection;
@@ -81,34 +80,29 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser()
         .Build();
 
-    options.AddPolicy("RootPolicy", policy =>
+    options.AddPolicy("RealmAccessPolicy", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim(ClaimTypes.System);
+        policy.RequireClaim(ClaimTypes.PrimaryGroupSid);
+        policy.RequireClaim(ClaimTypes.Role);
     });
 });
 
 builder.Services.AddSingleton(_ => new JwtSecretService(privateKey));
-builder.Services.AddSingleton(_ => new IdpService(IdentityProvider.Default));
 
-builder.Services.AddScoped<IAuthenticationService, SSO.Infrastructure.Authentication.AuthenticationService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-builder.Services.AddScoped<IUserRepository, SSO.Infrastructure.Management.UserRepository>();
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IApplicationRoleRepository, ApplicationRoleRepository>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
 builder.Services.AddScoped<IApplicationCallbackRepository, ApplicationCallbackRepository>();
 builder.Services.AddScoped<IApplicationPermissionRepository, ApplicationPermissionRepository>();
 builder.Services.AddScoped<IApplicationRoleClaimRepository, ApplicationRoleClaimRepository>();
-builder.Services.AddScoped<IGroupRepository, SSO.Infrastructure.Management.GroupRepository>();
-builder.Services.AddScoped<IGroupUserRepository, SSO.Infrastructure.Management.GroupUserRepository>();
 builder.Services.AddScoped<IGroupRoleRepository, GroupRoleRepository>();
+builder.Services.AddScoped<IRealmRepository, RealmRepository>();
+builder.Services.AddScoped<IRealmUserRepository, RealmUserRepository>();
+builder.Services.AddScoped<IRealmIdpSettingsRepository, RealmIdpSettingsRepository>();
 
-var ldapSettings = builder.Configuration.GetSection("LDAPSettings").Get<LDAPSettings>();
-
-if (ldapSettings != null)
-    builder.Services.ApplyLdapServiceCollection(builder.Configuration);
+builder.Services.ApplyBusinessServiceCollection(builder.Configuration);
+builder.Services.ApplyLdapServiceCollection(builder.Configuration);
 
 builder.Services.AddSpaStaticFiles(configuration =>
 {
@@ -119,6 +113,7 @@ builder.Services.AddSwaggerGen(x =>
 {
     x.SwaggerDoc("Client", new OpenApiInfo { Title = "Client", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
     x.SwaggerDoc("System", new OpenApiInfo { Title = "System", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
+    x.SwaggerDoc("Root", new OpenApiInfo { Title = "Root", Version = $"v{typeof(Program).Assembly.GetName().Version}" });
 
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -172,6 +167,7 @@ app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 app.UseCors();
 #endif
 
+app.UseSecureHeadersMiddleware(CustomConfiguration());
 app.UseSpaStaticFiles();
 app.UseAuthorization();
 
@@ -202,6 +198,7 @@ app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/Client/swagger.json", "Client");
     options.SwaggerEndpoint("/swagger/System/swagger.json", "System");
+    options.SwaggerEndpoint("/swagger/Root/swagger.json", "Root");
 });
 
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -210,3 +207,15 @@ app.UseHangfireServer();
 app.UseHangfireDashboard();
 
 app.Run();
+
+SecureHeadersMiddlewareConfiguration CustomConfiguration()
+{
+    return SecureHeadersMiddlewareBuilder
+        .CreateBuilder()
+        .UseHsts(1200, false)
+        .UseContentSecurityPolicy(blockAllMixedContent: false)
+        .UsePermittedCrossDomainPolicies(XPermittedCrossDomainOptionValue.masterOnly)
+        .UseReferrerPolicy(ReferrerPolicyOptions.sameOrigin)
+        .UseXFrameOptions()
+        .Build();
+}

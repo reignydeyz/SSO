@@ -29,11 +29,13 @@ namespace SSO.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Policy = "RootPolicy")]
+        [Authorize(Policy = "RealmAccessPolicy")]
         [EnableQuery(MaxTop = 1000)]
         public IQueryable<ApplicationDto> Get()
         {
-            var res = _mediator.Send(new GetApplicationsQuery { }).Result;
+            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+
+            var res = _mediator.Send(new GetApplicationsQuery { RealmId = realmId }).Result;
 
             if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
                 return res;
@@ -49,6 +51,7 @@ namespace SSO.Controllers
         [HttpGet("{appId}")]
         [ProducesResponseType(typeof(ApplicationDetailDto), 200)]
         [ODataIgnored]
+        [AppIdValidator<GetAppByIdQuery>(ParameterName = "param", PropertyName = "AppId")]
         public async Task<IActionResult> Get([FromRoute] GetAppByIdQuery param)
         {
             try
@@ -71,11 +74,12 @@ namespace SSO.Controllers
         /// <exception cref="NotImplementedException"></exception>
         [HttpPost]
         [ProducesResponseType(typeof(ApplicationDto), 200)]
-        [Authorize(Policy = "RootPolicy")]
+        [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Create([FromBody] CreateAppCommand param)
         {
             try
             {
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
                 var res = await _mediator.Send(param);
@@ -95,8 +99,8 @@ namespace SSO.Controllers
         /// <param name="param"></param>
         /// <returns></returns>
         [HttpPut("{applicationId}")]
-        [AppIdValidator(Relevant = false)]
-        [Authorize(Policy = "RootPolicy")]
+        [AppIdValidator<ApplicationIdDto>(Relevant = false)]
+        [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Update([FromRoute] ApplicationIdDto form, [FromBody] UpdateAppCommand param)
         {
             try
@@ -120,8 +124,8 @@ namespace SSO.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpDelete("{applicationId}")]
-        [AppIdValidator]
-        [Authorize(Policy = "RootPolicy")]
+        [AppIdValidator<ApplicationIdDto>]
+        [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form)
         {
             try
@@ -144,8 +148,8 @@ namespace SSO.Controllers
         /// <param name="form"></param>
         /// <returns></returns>
         [HttpPost("{applicationId}")]
-        [AppIdValidator]
-        [Authorize(Policy = "RootPolicy")]
+        [AppIdValidator<ApplicationIdDto>]
+        [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Copy([FromRoute] ApplicationIdDto form, [FromBody] CopyAppCommand param)
         {
             try

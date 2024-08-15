@@ -10,6 +10,9 @@ namespace SSO.Business.Applications.Commands
         public string Name { get; set; }
 
         [JsonIgnore]
+        public Guid RealmId { get; set; }
+
+        [JsonIgnore]
         public string? Author { get; set; }
     }
 }

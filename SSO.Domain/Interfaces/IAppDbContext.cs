@@ -28,9 +28,15 @@ namespace SSO.Domain.Interfaces
         DbSet<Group> Groups { get; set; }
         DbSet<GroupUser> GroupUsers { get; set; }
         DbSet<GroupRole> GroupRoles { get; set; }
+        DbSet<Realm> Realms { get; set; }
+        DbSet<RealmUser> RealmUsers { get; set; }
+        DbSet<RealmIdpSettings> RealmIdpSettings { get; set; }
+        DbSet<RootUser> RootUsers { get; set; }
 
         // Database property from DbContext
         DatabaseFacade Database { get; }
+
+        DbSet<TEntity> Set<TEntity>() where TEntity : class;
 
         // Method signatures for saving changes
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

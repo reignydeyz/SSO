@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SSO.Domain.Management.Interfaces;
+using SSO.Infrastructure.Management;
+using System.Security.Claims;
 
 namespace SSO.Filters
 {
@@ -24,13 +25,14 @@ namespace SSO.Filters
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var repo = context.HttpContext.RequestServices.GetService<IGroupRepository>();
+            var repo = context.HttpContext.RequestServices.GetService<GroupRepository>();
             var param = context.ActionArguments[ParameterName] as T;
             var id = (Guid)typeof(T).GetProperty(PropertyName).GetValue(param);
+            var realmId = new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
 
             bool condition = Relevant
-                ? await repo.Any(x => x.GroupId == id && x.DateInactive == null)
-                : await repo.Any(x => x.GroupId == id);
+                ? await repo.Any(x => x.GroupId == id && x.DateInactive == null && x.RealmId == realmId && x.Realm.DateInactive == null)
+                : await repo.Any(x => x.GroupId == id && x.RealmId == realmId);
 
             if (!condition) context.Result = new StatusCodeResult(404);
             else await next();

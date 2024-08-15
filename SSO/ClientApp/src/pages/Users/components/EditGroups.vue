@@ -33,7 +33,8 @@
                         </router-link>
 
                         <div class="mt-3">
-                            <button type="button" class="btn app-btn-outline-danger bg-white" @click="remove(i.groupId)">Remove</button>
+                            <button type="button" class="btn app-btn-outline-danger bg-white"
+                                @click="remove(i.groupId)">Remove</button>
                         </div>
                     </div>
                 </div>
@@ -60,36 +61,33 @@ export default {
         }
     },
     mounted() {
-        if (this.isInIdp('Default')) {
-            autocomplete({
-                input: this.$refs.group,
-                minLength: 3,
-                fetch: async function (text, update) {
-                    text = text.toLowerCase();
-                    var res = await searchGroup(
-                        { name: text },
-                        'name',
-                        'asc',
-                        1,
-                        5
-                    );
+        autocomplete({
+            input: this.$refs.group,
+            minLength: 3,
+            fetch: async function (text, update) {
+                var res = await searchGroup(
+                    { name: text },
+                    'name',
+                    'asc',
+                    1,
+                    5
+                );
 
-                    var suggestions = res.data.value.map(obj => ({
-                        label: obj.name,
-                        value: obj.groupId
-                    }));
+                var suggestions = res.data.value.map(obj => ({
+                    label: obj.name,
+                    value: obj.groupId
+                }));
 
-                    update(suggestions);
-                },
-                onSelect: async (item) => {
-                    this.$refs.group.value = '';
+                update(suggestions);
+            },
+            onSelect: async (item) => {
+                this.$refs.group.value = '';
 
-                    await addGroupUser(item.value, this.user.userId);
+                await addGroupUser(item.value, this.user.userId);
 
-                    await this.getGroups();
-                }
-            });
-        }
+                await this.getGroups();
+            }
+        });
     },
     methods: {
         getGroups() {

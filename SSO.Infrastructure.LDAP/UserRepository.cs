@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Management;
+using SSO.Infrastructure.Settings.Enums;
 using System.DirectoryServices;
 using System.Linq.Expressions;
 
@@ -12,26 +13,23 @@ namespace SSO.Infrastructure.LDAP
     public class UserRepository : UserRepositoryBase, IDisposable
     {
         readonly IAppDbContext _context;
-        readonly DirectoryEntry _dirEntry;
-        readonly DirectorySearcher _dirSearcher;
         readonly UserManager<ApplicationUser> _userManager;
+        DirectoryEntry _dirEntry;
+        DirectorySearcher _dirSearcher;
 
         bool _disposed;
 
         public UserRepository(UserManager<ApplicationUser> userManager,
-            IAppDbContext context,
-            IOptions<LDAPSettings> ldapSettings) : base(userManager, context)
+            IAppDbContext context) : base(userManager, context)
         {
             _context = context;
-
-            var ldapConnectionString = $"{(ldapSettings.Value.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Value.Server}:{ldapSettings.Value.Port}/{ldapSettings.Value.SearchBase}";
-            _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Value.Username, ldapSettings.Value.Password);
-            _dirSearcher = new DirectorySearcher(_dirEntry);
             _userManager = userManager;
         }
 
         public override async Task<ApplicationUser> Add(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+
             var newUser = _dirEntry.Children.Add($"CN={param.UserName}", "user");
             newUser.Properties["samAccountName"].Value = param.UserName;
             newUser.Properties["userPassword"].Value = param.PasswordHash;
@@ -65,8 +63,10 @@ namespace SSO.Infrastructure.LDAP
                 await _context.SaveChangesAsync();
         }
 
-        public override async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null)
+        public override async Task ChangePassword(ApplicationUser applicationUser, string password, ApplicationUser? author = null, object? args = null)
         {
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+
             _dirSearcher.Filter = $"(samAccountName={applicationUser.UserName})";
             _dirSearcher.SearchScope = SearchScope.Subtree;
 
@@ -96,8 +96,10 @@ namespace SSO.Infrastructure.LDAP
             _context.SaveChanges();
         }
 
-        public override async Task Delete(ApplicationUser param, bool? saveChanges = true)
+        public override async Task Delete(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+
             _dirSearcher.Filter = $"(samAccountName={param.UserName})";
             _dirSearcher.SearchScope = SearchScope.Subtree;
 
@@ -134,6 +136,8 @@ namespace SSO.Infrastructure.LDAP
 
         public override async Task<ApplicationUser> Update(ApplicationUser param, bool? saveChanges = true, object? args = null)
         {
+            (_dirEntry, _dirSearcher) = await GetLdapConnectionAsync(args);
+
             _dirSearcher.Filter = $"(samAccountName={param.UserName})";
             _dirSearcher.SearchScope = SearchScope.Subtree;
 
@@ -186,6 +190,21 @@ namespace SSO.Infrastructure.LDAP
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        private async Task<(DirectoryEntry dirEntry, DirectorySearcher dirSearcher)> GetLdapConnectionAsync(object? args)
+        {
+            if (args is null || args.GetType() != typeof(Realm))
+                throw new ArgumentException(nameof(args));
+            
+            var realm = (Realm)args;
+            var idpSettings = realm.IdpSettingsCollection.FirstOrDefault(x => x.IdentityProvider == IdentityProvider.LDAP) ?? throw new ArgumentException("LDAP is not configured.");
+            var ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(idpSettings.Value);
+            var ldapConnectionString = $"{(ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Server}:{ldapSettings.Port}/{ldapSettings.SearchBase}";
+            _dirEntry = new DirectoryEntry(ldapConnectionString, ldapSettings.Username, ldapSettings.Password);
+            _dirSearcher = new DirectorySearcher(_dirEntry);
+
+            return (_dirEntry, _dirSearcher);
         }
     }
 }

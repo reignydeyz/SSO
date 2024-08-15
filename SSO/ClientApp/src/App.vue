@@ -27,6 +27,13 @@ export default {
     data() {
         return { loading: false, showNav: true, allowedNavs: ['/', '/init', '/login', '/changepassword'] };
     },
+    mounted() {
+        if (window.top !== window.self) {
+            console.warn('This application cannot be displayed in an iframe.');
+            // Optionally, redirect or show a message
+            window.top.location = window.location.href;
+        }
+    },
     created() {
         emitter.on("showLoader", (e) => {
             this.loading = e;
@@ -62,8 +69,7 @@ export default {
 }
 
 .app-btn-outline-danger,
-.app-btn-outline-danger:hover
- {
+.app-btn-outline-danger:hover {
     background-color: transparent !important;
     color: #ff534d;
     border: 1px solid #ff534d
@@ -131,7 +137,7 @@ button.nav-link:hover {
     font: inherit;
 }
 
-.autocomplete > div {
+.autocomplete>div {
     padding: 15px;
 }
 
@@ -139,12 +145,11 @@ button.nav-link:hover {
     background: #eee;
 }
 
-.autocomplete > div:hover:not(.group),
-.autocomplete > div.selected {
+.autocomplete>div:hover:not(.group),
+.autocomplete>div.selected {
     background: var(--primary-color);
     opacity: 0.75;
     color: white !important;
     cursor: pointer;
 }
-
 </style>

@@ -17,5 +17,8 @@ namespace SSO.Business.Groups.Commands
 
         [JsonIgnore]
         public string? Author { get; set; }
+
+        [JsonIgnore]
+        public Guid RealmId { get; set; }
     }
 }

@@ -92,7 +92,8 @@
                             <div id="submenu-1" class="collapse submenu submenu-1" data-bs-parent="#menu-accordion">
                                 <ul class="submenu-list list-unstyled">
                                     <li class="submenu-item">
-                                        <router-link to="/applications/new" class="submenu-link">Create New</router-link>
+                                        <router-link to="/applications/new" class="submenu-link">Create
+                                            New</router-link>
                                     </li>
                                     <li class="submenu-item">
                                         <router-link to="/applications" class="submenu-link">Manage</router-link>
@@ -165,7 +166,30 @@
                 </nav>
                 <!--//app-nav-->
                 <div class="app-sidepanel-footer">
-
+                    <nav class="app-nav app-nav-footer">
+                        <ul class="app-menu footer-menu list-unstyled">
+                            <!--//nav-item-->
+                            <li class="nav-item">
+                                <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
+                                <router-link to="/settings" class="nav-link">
+                                    <span class="nav-icon">
+                                        <i class="bi bi-gear"></i>
+                                    </span>
+                                    <span class="nav-link-text">Settings</span> </router-link><!--//nav-link-->
+                            </li>
+                            <!--//nav-item-->
+                            <li class="nav-item">
+                                <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
+                                <a class="nav-link" href="https://periapsys.com/#contact" target="_blank" rel="noopener">
+                                    <span class="nav-icon">
+                                        <i class="bi bi-info-circle"></i>
+                                    </span>
+                                    <span class="nav-link-text">Help</span> </a><!--//nav-link-->
+                            </li>
+                            <!--//nav-item-->
+                        </ul>
+                        <!--//footer-menu-->
+                    </nav>
                 </div>
                 <!--//app-sidepanel-footer-->
             </div>
@@ -200,8 +224,8 @@ export default {
         },
 
         isInIdp(idp) {
-			return getAccount().authmethod === idp;
-		}
+            return getAccount().authmethod === idp;
+        }
     },
 };
 </script>

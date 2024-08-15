@@ -15,7 +15,7 @@
 						<div class="input-group mb-4">
 							<input type="password" id="password" class="form-control" placeholder="Password"
 								required="required" v-model="param.password" autocomplete="off">
-							<button class="btn app-btn-outline-secondary" type="button"
+							<button class="btn app-btn-outline-secondary" type="button" tabindex="-1"
 								@click="toggleViewKey('password')">
 								<i class="bi bi-eye"></i>
 							</button>
@@ -38,11 +38,16 @@ import { emitter } from '@/services/emitter.service';
 
 export default {
 	data: () => ({
-		param: new Object()
+		param: new Object(),
+		realm: null
 	}),
 	created() {
 		document.title = 'Login | System';
+
+		const params = new URLSearchParams(window.location.search);
+		this.realm = params.get('realm');
 	},
+		
 	mounted() {
 		if (Cookies.get('system')) {
 			window.location.href = 'init';
@@ -50,8 +55,10 @@ export default {
 	},
 	methods: {
 		submit() {
+			
 			emitter.emit('showLoader', true);
 
+			this.param.realmId = this.realm;
 			loginToSystem(this.param).then(r => {
 				emitter.emit('showLoader', false);
 

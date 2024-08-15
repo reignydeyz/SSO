@@ -30,7 +30,7 @@ namespace SSO.Infrastructure.Management
             return await _context.Applications.AnyAsync(predicate);
         }
 
-        public async Task Delete(Application param, bool? saveChanges = true)
+        public async Task Delete(Application param, bool? saveChanges = true, object? args = null)
         {
             _context.Remove(param);
 
@@ -48,7 +48,9 @@ namespace SSO.Infrastructure.Management
 
         public async Task<Application> FindOne(Expression<Func<Application, bool>> predicate)
         {
-            return await _context.Applications.FirstOrDefaultAsync(predicate);
+            return await _context.Applications
+                .Include(x => x.Realm).ThenInclude(x => x.IdpSettingsCollection)
+                .FirstOrDefaultAsync(predicate);
         }
 
         public async Task<IEnumerable<Application>> GetAppsByUserId(Guid userId)

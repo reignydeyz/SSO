@@ -147,7 +147,6 @@ export default {
             input: this.$refs.user,
             minLength: 3,
             fetch: async function (text, update) {
-                text = text.toLowerCase();
                 var res = await searchUser(
                     { firstName: text, lastName: text, email: text },
                     'firstName',
