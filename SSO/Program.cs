@@ -213,7 +213,9 @@ SecureHeadersMiddlewareConfiguration CustomConfiguration()
     return SecureHeadersMiddlewareBuilder
         .CreateBuilder()
         .UseHsts(1200, false)
-        .UseContentSecurityPolicy(blockAllMixedContent: false)
+        .UseContentSecurityPolicy(
+            blockAllMixedContent: false,
+            upgradeInsecureRequests: false)
         .UsePermittedCrossDomainPolicies(XPermittedCrossDomainOptionValue.masterOnly)
         .UseReferrerPolicy(ReferrerPolicyOptions.sameOrigin)
         .UseXFrameOptions()
