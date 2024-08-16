@@ -186,6 +186,13 @@
                                     </span>
                                     <span class="nav-link-text">Help</span> </a><!--//nav-link-->
                             </li>
+                            <li class="nav-item" v-show="newVersionAvailable">
+                                <a class="nav-link" href="https://github.com/reignydeyz/SSO/releases" target="_blank" rel="noopener">
+                                    <span class="nav-icon">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                    </span>
+                                    <span class="nav-link-text">New version available!</span> </a><!--//nav-link-->
+                            </li>
                             <!--//nav-item-->
                         </ul>
                         <!--//footer-menu-->
@@ -201,11 +208,18 @@
 
 <script>
 import { getAccount } from '@/services/account.service';
+import { healthCheck } from "@/services/health-check.service";
 export default {
-    mounted() {
-
+    data() {
+        return {
+            newVersionAvailable: false,
+        };
     },
-
+    mounted() {
+        healthCheck().then(r => {
+            this.newVersionAvailable = r.data.entries.HealthCheckHandler.data.version < r.data.entries.HealthCheckHandler.data.latestVersion;
+        });
+    },
     methods: {
         onMenuClick() {
             document
