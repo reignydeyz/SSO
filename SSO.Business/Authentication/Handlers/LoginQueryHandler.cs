@@ -63,7 +63,10 @@ namespace SSO.Business.Authentication.Handlers
             {
                 claims.Add(new Claim(ClaimTypes.Role, role.Name!));
 
-                claims.AddRange(await _roleRepo.GetClaims(new Guid(role.Id)));
+                var permissions = await _roleRepo.GetClaims(new Guid(role.Id));
+
+                foreach (var p in permissions)
+                    claims.Add(new Claim("permissions", p.Value));
             }
 
             var expires = DateTime.Now.AddMinutes(app.TokenExpiration);
