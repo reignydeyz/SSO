@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SSO.Business.Accounts;
 using SSO.Business.Users;
 using SSO.Business.Users.Commands;
 using SSO.Domain.Models;
@@ -10,6 +11,10 @@ namespace SSO.Business.Mappings
         public UserProfile()
         {
             CreateMap<ApplicationUser, UserDto>()
+                .ForMember(x => x.UserId, from => from.MapFrom(x => x.Id))
+                .IgnoreAllPropertiesWithAnInaccessibleSetter();
+
+            CreateMap<ApplicationUser, AccountDto>()
                 .ForMember(x => x.UserId, from => from.MapFrom(x => x.Id))
                 .IgnoreAllPropertiesWithAnInaccessibleSetter();
 
@@ -29,6 +34,10 @@ namespace SSO.Business.Mappings
                 .ForMember(x => x.UserName, from => from.MapFrom(x => x.Username))
                 .ForMember(x => x.PasswordHash, from => from.MapFrom(x => x.Password))
                 .IgnoreAllPropertiesWithAnInaccessibleSetter();
+
+            CreateMap<AccountDto, UserDetailDto>()
+                .IgnoreAllPropertiesWithAnInaccessibleSetter()
+                .ReverseMap();
         }
     }
 }

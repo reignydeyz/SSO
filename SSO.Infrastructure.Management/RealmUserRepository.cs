@@ -49,8 +49,9 @@ namespace SSO.Infrastructure.Management
         public async Task<IQueryable<RealmUser>> Find(Expression<Func<RealmUser, bool>>? predicate)
         {
             if (predicate is not null)
-                return await Task.Run(() => _context.RealmUsers.Include(x => x.Realm)
-                    .Where(predicate).AsQueryable().AsNoTracking());
+                return await Task.Run(() => _context.RealmUsers
+                    .Include(x => x.Realm)
+                        .Where(predicate).AsQueryable().AsNoTracking());
             else
                 return _context.RealmUsers.AsQueryable().AsNoTracking();
         }

@@ -6,7 +6,7 @@ namespace SSO.Business.Users.Queries
     public class GetUserByIdQuery : IRequest<UserDetailDto>
     {
         [JsonIgnore]
-        public Guid RealmId { get; set; }
+        public Guid? RealmId { get; set; }
 
         public string UserId { get; set; }
     }

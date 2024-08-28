@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using SSO.Domain.Interfaces;
 using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
@@ -46,12 +47,18 @@ namespace SSO.Infrastructure.Management
 
         public async Task<IEnumerable<Application>> GetApplications(Guid userId)
         {
-            var apps = from ur in _context.UserRoles.Where(x => x.UserId == userId.ToString())
+            var userApps = from ur in _context.UserRoles.Where(x => x.UserId == userId.ToString())
                        join r in _context.Roles on ur.RoleId equals r.Id
                        join a in _context.Applications on r.ApplicationId equals a.ApplicationId
                        select a;
 
-            return await apps.Distinct().ToListAsync();
+            var groupApps = from ug in _context.GroupUsers.Where(x => x.UserId == userId.ToString())
+                             join gr in _context.GroupRoles on ug.GroupId equals gr.GroupId
+                             join r in _context.Roles on gr.RoleId equals r.Id
+                             join a in _context.Applications on r.ApplicationId equals a.ApplicationId
+                             select a;
+
+            return await userApps.Union(groupApps).Distinct().ToListAsync();
         }
 
         public async Task<ApplicationUser> GetByUsername(string username)

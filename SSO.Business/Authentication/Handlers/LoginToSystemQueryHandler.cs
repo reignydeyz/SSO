@@ -64,7 +64,8 @@ namespace SSO.Business.Authentication.Handlers
                 new Claim(ClaimTypes.AuthenticationMethod, (isLdap ? IdentityProvider.LDAP.ToString() : IdentityProvider.Default.ToString())),
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.PrimaryGroupSid, root.RealmId.ToString())
+                new Claim("realm", root.RealmId.ToString()),
+                new Claim("app", root.ApplicationId.ToString())
             };
 
             if (user.Email is not null)

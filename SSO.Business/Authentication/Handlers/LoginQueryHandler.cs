@@ -50,7 +50,8 @@ namespace SSO.Business.Authentication.Handlers
 
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
-                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
+                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
+                new Claim("app", app.ApplicationId.ToString())
             };
 
             if (user.Email is not null)
