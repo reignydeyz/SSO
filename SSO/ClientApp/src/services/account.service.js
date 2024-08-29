@@ -11,7 +11,7 @@ const hasRealmAccess = () => {
 
     const decoded = jwtDecode(token);
 
-    return !!(decoded.role && decoded.primarygroupsid);
+    return !!(decoded.role && decoded.realm);
 }
 
 const getAccount = () => {
