@@ -28,7 +28,7 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(RealmDto), 200)]
         public async Task<IActionResult> Get()
         {
-            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+            var realmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
 
             var res = await _mediator.Send(new GetRealmByIdQuery { RealmId = realmId });
 

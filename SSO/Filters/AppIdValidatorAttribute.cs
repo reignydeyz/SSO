@@ -31,7 +31,7 @@ namespace SSO.Filters
             var id = (Guid)typeof(T).GetProperty(PropertyName).GetValue(param);
 
             var realmId = context.HttpContext.User.Identity.IsAuthenticated
-                ? new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value)
+                ? new Guid(context.HttpContext.User.Claims.First(x => x.Type == "realm").Value)
                 : !string.IsNullOrEmpty(context.HttpContext.Request.Query["realmId"])
                     ? (await realmRepo.FindOne(x => x.RealmId == new Guid(context.HttpContext.Request.Query["realmId"]!) && x.DateInactive == null))?.RealmId
                     : (await realmRepo.FindOne(x => x.Name == "Default" && x.DateInactive == null))?.RealmId;

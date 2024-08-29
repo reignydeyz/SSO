@@ -83,7 +83,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RealmAccessPolicy", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.RequireClaim(ClaimTypes.PrimaryGroupSid);
+        policy.RequireClaim("realm");
         policy.RequireClaim(ClaimTypes.Role);
     });
 });

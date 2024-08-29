@@ -55,7 +55,7 @@ namespace SSO.Controllers
             if (status is AcceptedResult)
                 return status;
 
-            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+            var realmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
 
             BackgroundJob.Enqueue(() => _synchronizeService.Begin(realmId));
 

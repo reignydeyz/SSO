@@ -23,7 +23,7 @@ namespace SSO.Filters
         {
             var repo = context.HttpContext.RequestServices.GetService<UserRepository>();
             var form = context.ActionArguments[ParameterName] as UserIdDto;
-            var realmId = new Guid(context.HttpContext.User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+            var realmId = new Guid(context.HttpContext.User.Claims.First(x => x.Type == "realm").Value);
 
             bool condition = Relevant
                 ? await repo.Any(x => x.Id == form.UserId.ToString() && x.DateInactive == null && x.Realms.Any(x => x.RealmId == realmId && x.Realm.DateInactive == null))

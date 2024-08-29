@@ -32,7 +32,7 @@ namespace SSO.Controllers
         [EnableQuery(MaxTop = 1000)]
         public IQueryable<UserDto> Get()
         {
-            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+            var realmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
             var res = _mediator.Send(new GetUsersQuery { RealmId = realmId }).Result;
 
             if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
@@ -52,7 +52,7 @@ namespace SSO.Controllers
         {
             try
             {
-                var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+                var realmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
                 var res = await _mediator.Send(new GetUserByIdQuery { UserId = id.ToString(), RealmId = realmId });
 
                 return Ok(res);
@@ -74,7 +74,7 @@ namespace SSO.Controllers
         {
             try
             {
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
                 var res = await _mediator.Send(param);
@@ -134,7 +134,7 @@ namespace SSO.Controllers
         {
             try
             {
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
                 param.UserId = form.UserId.ToString();
                 param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
@@ -161,7 +161,7 @@ namespace SSO.Controllers
         [UserIdValidator]
         public async Task<IActionResult> Delete([FromRoute] UserIdDto form)
         {
-            var realmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+            var realmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
             var param = new RemoveUserCommand { UserId = form.UserId.ToString(), RealmId = realmId };
 
             var res = await _mediator.Send(param);

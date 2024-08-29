@@ -41,7 +41,7 @@ namespace SSO.Controllers
 
             var cmd = new ModifyRealmLdapSettingsCommand
             {
-                RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value),
+                RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value),
                 LDAPSettings = param
             };
 
@@ -59,7 +59,7 @@ namespace SSO.Controllers
         {
             var cmd = new RemoveRealmIdpSettingsCommand
             {
-                RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value),
+                RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value),
                 IdentityProvider = IdentityProvider.LDAP
             };
 

@@ -56,7 +56,7 @@ namespace SSO.Controllers
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == ClaimTypes.PrimaryGroupSid).Value);
+                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
                 param.User = new ApplicationUser { Id = userId! };
 
                 await _mediator.Send(param);
