@@ -86,7 +86,7 @@ namespace SSO.Business.Authentication.Handlers
             }
 
             var expires = jsonToken.ValidTo;
-            var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires);
+            var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires, app.Name);
 
             return new TokenDto { AccessToken = token, Expires = expires };
         }
