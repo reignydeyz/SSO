@@ -51,6 +51,8 @@ namespace SSO.Controllers
                     // Add the token parameter
                     query["token"] = token.AccessToken;
                     uriBuilder.Query = query.ToString();
+
+                    return Redirect(uriBuilder.ToString());
                 }
 
                 return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.ApplicationId}&callbackUrl={form.CallbackUrl}");
