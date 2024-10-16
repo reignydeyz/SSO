@@ -45,7 +45,9 @@ namespace SSO.Business.Authentication.Handlers
                 throw new UnauthorizedAccessException("User not found.");
 
             var apps = await userRepo.GetApplications(new Guid(userId));
-            if (!apps.Any(x => x.ApplicationId == request.ApplicationId))
+            var app = apps.FirstOrDefault(x => x.ApplicationId == request.ApplicationId);
+
+            if (app is null)
                 throw new UnauthorizedAccessException("User doesn't have access to the app.");
 
             if (user.DateInactive != null)
@@ -62,7 +64,9 @@ namespace SSO.Business.Authentication.Handlers
 
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
-                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}")
+                new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
+                new Claim("realm", app.RealmId.ToString()),
+                new Claim("app", app.ApplicationId.ToString())
             };
 
             if (user.Email is not null)
