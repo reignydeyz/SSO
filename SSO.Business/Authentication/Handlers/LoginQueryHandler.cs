@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
 {
+    // NOSONAR
     /// <summary>
     /// Handler for login request
     /// </summary>

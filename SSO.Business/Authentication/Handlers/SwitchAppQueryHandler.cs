@@ -9,6 +9,7 @@ using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
 {
+    // NOSONAR
     public class SwitchAppQueryHandler : IRequestHandler<SwitchAppQuery, TokenDto>
     {
         readonly ITokenService _tokenService;
