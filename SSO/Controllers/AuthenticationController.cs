@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Authentication.Queries;
 using SSO.Filters;
 using System.ComponentModel.DataAnnotations;
+using System.Web;
 
 namespace SSO.Controllers
 {
@@ -41,7 +42,17 @@ namespace SSO.Controllers
 
                     Response.Cookies.Append("token", token.AccessToken, new CookieOptions { Expires = token.Expires, HttpOnly = false });
 
-                    return Redirect($"{form.CallbackUrl}?token={token.AccessToken}");
+                    var callbackUri = new Uri(form.CallbackUrl);
+                    var tokenParam = $"token={token.AccessToken}";
+
+                    var uriBuilder = new UriBuilder(callbackUri);
+                    var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+
+                    // Add the token parameter
+                    query["token"] = token.AccessToken;
+                    uriBuilder.Query = query.ToString();
+
+                    return Redirect(uriBuilder.ToString());
                 }
 
                 return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.ApplicationId}&callbackUrl={form.CallbackUrl}");

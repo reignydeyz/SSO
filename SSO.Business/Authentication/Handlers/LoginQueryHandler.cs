@@ -51,6 +51,7 @@ namespace SSO.Business.Authentication.Handlers
             var claims = new List<Claim>() {
                 new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
                 new Claim(ClaimTypes.GivenName, $"{user.FirstName} {user.LastName}"),
+                new Claim("realm", app.RealmId.ToString()),
                 new Claim("app", app.ApplicationId.ToString())
             };
 
