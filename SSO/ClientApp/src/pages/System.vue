@@ -29,17 +29,24 @@
 			</div><!--//auth-body-->
 		</div><!--//flex-column-->
 	</div><!--//auth-main-col-->
+	<Otp :user="param.userName"/>
+
 </template>
 
 <script>
+import Otp from "@/components/Otp.vue";
 import { loginToSystem } from "@/services/authentication.service";
 import Cookies from 'js-cookie';
 import { emitter } from '@/services/emitter.service';
 
 export default {
+	components: {
+		Otp
+	},
 	data: () => ({
 		param: new Object(),
-		realm: null
+		realm: null,
+		modal: null,
 	}),
 	created() {
 		document.title = 'Login | System';
@@ -47,24 +54,31 @@ export default {
 		const params = new URLSearchParams(window.location.search);
 		this.realm = params.get('realm');
 	},
-		
+
 	mounted() {
+		// Listen for the hidden.bs.modal event and call onModalClose method
+		this.modal = new bootstrap.Modal(document.getElementById('otpModal'));
+		this.modal._element.addEventListener('hidden.bs.modal', this.onModalClose);
+
 		if (Cookies.get('system')) {
 			window.location.href = 'init';
 		}
 	},
 	methods: {
 		submit() {
-			
+
 			emitter.emit('showLoader', true);
 
 			this.param.realmId = this.realm;
 			loginToSystem(this.param).then(r => {
 				emitter.emit('showLoader', false);
-
-				Cookies.set('system', r.data.access_token, { expires: 1 });
-
-				this.$router.replace({ name: 'Init' });
+				if (r.status === 202) {
+					this.modal.show();
+				}
+				else {
+					Cookies.set('system', r.data.access_token, { expires: 1 });
+					this.$router.replace({ name: 'Init' });
+				}
 			}, err => {
 				emitter.emit('showLoader', false);
 				alert(err.response.data);
@@ -78,6 +92,10 @@ export default {
 				e.type = "password";
 			}
 		},
+
+		onModalClose() {
+            location.reload();
+        },
 	}
 }
 </script>

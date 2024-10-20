@@ -94,6 +94,13 @@ namespace SSO.Controllers
             {
                 return Unauthorized(ex.Message);
             }
+            catch (InvalidOperationException ex)
+            {
+                if (ex.Message.Contains("OTP"))
+                    return Accepted(ex.Message);
+
+                return Unauthorized(ex.Message);
+            }
         }
 
         /// <summary>
@@ -128,6 +135,13 @@ namespace SSO.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
+                return Unauthorized(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (ex.Message.Contains("OTP"))
+                    return Accepted(ex.Message);
+
                 return Unauthorized(ex.Message);
             }
         }

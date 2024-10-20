@@ -17,6 +17,7 @@ namespace SSO.Business
             services.AddScoped<GroupUserRepository>();
 
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IOtpService, OtpService>();
 
             services.AddScoped<Authentication.ServiceFactory>();
 
