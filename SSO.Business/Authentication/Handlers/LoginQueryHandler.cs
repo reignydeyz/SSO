@@ -16,11 +16,12 @@ namespace SSO.Business.Authentication.Handlers
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
+        readonly IOtpService _otpService;
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
 
         public LoginQueryHandler(ITokenService tokenService, IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, 
-            IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo, 
+            IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo, IOtpService otpService,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
@@ -28,6 +29,7 @@ namespace SSO.Business.Authentication.Handlers
             _roleRepo = roleRepo;
             _userRoleRepo = userRoleRepo;
             _groupRoleRepo = groupRoleRepo;
+            _otpService = otpService;
             _authServiceFactory = authServiceFactory;
             _userRepoFactory = userRepoFactory;
         }
@@ -42,6 +44,18 @@ namespace SSO.Business.Authentication.Handlers
             await authenticationService.Login(request.Username, request.Password, app);
 
             var user = await userRepo.GetByUsername(request.Username);
+
+            if (user.TwoFactorEnabled)
+            {
+                if (user.TwoFactorSecretKey is null)
+                {
+                    user.TwoFactorSecretKey = _otpService.GenerateSecretKey();
+                    await userRepo.Update(user, true);
+                }
+
+                throw new InvalidOperationException("OTP is required.");
+            }
+
             var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId.Value);
 
             var groups = await userRepo.GetGroups(new Guid(user.Id));
