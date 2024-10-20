@@ -12,7 +12,7 @@ using SSO.Infrastructure;
 namespace SSO.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241020090540_UserTwoFactorSecretKey")]
+    [Migration("20241020144933_UserTwoFactorSecretKey")]
     partial class UserTwoFactorSecretKey
     {
         /// <inheritdoc />
@@ -375,6 +375,11 @@ namespace SSO.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.HasIndex("TwoFactorSecretKey")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TwoFactorSecretKey")
+                        .HasFilter("[TwoFactorSecretKey] IS NOT NULL");
 
                     b.HasIndex("FirstName", "LastName")
                         .IsUnique();

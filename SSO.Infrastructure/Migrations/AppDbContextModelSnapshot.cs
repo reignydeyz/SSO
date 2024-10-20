@@ -373,6 +373,11 @@ namespace SSO.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("TwoFactorSecretKey")
+                        .IsUnique()
+                        .HasDatabaseName("IX_TwoFactorSecretKey")
+                        .HasFilter("[TwoFactorSecretKey] IS NOT NULL");
+
                     b.HasIndex("FirstName", "LastName")
                         .IsUnique();
 

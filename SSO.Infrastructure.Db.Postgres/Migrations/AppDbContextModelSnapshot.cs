@@ -374,6 +374,10 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("TwoFactorSecretKey")
+                        .IsUnique()
+                        .HasFilter("TwoFactorSecretKey IS NOT NULL");
+
                     b.HasIndex("FirstName", "LastName")
                         .IsUnique();
 

@@ -16,11 +16,21 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                 type: "varchar(200)",
                 maxLength: 200,
                 nullable: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_TwoFactorSecretKey",
+                table: "AspNetUsers",
+                column: "TwoFactorSecretKey",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropIndex(
+                name: "IX_AspNetUsers_TwoFactorSecretKey",
+                table: "AspNetUsers");
+
             migrationBuilder.DropColumn(
                 name: "TwoFactorSecretKey",
                 table: "AspNetUsers");

@@ -4,14 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SSO.Infrastructure.Db.MySql;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using SSO.Infrastructure.Db.Postgres;
 
 #nullable disable
 
-namespace SSO.Infrastructure.Db.MySql.Migrations
+namespace SSO.Infrastructure.Db.Postgres.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241020091250_UserTwoFactorSecretKey")]
+    [Migration("20241020153555_UserTwoFactorSecretKey")]
     partial class UserTwoFactorSecretKey
     {
         /// <inheritdoc />
@@ -20,22 +21,24 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "8.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 64);
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -47,10 +50,10 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -62,16 +65,16 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Value")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -82,25 +85,25 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                 {
                     b.Property<Guid>("ApplicationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
-                    b.Property<DateTimeOffset>("DateCreated")
+                    b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
 
-                    b.Property<DateTimeOffset?>("DateInactive")
-                        .HasColumnType("datetime");
+                    b.Property<DateTime?>("DateInactive")
+                        .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset>("DateModified")
+                    b.Property<DateTime>("DateModified")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
 
                     b.Property<short>("MaxAccessFailedCount")
                         .HasColumnType("smallint");
@@ -108,23 +111,23 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                     b.Property<string>("ModifiedBy")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<Guid>("RealmId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)")
+                        .HasColumnType("uuid")
                         .HasDefaultValue(new Guid("afb6d3ad-92a3-4ea3-aa90-88071a3ee8aa"));
 
                     b.Property<int>("RefreshTokenExpiration")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TokenExpiration")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("ApplicationId");
 
@@ -137,11 +140,11 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.ApplicationCallback", b =>
                 {
                     b.Property<Guid>("ApplicationId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Url")
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.HasKey("ApplicationId", "Url");
 
@@ -152,20 +155,20 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                 {
                     b.Property<Guid>("PermissionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("ApplicationId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("PermissionId");
 
@@ -178,24 +181,24 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("ApplicationId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedName")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -215,22 +218,24 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("ClaimValue")
                         .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasColumnType("character varying(100)");
 
                     b.Property<Guid>("PermissionId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -244,121 +249,121 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)")
+                        .HasColumnType("character varying(200)")
                         .HasDefaultValue("admin");
 
                     b.Property<DateTime?>("DateConfirmed")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
 
                     b.Property<DateTime?>("DateInactive")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DateModified")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)")
+                        .HasColumnType("character varying(200)")
                         .HasDefaultValue("admin");
 
                     b.Property<DateTime?>("LastFailedPasswordAttempt")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime?>("LastLoginDate")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)")
+                        .HasColumnType("character varying(200)")
                         .HasDefaultValue("admin");
 
                     b.Property<DateTime?>("LastPasswordChanged")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastSessionId")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)")
+                        .HasColumnType("character varying(200)")
                         .HasDefaultValue("35c7c988-7c48-4f13-bf41-4edbd060a394");
 
                     b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetime");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)")
+                        .HasColumnType("character varying(200)")
                         .HasDefaultValue("admin");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTime?>("PasswordExpiry")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("TwoFactorSecretKey")
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
 
@@ -372,6 +377,10 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("TwoFactorSecretKey")
+                        .IsUnique()
+                        .HasFilter("TwoFactorSecretKey IS NOT NULL");
+
                     b.HasIndex("FirstName", "LastName")
                         .IsUnique();
 
@@ -382,20 +391,22 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("PermissionId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -410,43 +421,43 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                 {
                     b.Property<Guid>("GroupId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
 
                     b.Property<DateTime?>("DateInactive")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DateModified")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<Guid>("RealmId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)")
+                        .HasColumnType("uuid")
                         .HasDefaultValue(new Guid("afb6d3ad-92a3-4ea3-aa90-88071a3ee8aa"));
 
                     b.HasKey("GroupId");
@@ -460,10 +471,10 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.GroupRole", b =>
                 {
                     b.Property<Guid>("GroupId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("GroupId", "RoleId");
 
@@ -475,10 +486,10 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.GroupUser", b =>
                 {
                     b.Property<Guid>("GroupId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("GroupId", "UserId");
 
@@ -491,35 +502,35 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                 {
                     b.Property<Guid>("RealmId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("DateCreated")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
 
                     b.Property<DateTime?>("DateInactive")
-                        .HasColumnType("datetime(6)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DateModified")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("timestamp with time zone")
+                        .HasDefaultValueSql("now() AT TIME ZONE 'UTC'");
 
                     b.Property<string>("ModifiedBy")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("varchar(200)");
+                        .HasColumnType("character varying(200)");
 
                     b.HasKey("RealmId");
 
@@ -532,14 +543,14 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.RealmIdpSettings", b =>
                 {
                     b.Property<Guid>("RealmId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
-                    b.Property<sbyte>("IdentityProvider")
-                        .HasColumnType("tinyint");
+                    b.Property<short>("IdentityProvider")
+                        .HasColumnType("smallint");
 
                     b.Property<string>("Value")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasColumnType("text");
 
                     b.HasKey("RealmId", "IdentityProvider");
 
@@ -549,10 +560,10 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.RealmUser", b =>
                 {
                     b.Property<Guid>("RealmId")
-                        .HasColumnType("char(36)");
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("RealmId", "UserId");
 
@@ -564,7 +575,7 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
             modelBuilder.Entity("SSO.Domain.Models.RootUser", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("text");
 
                     b.HasKey("UserId");
 

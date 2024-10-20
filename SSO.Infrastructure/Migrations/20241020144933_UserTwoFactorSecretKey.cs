@@ -16,11 +16,22 @@ namespace SSO.Infrastructure.Migrations
                 type: "nvarchar(200)",
                 maxLength: 200,
                 nullable: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TwoFactorSecretKey",
+                table: "AspNetUsers",
+                column: "TwoFactorSecretKey",
+                unique: true,
+                filter: "[TwoFactorSecretKey] IS NOT NULL");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropIndex(
+                name: "IX_TwoFactorSecretKey",
+                table: "AspNetUsers");
+
             migrationBuilder.DropColumn(
                 name: "TwoFactorSecretKey",
                 table: "AspNetUsers");

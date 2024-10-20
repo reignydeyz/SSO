@@ -369,6 +369,9 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("TwoFactorSecretKey")
+                        .IsUnique();
+
                     b.HasIndex("FirstName", "LastName")
                         .IsUnique();
 
