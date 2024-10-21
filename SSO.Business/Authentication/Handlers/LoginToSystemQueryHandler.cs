@@ -57,15 +57,7 @@ namespace SSO.Business.Authentication.Handlers
             var user = await userRepo.GetByUsername(request.Username);
 
             if (user.TwoFactorEnabled)
-            {
-                if (user.TwoFactorSecretKey is null)
-                {
-                    user.TwoFactorSecretKey = _otpService.GenerateSecretKey();
-                    await userRepo.Update(user, true);
-                }
-
                 throw new InvalidOperationException("OTP is required.");
-            }
 
             // Checks root access
             var roles = await _userRoleRepo.Roles(request.Username, root.ApplicationId);

@@ -16,6 +16,7 @@
                         </div>
                         <button type="submit" class="btn app-btn-primary w-100">Verify OTP</button>
                     </form>
+                    <p class="pt-3"><small>Open your two-factor authenticator (TOTP) app or browser extension to view your OTP.</small></p>
                 </div>
             </div>
         </div>
