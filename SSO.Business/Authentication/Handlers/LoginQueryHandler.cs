@@ -2,6 +2,7 @@
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
+using SSO.Infrastructure.Authentication;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
@@ -12,6 +13,7 @@ namespace SSO.Business.Authentication.Handlers
     public class LoginQueryHandler : IRequestHandler<LoginQuery, TokenDto>
     {
         readonly ITokenService _tokenService;
+        readonly IOtpService _otpService;
         readonly IApplicationRepository _appRepo;
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
@@ -19,11 +21,12 @@ namespace SSO.Business.Authentication.Handlers
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
 
-        public LoginQueryHandler(ITokenService tokenService, IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, 
+        public LoginQueryHandler(ITokenService tokenService, IOtpService otpService, IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, 
             IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
+            _otpService = otpService;
             _appRepo = appRepo;
             _roleRepo = roleRepo;
             _userRoleRepo = userRoleRepo;
@@ -44,7 +47,17 @@ namespace SSO.Business.Authentication.Handlers
             var user = await userRepo.GetByUsername(request.Username);
 
             if (user.TwoFactorEnabled)
-                throw new InvalidOperationException("OTP is required.");
+            {
+                if (string.IsNullOrEmpty(request.Otp))
+                    throw new InvalidOperationException("OTP is required.");
+                else
+                {
+                    var validOtp = _otpService.VerifyOtp(user.TwoFactorSecretKey!, request.Otp);
+
+                    if (!validOtp)
+                        throw new UnauthorizedAccessException("Invalid OTP.");
+                }
+            }
 
             var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId.Value);
 
@@ -59,8 +72,18 @@ namespace SSO.Business.Authentication.Handlers
                 new Claim("app", app.ApplicationId.ToString())
             };
 
-            if (user.Email is not null)
-                claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            if (user.TwoFactorEnabled)
+            {
+                if (string.IsNullOrEmpty(request.Otp))
+                    throw new InvalidOperationException("OTP is required.");
+                else
+                {
+                    var validOtp = _otpService.VerifyOtp(user.TwoFactorSecretKey!, request.Otp);
+
+                    if (!validOtp)
+                        throw new UnauthorizedAccessException("Invalid OTP.");
+                }
+            }
 
             if (!roles.Any())
                 throw new UnauthorizedAccessException();

@@ -5,36 +5,58 @@
 				<div class="app-auth-branding mb-4"><a class="app-logo" href="index.html"><img class="logo-icon"
 							:src="require('@/assets/logo.png')" alt="logo"></a></div>
 				<h2 class="auth-heading text-center mb-3">Hi!</h2>
-				<p class="mb-4">{{account.given_name}}</p>
+				<p class="mb-4">{{ account.given_name }}</p>
 				<div class="auth-form-container text-start">
-                    <div class="auth-option text-center pt-3"><router-link to="/changepassword" class="text-link">Change password</router-link></div>
-					<div class="auth-option text-center pt-3"><router-link to="#" class="text-link">2FA</router-link></div>
-					<div class="auth-option text-center pt-3"><a class="text-link" href="#" @click="signout">Logout</a></div>
+					<div class="auth-option text-center pt-3"><router-link to="/changepassword" class="text-link">Change
+							password</router-link></div>
+					<div class="auth-option text-center pt-3"><router-link to="#" class="text-link" @click="on2faClick">2FA</router-link>
+					</div>
+					<div class="auth-option text-center pt-3"><a class="text-link" href="#" @click="signout">Logout</a>
+					</div>
 				</div><!--//auth-form-container-->
 
 			</div><!--//auth-body-->
 		</div><!--//flex-column-->
 	</div><!--//auth-main-col-->
+	<TwoFactor :binaryData="modalBinaryData" />
 </template>
 
 <script>
+import TwoFactor from "@/components/TwoFactor.vue";
 import { hasRealmAccess, getAccount } from '@/services/account.service';
+import { generate2faQrcode } from "@/services/account.service";
+
 export default {
-    data() {
-        return { account: new Object() };
-    },
-    created() {
+	components: { TwoFactor },
+	data() {
+		return {
+			account: new Object(),
+			modalBinaryData: null, // Store the fetched binary data
+			modal: null,
+		};
+	},
+	created() {
 		if (hasRealmAccess()) {
 			window.location.replace("main");
 		}
-        this.account = getAccount();
-    },
+		this.account = getAccount();
+	},
+	mounted() {
+		// Listen for the hidden.bs.modal event and call onModalClose method
+		this.modal = new bootstrap.Modal(document.getElementById('2faModal'));
+	},
 	methods: {
 		signout() {
-            this.$router.push('/logout');
-        },
+			this.$router.push('/logout');
+		},
 		isInIdp(idp) {
 			return this.account.authmethod === idp;
+		},
+
+		async on2faClick() {
+			const blobData = await generate2faQrcode(); // Fetch the QR code as a Blob
+			this.modalBinaryData = blobData; // Store the fetched Blob data
+			this.modal.show();
 		}
 	}
 }

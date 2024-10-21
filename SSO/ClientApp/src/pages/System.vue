@@ -29,7 +29,7 @@
 			</div><!--//auth-body-->
 		</div><!--//flex-column-->
 	</div><!--//auth-main-col-->
-	<Otp :user="param.userName"/>
+	<Otp :param="param" :system="true"/>
 
 </template>
 

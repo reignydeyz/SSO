@@ -29,15 +29,20 @@
 			</div><!--//auth-body-->
 		</div><!--//flex-column-->
 	</div><!--//auth-main-col-->
+	<Otp :param="param" />
 </template>
 
 <script>
+import Otp from "@/components/Otp.vue";
 import { login } from "@/services/authentication.service";
 import { getAppById } from "@/services/application.service";
 import Cookies from 'js-cookie';
 import { emitter } from '@/services/emitter.service';
 
 export default {
+	components: {
+		Otp
+	},
 	data: () => ({
 		param: new Object(),
 		urlParams: new URLSearchParams(window.location.search),
@@ -57,6 +62,10 @@ export default {
 		});
 	},
 	mounted() {
+		// Listen for the hidden.bs.modal event and call onModalClose method
+		this.modal = new bootstrap.Modal(document.getElementById('otpModal'));
+		this.modal._element.addEventListener('hidden.bs.modal', this.onModalClose);
+
 		this.param.applicationId = this.urlParams.get('appId');
 
 		if (Cookies.get('token')) {
@@ -71,9 +80,13 @@ export default {
 
 			login(this.param).then(r => {
 				emitter.emit('showLoader', false);
-
-				if (this.urlParams.get('callbackUrl')) {
-					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
+				if (r.status === 202) {
+					this.modal.show();
+				}
+				else {
+					if (this.urlParams.get('callbackUrl')) {
+						window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
+					}
 				}
 			}, err => {
 				emitter.emit('showLoader', false);

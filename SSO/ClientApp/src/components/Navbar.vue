@@ -225,6 +225,7 @@ export default {
         return {
             newVersionAvailable: false,
             modalBinaryData: null, // Store the fetched binary data
+            modal: null,
         };
     },
     mounted() {
