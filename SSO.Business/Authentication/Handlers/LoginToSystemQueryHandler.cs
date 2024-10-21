@@ -15,7 +15,6 @@ namespace SSO.Business.Authentication.Handlers
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
         readonly IRealmRepository _realmRepo;
-        readonly IOtpService _otpService;
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
 
@@ -23,7 +22,6 @@ namespace SSO.Business.Authentication.Handlers
             IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo,
             IGroupRoleRepository groupRoleRepository,
             IRealmRepository realmRepository,
-            IOtpService otpService,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
@@ -32,7 +30,6 @@ namespace SSO.Business.Authentication.Handlers
             _userRoleRepo = userRoleRepo;
             _groupRoleRepo = groupRoleRepository;
             _realmRepo = realmRepository;
-            _otpService = otpService;
             _authServiceFactory = authServiceFactory;
             _userRepoFactory = userRepoFactory;
         }

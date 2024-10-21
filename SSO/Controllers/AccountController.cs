@@ -68,5 +68,34 @@ namespace SSO.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Generates 2FA QR code
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("2fa")]
+        public async Task<IActionResult> Generate2faQrCode()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await _mediator.Send(new Generate2faQrCodeCommand { User = new ApplicationUser { Id = userId } });
+            var imageBytes = Convert.FromBase64String(res);
+
+            return File(imageBytes, "image/png");
+        }
+
+        /// <summary>
+        /// Disable 2FA
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("2fa")]
+        public async Task<IActionResult> Disable2fa()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var res = await _mediator.Send(new Disable2faCommand { User = new ApplicationUser { Id = userId } });
+
+            return Ok();
+        }
     }
 }

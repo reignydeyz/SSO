@@ -16,12 +16,11 @@ namespace SSO.Business.Authentication.Handlers
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
-        readonly IOtpService _otpService;
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
 
         public LoginQueryHandler(ITokenService tokenService, IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, 
-            IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo, IOtpService otpService,
+            IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
@@ -29,7 +28,6 @@ namespace SSO.Business.Authentication.Handlers
             _roleRepo = roleRepo;
             _userRoleRepo = userRoleRepo;
             _groupRoleRepo = groupRoleRepo;
-            _otpService = otpService;
             _authServiceFactory = authServiceFactory;
             _userRepoFactory = userRepoFactory;
         }
