@@ -38,13 +38,12 @@ export default {
         async onDisableClick() {
             if (confirm("Are you sure you want to disable 2FA?")) {
                 await disable2fa();
+                window.location.reload();
             }
         },
-
-        async onModalClose() {
-            if (!confirm("Keep 2FA enabled?")) {
-                await disable2fa();
-            }
+        
+        onModalClose() {
+            window.location.reload();
         }
     }
 }

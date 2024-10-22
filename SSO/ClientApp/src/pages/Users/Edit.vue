@@ -64,7 +64,7 @@
 
 <script>
 import * as navbar from "@/services/navbar.service";
-import { getAccount } from '@/services/account.service';
+import { getTokenInfo } from '@/services/account.service';
 import { getUserById } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import EditBasic from "@/pages/Users/components/EditBasic.vue";
@@ -88,7 +88,7 @@ export default {
     },
     methods: {
         isInIdp(idp) {
-            return getAccount().authmethod === idp;
+            return getTokenInfo().authmethod === idp;
         },
     }
 }

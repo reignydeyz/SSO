@@ -216,9 +216,10 @@
 
 <script>
 import TwoFactor from "@/components/TwoFactor.vue";
-import { getAccount } from '@/services/account.service';
+import { getTokenInfo, getAccount } from '@/services/account.service';
 import { healthCheck } from "@/services/health-check.service";
 import { generate2faQrcode } from "@/services/account.service";
+
 export default {
     components: { TwoFactor },
     data() {
@@ -226,6 +227,7 @@ export default {
             newVersionAvailable: false,
             modalBinaryData: null, // Store the fetched binary data
             modal: null,
+            account: null,
         };
     },
     mounted() {
@@ -235,6 +237,10 @@ export default {
 
         // Listen for the hidden.bs.modal event and call onModalClose method
         this.modal = new bootstrap.Modal(document.getElementById('2faModal'));
+
+        getAccount().then(r => {
+            this.account = r.data;
+        });
     },
     methods: {
         onMenuClick() {
@@ -254,10 +260,16 @@ export default {
         },
 
         isInIdp(idp) {
-            return getAccount().authmethod === idp;
+            return getTokenInfo().authmethod === idp;
         },
 
         async on2faClick() {
+            if (!this.account.twoFactorEnabled) {
+                if (!confirm("Enable Two-Factor Authentication (2FA)?")) {
+                    return;
+                }
+            }
+
             const blobData = await generate2faQrcode(); // Fetch the QR code as a Blob
             this.modalBinaryData = blobData; // Store the fetched Blob data
             this.modal.show();

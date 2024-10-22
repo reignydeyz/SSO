@@ -6,5 +6,7 @@ namespace SSO.Business.Accounts
     public class AccountDto : UserDetailDto
     {
         public IList<ApplicationDto> Apps { get; set; }
+
+        public bool TwoFactorEnabled { get; set; }
     }
 }

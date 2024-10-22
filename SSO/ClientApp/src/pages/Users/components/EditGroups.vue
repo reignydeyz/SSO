@@ -45,7 +45,7 @@
 
 <script>
 import autocomplete from 'autocompleter';
-import { getAccount } from '@/services/account.service';
+import { getTokenInfo } from '@/services/account.service';
 import { searchGroup } from "@/services/group.service";
 import { getUserGroups } from "@/services/user-group.service";
 import { addGroupUser, removeGroupUser } from '@/services/group-user.service';
@@ -110,7 +110,7 @@ export default {
         },
 
         isInIdp(idp) {
-            return getAccount().authmethod === idp;
+            return getTokenInfo().authmethod === idp;
         },
     }
 }

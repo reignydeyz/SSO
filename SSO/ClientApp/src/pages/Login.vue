@@ -101,6 +101,10 @@ export default {
 				e.type = "password";
 			}
 		},
+
+		onModalClose() {
+            location.reload();
+        },
 	}
 }
 </script>

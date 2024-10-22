@@ -1,11 +1,10 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Accounts;
 using SSO.Business.Accounts.Commands;
+using SSO.Business.Accounts.Queries;
 using SSO.Business.UserApplications.Queries;
-using SSO.Business.Users.Queries;
 using SSO.Domain.Models;
 using System.Security.Claims;
 
@@ -17,12 +16,10 @@ namespace SSO.Controllers
     [Authorize]
     public class AccountController : ControllerBase
     {
-        readonly IMapper _mapper;
         readonly IMediator _mediator;
 
-        public AccountController(IMapper mapper, IMediator mediator)
+        public AccountController(IMediator mediator)
         {
-            _mapper = mapper;
             _mediator = mediator;
         }
 
@@ -35,13 +32,12 @@ namespace SSO.Controllers
         public async Task<IActionResult> Get()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _mediator.Send(new GetUserByIdQuery { UserId = userId! });
+            var account = await _mediator.Send(new GetAccountByUserIdQuery { UserId = userId! });
             var apps = await _mediator.Send(new GetUserAppsQuery { UserId = new Guid(userId!) });
 
-            var res = _mapper.Map<AccountDto>(user);
-            res.Apps = apps.ToList();
+            account.Apps = apps.ToList();
 
-            return Ok(res);
+            return Ok(account);
         }
 
         /// <summary>

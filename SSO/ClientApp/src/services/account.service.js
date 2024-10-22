@@ -14,7 +14,7 @@ const hasRealmAccess = () => {
     return !!(decoded.role && decoded.realm);
 }
 
-const getAccount = () => {
+const getTokenInfo = () => {
     const token = Cookies.get('system');
 
     if (!token) {
@@ -39,11 +39,19 @@ async function generate2faQrcode() {
 };
 
 const disable2fa = async () => await axios.delete("/api/account/2fa");
+const getAccount = async () => { 
+    if (!Cookies.get('system')) {
+        return false;
+    }
+
+    return axios.get("api/account"); 
+}
 
 export {
     hasRealmAccess,
-    getAccount,
+    getTokenInfo,
     changePassword,
     generate2faQrcode,
-    disable2fa
+    disable2fa,
+    getAccount
 }
