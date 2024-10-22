@@ -22,19 +22,19 @@ namespace SSO.Business.Accounts.Handlers
         public async Task<string> Handle(Generate2faQrCodeCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.User!.Id.ToString());
-            
+
             if (!user.TwoFactorEnabled)
             {
-                var salt = CryptographyHelper.GenerateSalt();
+                var key = CryptographyHelper.GenerateKey();
 
                 user.TwoFactorEnabled = true;
-                user.TwoFactorSecretKeyHash = CryptographyHelper.EncryptString(salt, _otpService.GenerateSecretKey());
-                user.TwoFactorSecretKeySalt = salt;
+                user.TwoFactorSecret = CryptographyHelper.EncryptStringToBytes_Aes(_otpService.GenerateSecretKey(), key);
+                user.TwoFactorSecretKey = key;
 
                 await _userManager.UpdateAsync(user);
             }
 
-            var secret = CryptographyHelper.DecryptString(user.TwoFactorSecretKeySalt!, user.TwoFactorSecretKeyHash!);
+            var secret = CryptographyHelper.DecryptStringFromBytes_Aes(user.TwoFactorSecret!, user.TwoFactorSecretKey!);
             var otpAuthUrl = $"otpauth://totp/SSO:{user.UserName}?secret={secret}&issuer=SSO&digits=6&period=30";
 
             return GenerateQrCodeImage(otpAuthUrl);

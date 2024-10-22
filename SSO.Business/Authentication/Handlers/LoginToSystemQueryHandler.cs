@@ -62,7 +62,7 @@ namespace SSO.Business.Authentication.Handlers
                     throw new InvalidOperationException("OTP is required.");
                 else
                 {
-                    var secret = CryptographyHelper.DecryptString(user.TwoFactorSecretKeySalt!, user.TwoFactorSecretKeyHash!);
+                    var secret = CryptographyHelper.DecryptStringFromBytes_Aes(user.TwoFactorSecret!, user.TwoFactorSecretKey!);
                     var validOtp = _otpService.VerifyOtp(secret, request.Otp);
 
                     if (!validOtp)

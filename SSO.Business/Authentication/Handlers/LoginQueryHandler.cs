@@ -52,7 +52,7 @@ namespace SSO.Business.Authentication.Handlers
                     throw new InvalidOperationException("OTP is required.");
                 else
                 {
-                    var secret = CryptographyHelper.DecryptString(user.TwoFactorSecretKeySalt!, user.TwoFactorSecretKeyHash!);
+                    var secret = CryptographyHelper.DecryptStringFromBytes_Aes(user.TwoFactorSecret!, user.TwoFactorSecretKey!);
                     var validOtp = _otpService.VerifyOtp(secret, request.Otp);
 
                     if (!validOtp)
@@ -60,7 +60,7 @@ namespace SSO.Business.Authentication.Handlers
                 }
             }
 
-            var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId.Value);
+            var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId!.Value);
 
             var groups = await userRepo.GetGroups(new Guid(user.Id));
             foreach (var group in groups)
@@ -72,20 +72,6 @@ namespace SSO.Business.Authentication.Handlers
                 new Claim("realm", app.RealmId.ToString()),
                 new Claim("app", app.ApplicationId.ToString())
             };
-
-            if (user.TwoFactorEnabled)
-            {
-                if (string.IsNullOrEmpty(request.Otp))
-                    throw new InvalidOperationException("OTP is required.");
-                else
-                {
-                    var secret = CryptographyHelper.DecryptString(user.TwoFactorSecretKeySalt!, user.TwoFactorSecretKeyHash!);
-                    var validOtp = _otpService.VerifyOtp(secret, request.Otp);
-
-                    if (!validOtp)
-                        throw new UnauthorizedAccessException("Invalid OTP.");
-                }
-            }
 
             if (!roles.Any())
                 throw new UnauthorizedAccessException();

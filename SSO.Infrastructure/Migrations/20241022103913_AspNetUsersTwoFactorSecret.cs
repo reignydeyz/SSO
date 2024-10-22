@@ -2,33 +2,34 @@
 
 #nullable disable
 
-namespace SSO.Infrastructure.Db.MySql.Migrations
+namespace SSO.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UserTwoFactorSecretKey : Migration
+    public partial class AspNetUsersTwoFactorSecret : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "TwoFactorSecretKey",
+            migrationBuilder.AddColumn<byte[]>(
+                name: "TwoFactorSecret",
                 table: "AspNetUsers",
-                type: "varchar(200)",
-                maxLength: 200,
+                type: "varbinary(88)",
+                maxLength: 88,
                 nullable: true);
 
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_TwoFactorSecretKey",
+            migrationBuilder.AddColumn<byte[]>(
+                name: "TwoFactorSecretKey",
                 table: "AspNetUsers",
-                column: "TwoFactorSecretKey",
-                unique: true);
+                type: "varbinary(88)",
+                maxLength: 88,
+                nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_AspNetUsers_TwoFactorSecretKey",
+            migrationBuilder.DropColumn(
+                name: "TwoFactorSecret",
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(

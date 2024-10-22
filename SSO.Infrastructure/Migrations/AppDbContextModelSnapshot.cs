@@ -351,13 +351,13 @@ namespace SSO.Infrastructure.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
-                    b.Property<string>("TwoFactorSecretKeyHash")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<byte[]>("TwoFactorSecret")
+                        .HasMaxLength(88)
+                        .HasColumnType("varbinary(88)");
 
-                    b.Property<string>("TwoFactorSecretKeySalt")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                    b.Property<byte[]>("TwoFactorSecretKey")
+                        .HasMaxLength(88)
+                        .HasColumnType("varbinary(88)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -376,11 +376,6 @@ namespace SSO.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("TwoFactorSecretKeyHash")
-                        .IsUnique()
-                        .HasDatabaseName("IX_TwoFactorSecretKey")
-                        .HasFilter("[TwoFactorSecretKeyHash] IS NOT NULL");
 
                     b.HasIndex("FirstName", "LastName")
                         .IsUnique();

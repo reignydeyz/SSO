@@ -23,8 +23,8 @@ namespace SSO.Infrastructure.Configs
             builder.Property(x => x.LastSessionId).HasMaxLength(200).HasDefaultValue("35c7c988-7c48-4f13-bf41-4edbd060a394");
             builder.Property(x => x.CreatedBy).HasMaxLength(200).HasDefaultValue("admin");
             builder.Property(x => x.ModifiedBy).HasMaxLength(200).HasDefaultValue("admin");
-            builder.Property(x => x.TwoFactorSecretKeyHash).HasMaxLength(200).IsRequired(false);
-            builder.Property(x => x.TwoFactorSecretKeySalt).HasMaxLength(200).IsRequired(false);
+            builder.Property(x => x.TwoFactorSecret).HasMaxLength(88).IsRequired(false);
+            builder.Property(x => x.TwoFactorSecretKey).HasMaxLength(88).IsRequired(false);
 
             builder.HasIndex(x => new { x.FirstName, x.LastName }).IsUnique();
 
@@ -40,8 +40,6 @@ namespace SSO.Infrastructure.Configs
         {
             builder.Property(x => x.DateCreated).HasDefaultValueSql("getdate()");
             builder.Property(x => x.DateModified).HasDefaultValueSql("getdate()");
-
-            builder.HasIndex(x => x.TwoFactorSecretKeyHash).IsUnique().HasDatabaseName("IX_TwoFactorSecretKey").HasFilter("[TwoFactorSecretKeyHash] IS NOT NULL");
         }
 
         void UseMySql(EntityTypeBuilder<ApplicationUser> builder)
@@ -49,7 +47,7 @@ namespace SSO.Infrastructure.Configs
             builder.Property(x => x.DateCreated).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
             builder.Property(x => x.DateModified).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.HasIndex(x => x.TwoFactorSecretKeyHash).IsUnique(); // Allows multiple nulls, as expected in MySQL
+            builder.HasIndex(x => x.TwoFactorSecret).IsUnique(); // Allows multiple nulls, as expected in MySQL
         }
 
         void UsePostgres(EntityTypeBuilder<ApplicationUser> builder)
@@ -88,7 +86,7 @@ namespace SSO.Infrastructure.Configs
                 .HasColumnType("timestamp with time zone")
                 .HasConversion(x => x.HasValue ? x.Value.ToUniversalTime() : (DateTime?)null, x => x.HasValue ? DateTime.SpecifyKind(x.Value, DateTimeKind.Utc) : (DateTime?)null);
 
-            builder.HasIndex(x => x.TwoFactorSecretKeyHash).IsUnique().HasFilter("TwoFactorSecretKeyHash IS NOT NULL"); // Filter for uniqueness on non-null values
+            builder.HasIndex(x => x.TwoFactorSecret).IsUnique().HasFilter("TwoFactorSecretKeyHash IS NOT NULL"); // Filter for uniqueness on non-null values
         }
     }
 }
