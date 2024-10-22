@@ -4,6 +4,7 @@ using QRCoder;
 using SSO.Business.Accounts.Commands;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Models;
+using SSO.Infrastructure.Helpers;
 
 namespace SSO.Business.Accounts.Handlers
 {
@@ -24,13 +25,17 @@ namespace SSO.Business.Accounts.Handlers
             
             if (!user.TwoFactorEnabled)
             {
+                var salt = CryptographyHelper.GenerateSalt();
+
                 user.TwoFactorEnabled = true;
-                user.TwoFactorSecretKey = _otpService.GenerateSecretKey();
+                user.TwoFactorSecretKeyHash = CryptographyHelper.EncryptString(salt, _otpService.GenerateSecretKey());
+                user.TwoFactorSecretKeySalt = salt;
 
                 await _userManager.UpdateAsync(user);
             }
 
-            var otpAuthUrl = $"otpauth://totp/SSO:{user.UserName}?secret={user.TwoFactorSecretKey}&issuer=SSO&digits=6&period=30";
+            var secret = CryptographyHelper.DecryptString(user.TwoFactorSecretKeySalt!, user.TwoFactorSecretKeyHash!);
+            var otpAuthUrl = $"otpauth://totp/SSO:{user.UserName}?secret={secret}&issuer=SSO&digits=6&period=30";
 
             return GenerateQrCodeImage(otpAuthUrl);
         }

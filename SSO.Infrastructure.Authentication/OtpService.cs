@@ -1,19 +1,10 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using OtpNet;
+﻿using OtpNet;
 using SSO.Domain.Authentication.Interfaces;
-using SSO.Domain.Management.Interfaces;
 
 namespace SSO.Infrastructure.Authentication
 {
     public class OtpService : IOtpService
     {
-        readonly IUserRepository _userRepository;
-
-        public OtpService(IServiceProvider serviceProvider)
-        {
-            _userRepository = serviceProvider.GetRequiredService<Management.UserRepository>();
-        }
-
         public string GenerateSecretKey()
         {
             // Generate a random 160-bit secret key (Base32 encoded)

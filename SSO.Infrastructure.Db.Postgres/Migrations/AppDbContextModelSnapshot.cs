@@ -354,7 +354,11 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("TwoFactorSecretKey")
+                    b.Property<string>("TwoFactorSecretKeyHash")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("TwoFactorSecretKeySalt")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
@@ -374,9 +378,9 @@ namespace SSO.Infrastructure.Db.Postgres.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("TwoFactorSecretKey")
+                    b.HasIndex("TwoFactorSecretKeyHash")
                         .IsUnique()
-                        .HasFilter("TwoFactorSecretKey IS NOT NULL");
+                        .HasFilter("TwoFactorSecretKeyHash IS NOT NULL");
 
                     b.HasIndex("FirstName", "LastName")
                         .IsUnique();

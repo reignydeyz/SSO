@@ -19,7 +19,7 @@ namespace SSO.Business.Accounts.Handlers
             var user = await _userManager.FindByIdAsync(request.User!.Id.ToString());
 
             user.TwoFactorEnabled = false;
-            user.TwoFactorSecretKey = null;
+            user.TwoFactorSecretKeyHash = null;
 
             await _userManager.UpdateAsync(user);
 

@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSO.Infrastructure.Db.MySql
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Infrastructure.Db.Postgres", "SSO.Infrastructure.Db.Postgres\SSO.Infrastructure.Db.Postgres.csproj", "{8E879BF9-FF73-48F3-B3B8-C84BADC147F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SSO.Infrastructure.Helpers", "SSO.Infrastructure.Helpers\SSO.Infrastructure.Helpers.csproj", "{0ABABC2F-629F-42E7-9249-FB8DB198D54D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{8E879BF9-FF73-48F3-B3B8-C84BADC147F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E879BF9-FF73-48F3-B3B8-C84BADC147F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E879BF9-FF73-48F3-B3B8-C84BADC147F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0ABABC2F-629F-42E7-9249-FB8DB198D54D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ABABC2F-629F-42E7-9249-FB8DB198D54D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ABABC2F-629F-42E7-9249-FB8DB198D54D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ABABC2F-629F-42E7-9249-FB8DB198D54D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{A0606EB8-16A9-4E99-8DE5-F50FB432C10A} = {78213346-AF3E-4D9C-B07F-698FFD328835}
 		{643CCC5B-A716-4120-B122-CE1B44C98B7D} = {78213346-AF3E-4D9C-B07F-698FFD328835}
 		{8E879BF9-FF73-48F3-B3B8-C84BADC147F5} = {78213346-AF3E-4D9C-B07F-698FFD328835}
+		{0ABABC2F-629F-42E7-9249-FB8DB198D54D} = {78213346-AF3E-4D9C-B07F-698FFD328835}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEACCE13-B4FB-4B39-96F8-77FAB0425877}

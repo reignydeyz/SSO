@@ -349,7 +349,11 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("TwoFactorSecretKey")
+                    b.Property<string>("TwoFactorSecretKeyHash")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("TwoFactorSecretKeySalt")
                         .HasMaxLength(200)
                         .HasColumnType("varchar(200)");
 
@@ -369,7 +373,7 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("TwoFactorSecretKey")
+                    b.HasIndex("TwoFactorSecretKeyHash")
                         .IsUnique();
 
                     b.HasIndex("FirstName", "LastName")

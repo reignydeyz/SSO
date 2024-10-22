@@ -2,7 +2,7 @@
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
-using SSO.Infrastructure.Authentication;
+using SSO.Infrastructure.Helpers;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
@@ -52,7 +52,8 @@ namespace SSO.Business.Authentication.Handlers
                     throw new InvalidOperationException("OTP is required.");
                 else
                 {
-                    var validOtp = _otpService.VerifyOtp(user.TwoFactorSecretKey!, request.Otp);
+                    var secret = CryptographyHelper.DecryptString(user.TwoFactorSecretKeySalt!, user.TwoFactorSecretKeyHash!);
+                    var validOtp = _otpService.VerifyOtp(secret, request.Otp);
 
                     if (!validOtp)
                         throw new UnauthorizedAccessException("Invalid OTP.");
@@ -78,7 +79,7 @@ namespace SSO.Business.Authentication.Handlers
                     throw new InvalidOperationException("OTP is required.");
                 else
                 {
-                    var validOtp = _otpService.VerifyOtp(user.TwoFactorSecretKey!, request.Otp);
+                    var validOtp = _otpService.VerifyOtp(user.TwoFactorSecretKeyHash!, request.Otp);
 
                     if (!validOtp)
                         throw new UnauthorizedAccessException("Invalid OTP.");
