@@ -2,7 +2,7 @@
 	<div class="col-12 col-md-12 col-lg-12 auth-main-col text-center p-5">
 		<div class="d-flex flex-column align-content-end">
 			<div class="app-auth-body mx-auto">
-				<div class="app-auth-branding mb-4"><a class="app-logo" href="index.html"><img class="logo-icon"
+				<div class="app-auth-branding mb-4"><a class="app-logo" href="#"><img class="logo-icon"
 							:src="require('@/assets/logo.png')" alt="logo"></a></div>
 				<h2 class="auth-heading text-center mb-3">Welcome</h2>
 				<p class="mb-4">Login to SSO to continue to system.</p>
