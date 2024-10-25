@@ -86,7 +86,7 @@ namespace SSO.Infrastructure.Configs
                 .HasColumnType("timestamp with time zone")
                 .HasConversion(x => x.HasValue ? x.Value.ToUniversalTime() : (DateTime?)null, x => x.HasValue ? DateTime.SpecifyKind(x.Value, DateTimeKind.Utc) : (DateTime?)null);
 
-            builder.HasIndex(x => x.TwoFactorSecret).IsUnique().HasFilter("TwoFactorSecretKeyHash IS NOT NULL"); // Filter for uniqueness on non-null values
+            builder.HasIndex(x => x.TwoFactorSecret).IsUnique();
         }
     }
 }
