@@ -14,5 +14,8 @@ namespace SSO.Business.Authentication.Queries
 
         [JsonIgnore]
         public Guid? RealmId { get; set; }
+
+        [StringLength(6)]
+        public string? Otp { get; set; }
     }
 }

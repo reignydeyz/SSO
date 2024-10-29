@@ -2,6 +2,7 @@
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
+using SSO.Infrastructure.Helpers;
 using System.Security.Claims;
 
 namespace SSO.Business.Authentication.Handlers
@@ -12,6 +13,7 @@ namespace SSO.Business.Authentication.Handlers
     public class LoginQueryHandler : IRequestHandler<LoginQuery, TokenDto>
     {
         readonly ITokenService _tokenService;
+        readonly IOtpService _otpService;
         readonly IApplicationRepository _appRepo;
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
@@ -19,11 +21,12 @@ namespace SSO.Business.Authentication.Handlers
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
 
-        public LoginQueryHandler(ITokenService tokenService, IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, 
-            IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo, 
+        public LoginQueryHandler(ITokenService tokenService, IOtpService otpService, IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, 
+            IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
+            _otpService = otpService;
             _appRepo = appRepo;
             _roleRepo = roleRepo;
             _userRoleRepo = userRoleRepo;
@@ -42,7 +45,22 @@ namespace SSO.Business.Authentication.Handlers
             await authenticationService.Login(request.Username, request.Password, app);
 
             var user = await userRepo.GetByUsername(request.Username);
-            var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId.Value);
+
+            if (user.TwoFactorEnabled)
+            {
+                if (string.IsNullOrEmpty(request.Otp))
+                    throw new InvalidOperationException("OTP is required.");
+                else
+                {
+                    var secret = CryptographyHelper.DecryptStringFromBytes_Aes(user.TwoFactorSecret!, user.TwoFactorSecretKey!);
+                    var validOtp = _otpService.VerifyOtp(secret, request.Otp);
+
+                    if (!validOtp)
+                        throw new UnauthorizedAccessException("Invalid OTP.");
+                }
+            }
+
+            var roles = await _userRoleRepo.Roles(request.Username, request.ApplicationId!.Value);
 
             var groups = await userRepo.GetGroups(new Guid(user.Id));
             foreach (var group in groups)
@@ -54,9 +72,6 @@ namespace SSO.Business.Authentication.Handlers
                 new Claim("realm", app.RealmId.ToString()),
                 new Claim("app", app.ApplicationId.ToString())
             };
-
-            if (user.Email is not null)
-                claims.Add(new Claim(ClaimTypes.Email, user.Email));
 
             if (!roles.Any())
                 throw new UnauthorizedAccessException();

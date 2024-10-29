@@ -2,7 +2,7 @@
 	<div class="col-12 col-md-12 col-lg-12 auth-main-col text-center p-5">
 		<div class="d-flex flex-column align-content-end">
 			<div class="app-auth-body mx-auto">
-				<div class="app-auth-branding mb-4"><a class="app-logo" href="index.html"><img class="logo-icon"
+				<div class="app-auth-branding mb-4"><a class="app-logo" href="#"><img class="logo-icon"
 							:src="require('@/assets/logo.png')" alt="logo"></a></div>
 				<h2 class="auth-heading text-center mb-3">Welcome</h2>
 				<p class="mb-4">Login to SSO to continue to system.</p>
@@ -29,17 +29,24 @@
 			</div><!--//auth-body-->
 		</div><!--//flex-column-->
 	</div><!--//auth-main-col-->
+	<Otp :param="param" :system="true"/>
+
 </template>
 
 <script>
+import Otp from "@/components/Otp.vue";
 import { loginToSystem } from "@/services/authentication.service";
 import Cookies from 'js-cookie';
 import { emitter } from '@/services/emitter.service';
 
 export default {
+	components: {
+		Otp
+	},
 	data: () => ({
 		param: new Object(),
-		realm: null
+		realm: null,
+		modal: null,
 	}),
 	created() {
 		document.title = 'Login | System';
@@ -47,24 +54,31 @@ export default {
 		const params = new URLSearchParams(window.location.search);
 		this.realm = params.get('realm');
 	},
-		
+
 	mounted() {
+		// Listen for the hidden.bs.modal event and call onModalClose method
+		this.modal = new bootstrap.Modal(document.getElementById('otpModal'));
+		this.modal._element.addEventListener('hidden.bs.modal', this.onModalClose);
+
 		if (Cookies.get('system')) {
 			window.location.href = 'init';
 		}
 	},
 	methods: {
 		submit() {
-			
+
 			emitter.emit('showLoader', true);
 
 			this.param.realmId = this.realm;
 			loginToSystem(this.param).then(r => {
 				emitter.emit('showLoader', false);
-
-				Cookies.set('system', r.data.access_token, { expires: 1 });
-
-				this.$router.replace({ name: 'Init' });
+				if (r.status === 202) {
+					this.modal.show();
+				}
+				else {
+					Cookies.set('system', r.data.access_token, { expires: 1 });
+					this.$router.replace({ name: 'Init' });
+				}
 			}, err => {
 				emitter.emit('showLoader', false);
 				alert(err.response.data);
@@ -78,6 +92,10 @@ export default {
 				e.type = "password";
 			}
 		},
+
+		onModalClose() {
+            location.reload();
+        },
 	}
 }
 </script>

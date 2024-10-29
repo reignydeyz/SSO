@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { getAccount } from '@/services/account.service';
+import { getTokenInfo } from '@/services/account.service';
 import { copyUser } from "@/services/user.service";
 import { emitter } from "@/services/emitter.service";
 import * as navbar from "@/services/navbar.service";
@@ -180,7 +180,7 @@ export default {
         },
 
         isInIdp(idp) {
-            return getAccount().authmethod === idp;
+            return getTokenInfo().authmethod === idp;
         }
     }
 }

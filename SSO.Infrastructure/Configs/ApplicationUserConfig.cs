@@ -23,6 +23,8 @@ namespace SSO.Infrastructure.Configs
             builder.Property(x => x.LastSessionId).HasMaxLength(200).HasDefaultValue("35c7c988-7c48-4f13-bf41-4edbd060a394");
             builder.Property(x => x.CreatedBy).HasMaxLength(200).HasDefaultValue("admin");
             builder.Property(x => x.ModifiedBy).HasMaxLength(200).HasDefaultValue("admin");
+            builder.Property(x => x.TwoFactorSecret).HasMaxLength(88).IsRequired(false);
+            builder.Property(x => x.TwoFactorSecretKey).HasMaxLength(88).IsRequired(false);
 
             builder.HasIndex(x => new { x.FirstName, x.LastName }).IsUnique();
 
@@ -44,6 +46,8 @@ namespace SSO.Infrastructure.Configs
         {
             builder.Property(x => x.DateCreated).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
             builder.Property(x => x.DateModified).HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            builder.HasIndex(x => x.TwoFactorSecret).IsUnique(); // Allows multiple nulls, as expected in MySQL
         }
 
         void UsePostgres(EntityTypeBuilder<ApplicationUser> builder)
@@ -81,6 +85,8 @@ namespace SSO.Infrastructure.Configs
             builder.Property(x => x.DateInactive)
                 .HasColumnType("timestamp with time zone")
                 .HasConversion(x => x.HasValue ? x.Value.ToUniversalTime() : (DateTime?)null, x => x.HasValue ? DateTime.SpecifyKind(x.Value, DateTimeKind.Utc) : (DateTime?)null);
+
+            builder.HasIndex(x => x.TwoFactorSecret).IsUnique();
         }
     }
 }

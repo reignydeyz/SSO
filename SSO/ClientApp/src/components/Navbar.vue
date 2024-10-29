@@ -28,6 +28,11 @@
                                         </router-link>
                                     </li>
                                     <li>
+                                        <button class="dropdown-item" href="#" @click="on2faClick">
+                                            2FA
+                                        </button>
+                                    </li>
+                                    <li>
                                         <button class="dropdown-item" href="#" @click="signout">
                                             Log Out
                                         </button>
@@ -180,14 +185,16 @@
                             <!--//nav-item-->
                             <li class="nav-item">
                                 <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
-                                <a class="nav-link" href="https://periapsys.com/#contact" target="_blank" rel="noopener">
+                                <a class="nav-link" href="https://periapsys.com/#contact" target="_blank"
+                                    rel="noopener">
                                     <span class="nav-icon">
                                         <i class="bi bi-info-circle"></i>
                                     </span>
                                     <span class="nav-link-text">Help</span> </a><!--//nav-link-->
                             </li>
                             <li class="nav-item" v-show="newVersionAvailable">
-                                <a class="nav-link" href="https://github.com/reignydeyz/SSO/releases" target="_blank" rel="noopener">
+                                <a class="nav-link" href="https://github.com/reignydeyz/SSO/releases" target="_blank"
+                                    rel="noopener">
                                     <span class="nav-icon">
                                         <i class="bi bi-exclamation-triangle"></i>
                                     </span>
@@ -204,20 +211,35 @@
         </div>
         <!--//app-sidepanel-->
     </header>
+    <TwoFactor :binaryData="modalBinaryData" />
 </template>
 
 <script>
-import { getAccount } from '@/services/account.service';
+import TwoFactor from "@/components/TwoFactor.vue";
+import { getTokenInfo, getAccount } from '@/services/account.service';
 import { healthCheck } from "@/services/health-check.service";
+import { generate2faQrcode } from "@/services/account.service";
+
 export default {
+    components: { TwoFactor },
     data() {
         return {
             newVersionAvailable: false,
+            modalBinaryData: null, // Store the fetched binary data
+            modal: null,
+            account: null,
         };
     },
     mounted() {
         healthCheck().then(r => {
             this.newVersionAvailable = r.data.entries.HealthCheckHandler.data.version < r.data.entries.HealthCheckHandler.data.latestVersion;
+        });
+
+        // Listen for the hidden.bs.modal event and call onModalClose method
+        this.modal = new bootstrap.Modal(document.getElementById('2faModal'));
+
+        getAccount().then(r => {
+            this.account = r.data;
         });
     },
     methods: {
@@ -238,7 +260,19 @@ export default {
         },
 
         isInIdp(idp) {
-            return getAccount().authmethod === idp;
+            return getTokenInfo().authmethod === idp;
+        },
+
+        async on2faClick() {
+            if (!this.account.twoFactorEnabled) {
+                if (!confirm("Enable Two-Factor Authentication (2FA)?")) {
+                    return;
+                }
+            }
+
+            const blobData = await generate2faQrcode(); // Fetch the QR code as a Blob
+            this.modalBinaryData = blobData; // Store the fetched Blob data
+            this.modal.show();
         }
     },
 };

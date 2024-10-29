@@ -364,3 +364,9 @@ FodyWeavers.xsd
 
 *.local.ps1
 .sonarqube
+
+# Rider project files
+.idea/
+
+# Rider specific files and settings
+*.sln.iml

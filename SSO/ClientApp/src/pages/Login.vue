@@ -2,7 +2,7 @@
 	<div class="col-12 col-md-12 col-lg-12 auth-main-col text-center p-5">
 		<div class="d-flex flex-column align-content-end">
 			<div class="app-auth-body mx-auto">
-				<div class="app-auth-branding mb-4"><a class="app-logo" href="index.html"><img class="logo-icon"
+				<div class="app-auth-branding mb-4"><a class="app-logo" href="#"><img class="logo-icon"
 							:src="require('@/assets/logo.png')" alt="logo"></a></div>
 				<h2 class="auth-heading text-center mb-3">Welcome</h2>
 				<p class="mb-4">Login to SSO to continue to {{ app }}.</p>
@@ -29,15 +29,20 @@
 			</div><!--//auth-body-->
 		</div><!--//flex-column-->
 	</div><!--//auth-main-col-->
+	<Otp :param="param" />
 </template>
 
 <script>
+import Otp from "@/components/Otp.vue";
 import { login } from "@/services/authentication.service";
 import { getAppById } from "@/services/application.service";
 import Cookies from 'js-cookie';
 import { emitter } from '@/services/emitter.service';
 
 export default {
+	components: {
+		Otp
+	},
 	data: () => ({
 		param: new Object(),
 		urlParams: new URLSearchParams(window.location.search),
@@ -57,6 +62,10 @@ export default {
 		});
 	},
 	mounted() {
+		// Listen for the hidden.bs.modal event and call onModalClose method
+		this.modal = new bootstrap.Modal(document.getElementById('otpModal'));
+		this.modal._element.addEventListener('hidden.bs.modal', this.onModalClose);
+
 		this.param.applicationId = this.urlParams.get('appId');
 
 		if (Cookies.get('token')) {
@@ -71,9 +80,13 @@ export default {
 
 			login(this.param).then(r => {
 				emitter.emit('showLoader', false);
-
-				if (this.urlParams.get('callbackUrl')) {
-					window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
+				if (r.status === 202) {
+					this.modal.show();
+				}
+				else {
+					if (this.urlParams.get('callbackUrl')) {
+						window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
+					}
 				}
 			}, err => {
 				emitter.emit('showLoader', false);
@@ -88,6 +101,10 @@ export default {
 				e.type = "password";
 			}
 		},
+
+		onModalClose() {
+            location.reload();
+        },
 	}
 }
 </script>

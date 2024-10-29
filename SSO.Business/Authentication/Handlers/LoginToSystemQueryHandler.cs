@@ -2,6 +2,7 @@
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
+using SSO.Infrastructure.Helpers;
 using SSO.Infrastructure.Settings.Enums;
 using System.Security.Claims;
 
@@ -10,6 +11,7 @@ namespace SSO.Business.Authentication.Handlers
     public class LoginToSystemQueryHandler : IRequestHandler<LoginToSystemQuery, TokenDto>
     {
         readonly ITokenService _tokenService;
+        readonly IOtpService _otpService;
         readonly IApplicationRepository _applicationRepository;
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
@@ -18,13 +20,14 @@ namespace SSO.Business.Authentication.Handlers
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
 
-        public LoginToSystemQueryHandler(ITokenService tokenService,
+        public LoginToSystemQueryHandler(ITokenService tokenService, IOtpService otpService,
             IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo,
             IGroupRoleRepository groupRoleRepository,
             IRealmRepository realmRepository,
             ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
+            _otpService = otpService;
             _applicationRepository = applicationRepository;
             _roleRepo = roleRepo;
             _userRoleRepo = userRoleRepo;
@@ -52,6 +55,20 @@ namespace SSO.Business.Authentication.Handlers
             await authenticationService.Login(request.Username, request.Password, root);
 
             var user = await userRepo.GetByUsername(request.Username);
+
+            if (user.TwoFactorEnabled)
+            {
+                if (string.IsNullOrEmpty(request.Otp))
+                    throw new InvalidOperationException("OTP is required.");
+                else
+                {
+                    var secret = CryptographyHelper.DecryptStringFromBytes_Aes(user.TwoFactorSecret!, user.TwoFactorSecretKey!);
+                    var validOtp = _otpService.VerifyOtp(secret, request.Otp);
+
+                    if (!validOtp)
+                        throw new UnauthorizedAccessException("Invalid OTP.");
+                }
+            }
 
             // Checks root access
             var roles = await _userRoleRepo.Roles(request.Username, root.ApplicationId);

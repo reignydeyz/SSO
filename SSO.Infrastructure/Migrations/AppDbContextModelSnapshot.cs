@@ -351,6 +351,14 @@ namespace SSO.Infrastructure.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<byte[]>("TwoFactorSecret")
+                        .HasMaxLength(88)
+                        .HasColumnType("varbinary(88)");
+
+                    b.Property<byte[]>("TwoFactorSecretKey")
+                        .HasMaxLength(88)
+                        .HasColumnType("varbinary(88)");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
