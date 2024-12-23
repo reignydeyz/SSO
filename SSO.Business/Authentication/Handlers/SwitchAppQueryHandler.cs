@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
@@ -15,11 +16,14 @@ namespace SSO.Business.Authentication.Handlers
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
+        readonly IMemoryCache _cache;
         readonly UserManager<ApplicationUser> _userManager;
         readonly Users.RepositoryFactory _userRepoFactory;
+        readonly MemoryCacheEntryOptions _cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
 
         public SwitchAppQueryHandler(ITokenService tokenService,
             IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepository,
+            IMemoryCache cache,
             UserManager<ApplicationUser> userManager, Users.RepositoryFactory userRepoFactory)
         {
             _tokenService = tokenService;
@@ -28,6 +32,7 @@ namespace SSO.Business.Authentication.Handlers
             _userManager = userManager;
             _groupRoleRepo = groupRoleRepository;
             _userRepoFactory = userRepoFactory;
+            _cache = cache;
         }
 
         public async Task<TokenDto> Handle(SwitchAppQuery request, CancellationToken cancellationToken)
@@ -88,7 +93,10 @@ namespace SSO.Business.Authentication.Handlers
             var expires = jsonToken.ValidTo;
             var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires, app.Name);
 
-            return new TokenDto { AccessToken = token, Expires = expires };
+            var id = Guid.NewGuid();
+            _cache.Set(id.ToString(), token, _cacheEntryOptions);
+
+            return new TokenDto { Id = id, AccessToken = token, Expires = expires };
         }
     }
 }

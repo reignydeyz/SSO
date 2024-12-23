@@ -4,6 +4,8 @@ namespace SSO.Business.Authentication
 {
     public class TokenDto
     {
+        public Guid Id { get; set; }
+
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
 

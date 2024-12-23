@@ -46,6 +46,7 @@ else if (keys.Any(k => k.Equals("Host", StringComparison.OrdinalIgnoreCase)))
 else
     builder.Services.ApplySqlServerServiceCollection(builder.Configuration);
 
+builder.Services.AddMemoryCache();
 builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginQueryHandler>());
