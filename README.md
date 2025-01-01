@@ -16,11 +16,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Technology Used
 
-- [.Net 8](https://www.microsoft.com/net/download/windows)
+- [.Net 9](https://www.microsoft.com/net/download/windows)
 - [Vue 3](https://vuejs.org/guide/introduction.html)
 - [EntityFramework Core](https://docs.microsoft.com/en-us/ef/core/)
 - [ASP.Net Identity](https://www.asp.net/identity)
-- [OData 8](https://learn.microsoft.com/en-us/odata/webapi-8/overview)
+- [OData 9](https://devblogs.microsoft.com/odata/announcing-asp-net-core-odata-9-official-release/)
 - [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle)
 - [Bootstrap 5.3](https://getbootstrap.com)
 - [Hangfire](https://www.hangfire.io/)
