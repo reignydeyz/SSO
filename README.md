@@ -38,6 +38,9 @@ These instructions will get you a copy of the project up and running on your loc
 ### Debugging
 
 #### Back-end
+
+⚠️ **Warning:** This version might not work with MySQL or Postgres. Further testing is currently ongoing.
+
 - Make sure the **Startup project** is `SSO`.
 - From `SSO`, open `appsettings.json` and change the **connection string** accordingly...
   ```json
@@ -51,6 +54,7 @@ These instructions will get you a copy of the project up and running on your loc
       ```
   
 - Update database (EF)...
+
   - PMC
     - From **Package Manager Console**, choose the Default project...
       - `SSO.Infrastructure` for MS SQL
@@ -103,7 +107,7 @@ This tutorial shows how to host SSO on an IIS server.
 ### Prerequisites
 
 The following must be installed on the server for SSO to work...
-- [ASP.NET Core 8.0 Runtime (v8.0.3) - Windows Hosting Bundle Installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.3-windows-hosting-bundle-installer)
+- [ASP.NET Core 9.0 Runtime (v9.0.0) - Windows Hosting Bundle Installer](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 - [Node.js](https://nodejs.org)
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-2022)
 
