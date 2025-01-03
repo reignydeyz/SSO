@@ -14,8 +14,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
-		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.15" />
+		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.17" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
@@ -27,11 +27,11 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="OwaspHeaders.Core" Version="9.0.1" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.0.0" />
+		<PackageReference Include="OwaspHeaders.Core" Version="9.7.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="8.0.2" />
-		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="7.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="7.2.0" />
 		<PackageReference Include="VueCliMiddleware" Version="6.0.0" />
 	</ItemGroup>
 
