@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using SSO.Filters;
 using SSO.Infrastructure.LDAP;
 using SSO.Infrastructure.Settings.Enums;
-using System.Security.Claims;
 
 namespace SSO.Controllers
 {

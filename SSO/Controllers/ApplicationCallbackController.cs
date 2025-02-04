@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SSO.Business.ApplicationCallbacks;
 using SSO.Business.ApplicationCallbacks.Commands;
 using SSO.Business.ApplicationCallbacks.Queries;
@@ -51,18 +50,11 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(AppCallbackDto), 200)]
         public async Task<IActionResult> Create([FromRoute] ApplicationIdDto form, [FromBody] CreateAppCallbackCommand param)
         {
-            try
-            {
-                param.ApplicationId = form.ApplicationId!.Value;
+            param.ApplicationId = form.ApplicationId!.Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -74,18 +66,11 @@ namespace SSO.Controllers
         [HttpDelete]
         public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form, [FromQuery, Url, Required] string url)
         {
-            try
-            {
-                var param = new RemoveAppCallbackCommand { ApplicationId = form.ApplicationId!.Value, Url = url };
+            var param = new RemoveAppCallbackCommand { ApplicationId = form.ApplicationId!.Value, Url = url };
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok();
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok();
         }
     }
 }

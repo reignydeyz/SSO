@@ -14,6 +14,7 @@ using SSO.Business;
 using SSO.Business.Authentication.Handlers;
 using SSO.Business.Mappings;
 using SSO.Domain.Management.Interfaces;
+using SSO.Filters;
 using SSO.Infrastructure;
 using SSO.Infrastructure.Db.MySql;
 using SSO.Infrastructure.Db.Postgres;
@@ -30,7 +31,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 var modelBuilder = ODataModelBuilderFactory.Create();
 
-builder.Services.AddControllers().AddOData(
+builder.Services.AddControllers(options => {
+    options.Filters.Add(new GlobalExceptionFilter());
+}).AddOData(
     options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
         "odata",
         modelBuilder.GetEdmModel()));

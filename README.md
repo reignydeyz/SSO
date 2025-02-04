@@ -39,7 +39,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 #### Back-end
 
-⚠️ **Warning:** This version might not work with MySQL or Postgres. Further testing is currently ongoing.
+⚠️ **Warning:** This version might not work with MySQL. Further testing is currently ongoing.
 
 - Make sure the **Startup project** is `SSO`.
 - From `SSO`, open `appsettings.json` and change the **connection string** accordingly...

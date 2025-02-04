@@ -2,11 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.EntityFrameworkCore;
 using SSO.Business.GroupUsers.Commands;
 using SSO.Business.GroupUsers.Queries;
 using SSO.Business.Users;
-using System.Security.Claims;
 
 namespace SSO.Controllers
 {
@@ -32,26 +30,19 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(List<UserDto>), 200)]
         public async Task<IActionResult> Get([FromRoute] Guid groupId, [FromQuery] Guid? group)
         {
-            try
+            if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
             {
-                if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
-                {
-                    if (group is null)
-                        throw new ArgumentNullException();
+                if (group is null)
+                    throw new ArgumentNullException();
 
-                    var res = await _mediator.Send(new GetUsersByGroupIdQuery { GroupId = group!.Value });
+                var res = await _mediator.Send(new GetUsersByGroupIdQuery { GroupId = group!.Value });
 
-                    return Ok(res);
-                }
-
-                var res1 = _mediator.Send(new GetUsersByGroupIdQuery { GroupId = groupId }).Result.Take(1000);
-
-                return Ok(res1);
+                return Ok(res);
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
+
+            var res1 = _mediator.Send(new GetUsersByGroupIdQuery { GroupId = groupId }).Result.Take(1000);
+
+            return Ok(res1);
         }
 
         /// <summary>
@@ -64,23 +55,16 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(OkResult), 200)]
         public async Task<IActionResult> Create([FromRoute] Guid groupId, [FromBody] Guid userId)
         {
-            try
+            var param = new CreateGroupUserCommand
             {
-                var param = new CreateGroupUserCommand
-                {
-                    RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value),
-                    GroupId = groupId,
-                    UserId = userId
-                };
+                RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value),
+                GroupId = groupId,
+                UserId = userId
+            };
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok();
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
+            return Ok();
         }
 
         /// <summary>

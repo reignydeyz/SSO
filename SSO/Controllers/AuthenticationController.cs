@@ -56,10 +56,6 @@ namespace SSO.Controllers
 
                 return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.ApplicationId}&callbackUrl={form.CallbackUrl}");
             }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
             catch (UnauthorizedAccessException)
             {
                 // Delete cookie
@@ -81,25 +77,11 @@ namespace SSO.Controllers
         [ApiExplorerSettings(GroupName = "System")]
         public async Task<IActionResult> Login([FromBody] LoginQuery form, [FromQuery] Guid? realmId = null)
         {
-            try
-            {
-                var res = await _mediator.Send(form);
+            var res = await _mediator.Send(form);
 
-                Response.Cookies.Append("token", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
+            Response.Cookies.Append("token", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
 
-                return Ok(res);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message.Contains("OTP"))
-                    return Accepted(ex.Message);
-
-                return Unauthorized(ex.Message);
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -114,35 +96,13 @@ namespace SSO.Controllers
         [RealmIdValidator<LoginToSystemQuery>]
         public async Task<IActionResult> LoginToSystem([FromBody] LoginToSystemQuery form, [FromQuery] Guid? realmId = null)
         {
-            try
-            {
-                form.RealmId = realmId;
+            form.RealmId = realmId;
 
-                var res = await _mediator.Send(form);
+            var res = await _mediator.Send(form);
 
-                Response.Cookies.Append("system", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
+            Response.Cookies.Append("system", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
 
-                return Ok(res);
-            }           
-            catch (ArgumentNullException)
-            {
-                return Unauthorized();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message.Contains("OTP"))
-                    return Accepted(ex.Message);
-
-                return Unauthorized(ex.Message);
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -173,16 +133,9 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(TokenDto), 200)]
         public async Task<IActionResult> GetAccessToken([FromQuery] GetAccessTokenQuery param)
         {
-            try
-            {
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
+            return Ok(res);
         }
     }
 }

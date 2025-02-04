@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SSO.Business.ApplicationPermissions;
 using SSO.Business.ApplicationPermissions.Commands;
 using SSO.Business.ApplicationPermissions.Queries;
@@ -49,18 +48,11 @@ namespace SSO.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromRoute] ApplicationIdDto form, [FromBody] CreateAppPermissionCommand param)
         {
-            try
-            {
-                param.ApplicationId = form.ApplicationId!.Value;
+            param.ApplicationId = form.ApplicationId!.Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -72,18 +64,11 @@ namespace SSO.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form, [FromRoute] Guid id)
         {
-            try
-            {
-                var param = new RemoveAppPermissionCommand { ApplicationId = form.ApplicationId!.Value, PermissionId = id };
+            var param = new RemoveAppPermissionCommand { ApplicationId = form.ApplicationId!.Value, PermissionId = id };
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok();
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok();
         }
     }
 }
