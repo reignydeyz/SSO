@@ -15,7 +15,7 @@ namespace SSO.Filters
             context.ExceptionHandled = true; // Mark the exception as handled
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static void HandleExceptionAsync(HttpContext context, Exception exception)
         {
             HttpStatusCode statusCode;
             string message;
@@ -56,7 +56,7 @@ namespace SSO.Filters
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
-            return context.Response.WriteAsync(responseJson);
+            context.Response.WriteAsync(responseJson);
         }
     }
 }
