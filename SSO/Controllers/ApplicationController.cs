@@ -54,16 +54,9 @@ namespace SSO.Controllers
         [AppIdValidator<GetAppByIdQuery>(ParameterName = "param", PropertyName = "AppId")]
         public async Task<IActionResult> Get([FromRoute] GetAppByIdQuery param)
         {
-            try
-            {
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -77,19 +70,12 @@ namespace SSO.Controllers
         [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Create([FromBody] CreateAppCommand param)
         {
-            try
-            {
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
-                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
+            param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -103,19 +89,12 @@ namespace SSO.Controllers
         [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Update([FromRoute] ApplicationIdDto form, [FromBody] UpdateAppCommand param)
         {
-            try
-            {
-                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
-                param.ApplicationId = form.ApplicationId!.Value;
+            param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+            param.ApplicationId = form.ApplicationId!.Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -128,18 +107,11 @@ namespace SSO.Controllers
         [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form)
         {
-            try
-            {
-                var param = new RemoveAppCommand { ApplicationId = form.ApplicationId!.Value };
+            var param = new RemoveAppCommand { ApplicationId = form.ApplicationId!.Value };
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok();
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok();
         }
 
         /// <summary>
@@ -152,19 +124,12 @@ namespace SSO.Controllers
         [Authorize(Policy = "RealmAccessPolicy")]
         public async Task<IActionResult> Copy([FromRoute] ApplicationIdDto form, [FromBody] CopyAppCommand param)
         {
-            try
-            {
-                param.ApplicationId = form.ApplicationId.Value;
-                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+            param.ApplicationId = form.ApplicationId.Value;
+            param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok(res);
         }
     }
 }

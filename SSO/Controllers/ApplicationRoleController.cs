@@ -5,7 +5,6 @@ using SSO.Business.ApplicationRoles.Queries;
 using SSO.Business.ApplicationRoles;
 using SSO.Business.Applications;
 using SSO.Filters;
-using Microsoft.EntityFrameworkCore;
 using SSO.Business.ApplicationRoles.Commands;
 
 namespace SSO.Controllers
@@ -49,18 +48,11 @@ namespace SSO.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromRoute] ApplicationIdDto form, [FromBody] CreateAppRoleCommand param)
         {
-            try
-            {
-                param.ApplicationId = form.ApplicationId!.Value;
+            param.ApplicationId = form.ApplicationId!.Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException ex)
-            {
-                return Conflict();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -72,18 +64,11 @@ namespace SSO.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] ApplicationIdDto form, [FromRoute] Guid id)
         {
-            try
-            {
-                var param = new RemoveAppRoleCommand { ApplicationId = form.ApplicationId!.Value, RoleId = id };
+            var param = new RemoveAppRoleCommand { ApplicationId = form.ApplicationId!.Value, RoleId = id };
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok();
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok();
         }
     }
 }

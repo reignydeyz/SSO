@@ -85,7 +85,7 @@ export default {
 				}
 				else {
 					if (this.urlParams.get('callbackUrl')) {
-						window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
+						window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.id}`;
 					}
 				}
 			}, err => {

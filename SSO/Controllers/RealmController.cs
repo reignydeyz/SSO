@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SSO.Business.Realms;
 using SSO.Business.Realms.Queries;
-using System.Security.Claims;
 
 namespace SSO.Controllers
 {

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Attributes;
-using Microsoft.EntityFrameworkCore;
 using SSO.Business.Groups;
 using SSO.Business.Groups.Commands;
 using SSO.Business.Groups.Queries;
@@ -53,16 +52,9 @@ namespace SSO.Controllers
         [GroupIdValidator<GetGroupByIdQuery>(ParameterName = "param")]
         public async Task<IActionResult> Get([FromRoute] GetGroupByIdQuery param)
         {
-            try
-            {
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -74,19 +66,12 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(GroupDto), 200)]
         public async Task<IActionResult> Create([FromBody] CreateGroupCommand param)
         {
-            try
-            {
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
-                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
+            param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -98,19 +83,12 @@ namespace SSO.Controllers
         [GroupIdValidator<GroupIdDto>]
         public async Task<IActionResult> Delete([FromRoute] GroupIdDto form)
         {
-            try
-            {
-                var param = new RemoveGroupCommand { GroupId = form.GroupId };
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
+            var param = new RemoveGroupCommand { GroupId = form.GroupId };
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok();
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok();
         }
 
         /// <summary>
@@ -123,20 +101,13 @@ namespace SSO.Controllers
         [GroupIdValidator<GroupIdDto>]
         public async Task<IActionResult> Update([FromRoute] GroupIdDto form, [FromBody] UpdateGroupCommand param)
         {
-            try
-            {
-                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
-                param.GroupId = form.GroupId;
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
+            param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+            param.GroupId = form.GroupId;
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
+            return Ok(res);
         }
     }
 }
