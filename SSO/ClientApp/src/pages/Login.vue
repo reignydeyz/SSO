@@ -90,7 +90,7 @@ export default {
 				}
 			}, err => {
 				emitter.emit('showLoader', false);
-				alert(err.response.data);
+				alert(err.response.data.error);
 			});
 		},
 		toggleViewKey(param) {
