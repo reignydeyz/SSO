@@ -54,9 +54,10 @@ builder.Services.AddAutoMapper(typeof(ApplicationProfile).Assembly);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<LoginQueryHandler>());
 
-var rsaPrivateKeyService = new RsaPrivateKeyService();
+var rsaKeyService = new RsaKeyService();
 var pemFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "private_key.pem");
-var privateKey = rsaPrivateKeyService.CreatePrivateKey(pemFilePath);
+var privateKey = rsaKeyService.CreatePrivateKey(pemFilePath);
+var publicKey = rsaKeyService.CreatePublicKey(privateKey, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "public_key.pem"));
 
 builder.Services.AddAuthentication(options =>
 {
@@ -74,7 +75,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = TokenValidationParamConstants.Audience,
         ValidIssuer = TokenValidationParamConstants.Issuer,
-        IssuerSigningKey = new RsaSecurityKey(privateKey)
+        IssuerSigningKey = new RsaSecurityKey(publicKey)
     };
 });
 
