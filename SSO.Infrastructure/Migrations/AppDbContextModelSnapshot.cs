@@ -17,7 +17,7 @@ namespace SSO.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -352,12 +352,8 @@ namespace SSO.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<byte[]>("TwoFactorSecret")
-                        .HasMaxLength(88)
-                        .HasColumnType("varbinary(88)");
-
-                    b.Property<byte[]>("TwoFactorSecretKey")
-                        .HasMaxLength(88)
-                        .HasColumnType("varbinary(88)");
+                        .HasMaxLength(512)
+                        .HasColumnType("varbinary(512)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
