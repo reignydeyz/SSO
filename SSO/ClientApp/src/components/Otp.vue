@@ -54,7 +54,7 @@ export default {
                     this.$router.replace({ name: 'Init' });
                 }, err => {
                     emitter.emit('showLoader', false);
-                    alert(err.response.data);
+                    alert(err.response.data.error);
                 });
             }
             else {
@@ -64,7 +64,7 @@ export default {
                     }
                 }, err => {
                     emitter.emit('showLoader', false);
-                    alert(err.response.data);
+                    alert(err.response.data.error);
                 })
             }
         }
