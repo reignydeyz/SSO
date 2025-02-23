@@ -24,7 +24,6 @@ namespace SSO.Infrastructure.Configs
             builder.Property(x => x.CreatedBy).HasMaxLength(200).HasDefaultValue("admin");
             builder.Property(x => x.ModifiedBy).HasMaxLength(200).HasDefaultValue("admin");
             builder.Property(x => x.TwoFactorSecret).HasMaxLength(88).IsRequired(false);
-            builder.Property(x => x.TwoFactorSecretKey).HasMaxLength(88).IsRequired(false);
 
             builder.HasIndex(x => new { x.FirstName, x.LastName }).IsUnique();
 

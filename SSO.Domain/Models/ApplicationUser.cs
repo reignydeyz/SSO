@@ -18,7 +18,6 @@ namespace SSO.Domain.Models
         public string ModifiedBy { get; set; } = "admin";
         public DateTime? DateInactive { get; set; }
         public byte[] TwoFactorSecret { get; set; }
-        public byte[] TwoFactorSecretKey { get; set; }
 
         public virtual ICollection<GroupUser> Groups { get; set; } = new List<GroupUser>();
         public virtual ICollection<RealmUser> Realms { get; set; } = new List<RealmUser>();

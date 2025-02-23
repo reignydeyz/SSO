@@ -94,6 +94,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddSingleton(_ => new JwtSecretService(privateKey));
+builder.Services.AddSingleton(_ => rsaKeyService);
 
 builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IApplicationRoleRepository, ApplicationRoleRepository>();
