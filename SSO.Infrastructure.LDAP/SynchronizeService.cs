@@ -5,6 +5,7 @@ using SSO.Domain.Management.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Settings.Enums;
+using SSO.Infrastructure.Settings.Services;
 using System.DirectoryServices;
 
 namespace SSO.Infrastructure.LDAP
@@ -16,18 +17,23 @@ namespace SSO.Infrastructure.LDAP
         readonly IGroupRepository _groupRepository;
         readonly IGroupUserRepository _groupUserRepository;
         readonly IUserRepository _userRepository;
+        readonly RsaKeyService _rsaKeyService;
+        readonly JwtSecretService _jwtSecretService;
 
         LDAPSettings _ldapSettings;
         string _ldapConnectionString;
         Guid _realmId;
 
-        public SynchronizeService(IRealmRepository realmRepository, IRealmUserRepository realmUserRepository, IServiceProvider serviceProvider)
+        public SynchronizeService(IRealmRepository realmRepository, IRealmUserRepository realmUserRepository, IServiceProvider serviceProvider,
+            JwtSecretService jwtSecretService, RsaKeyService rsaKeyService)
         {
             _realmRepository = realmRepository;
             _realmUserRepository = realmUserRepository;
             _groupRepository = serviceProvider.GetRequiredService<Management.GroupRepository>();
             _groupUserRepository = serviceProvider.GetRequiredService<Management.GroupUserRepository>();
             _userRepository = serviceProvider.GetRequiredService<Management.UserRepository>();
+            _jwtSecretService = jwtSecretService;
+            _rsaKeyService = rsaKeyService;
         }
 
         public async Task Begin(Guid realmId)
@@ -36,7 +42,9 @@ namespace SSO.Infrastructure.LDAP
 
             if (realm is not null)
             {
-                _ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(realm.IdpSettingsCollection.First(x => x.IdentityProvider == IdentityProvider.LDAP).Value);
+                var encVal = realm.IdpSettingsCollection.First(x => x.IdentityProvider == IdentityProvider.LDAP).Value;
+                var decVal = _rsaKeyService.DecryptString(encVal, _jwtSecretService.PrivateKey);
+                _ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(decVal);
                 _ldapConnectionString = $"{(_ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{_ldapSettings.Server}:{_ldapSettings.Port}/{_ldapSettings.SearchBase}";
                 _realmId = realmId;
 
