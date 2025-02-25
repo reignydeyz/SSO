@@ -4,16 +4,21 @@ using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Models;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Settings.Enums;
+using SSO.Infrastructure.Settings.Services;
 using System.DirectoryServices;
 
 namespace SSO.Infrastructure.LDAP
 {
     public class AuthenticationService : IAuthenticationService
     {
+        readonly JwtSecretService _jwtSecretService;
+        readonly RsaKeyService _rsaKeyService;
         readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthenticationService(UserManager<ApplicationUser> userManager)
+        public AuthenticationService(JwtSecretService jwtSecretService, RsaKeyService rsaKeyService, UserManager<ApplicationUser> userManager)
         {
+            _jwtSecretService = jwtSecretService;
+            _rsaKeyService = rsaKeyService;
             _userManager = userManager;
         }
 
@@ -22,7 +27,9 @@ namespace SSO.Infrastructure.LDAP
             if (app.Realm.IdpSettingsCollection == null || !app.Realm.IdpSettingsCollection.Any(x => x.IdentityProvider == IdentityProvider.LDAP))
                 throw new ArgumentException("LDAP is not configured.");
 
-            var ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(app.Realm.IdpSettingsCollection.First(x => x.IdentityProvider == IdentityProvider.LDAP).Value);
+            var encVal = app.Realm.IdpSettingsCollection.First(x => x.IdentityProvider == IdentityProvider.LDAP).Value;
+            var decVal = _rsaKeyService.DecryptString(encVal, _jwtSecretService.PrivateKey);
+            var ldapSettings = JsonConvert.DeserializeObject<LDAPSettings>(decVal);
             var ldapConnectionString = $"{(ldapSettings.UseSSL ? "LDAPS" : "LDAP")}://{ldapSettings.Server}:{ldapSettings.Port}/{ldapSettings.SearchBase}";
 
             var user = await _userManager.FindByNameAsync(username);

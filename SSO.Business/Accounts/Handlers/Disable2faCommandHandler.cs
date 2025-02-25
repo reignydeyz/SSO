@@ -20,7 +20,6 @@ namespace SSO.Business.Accounts.Handlers
 
             user.TwoFactorEnabled = false;
             user.TwoFactorSecret = null;
-            user.TwoFactorSecretKey = null;
 
             await _userManager.UpdateAsync(user);
 

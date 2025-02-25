@@ -16,11 +16,11 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Technology Used
 
-- [.Net 8](https://www.microsoft.com/net/download/windows)
+- [.Net 9](https://www.microsoft.com/net/download/windows)
 - [Vue 3](https://vuejs.org/guide/introduction.html)
 - [EntityFramework Core](https://docs.microsoft.com/en-us/ef/core/)
 - [ASP.Net Identity](https://www.asp.net/identity)
-- [OData 8](https://learn.microsoft.com/en-us/odata/webapi-8/overview)
+- [OData 9](https://devblogs.microsoft.com/odata/announcing-asp-net-core-odata-9-official-release/)
 - [Swashbuckle](https://github.com/domaindrivendev/Swashbuckle)
 - [Bootstrap 5.3](https://getbootstrap.com)
 - [Hangfire](https://www.hangfire.io/)
@@ -38,6 +38,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Debugging
 
 #### Back-end
+
 - Make sure the **Startup project** is `SSO`.
 - From `SSO`, open `appsettings.json` and change the **connection string** accordingly...
   ```json
@@ -51,6 +52,7 @@ These instructions will get you a copy of the project up and running on your loc
       ```
   
 - Update database (EF)...
+
   - PMC
     - From **Package Manager Console**, choose the Default project...
       - `SSO.Infrastructure` for MS SQL
@@ -103,7 +105,7 @@ This tutorial shows how to host SSO on an IIS server.
 ### Prerequisites
 
 The following must be installed on the server for SSO to work...
-- [ASP.NET Core 8.0 Runtime (v8.0.3) - Windows Hosting Bundle Installer](https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-aspnetcore-8.0.3-windows-hosting-bundle-installer)
+- [ASP.NET Core 9.0 Runtime (v9.0.0) - Windows Hosting Bundle Installer](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 - [Node.js](https://nodejs.org)
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-2022)
 

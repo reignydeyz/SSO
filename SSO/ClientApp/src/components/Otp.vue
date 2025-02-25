@@ -54,17 +54,17 @@ export default {
                     this.$router.replace({ name: 'Init' });
                 }, err => {
                     emitter.emit('showLoader', false);
-                    alert(err.response.data);
+                    alert(err.response.data.error);
                 });
             }
             else {
                 login({ ...this.param, otp: this.otp }).then(r => {
                     if (this.urlParams.get('callbackUrl')) {
-                        window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.access_token}`;
+                        window.location.href = `${this.urlParams.get('callbackUrl')}?token=${r.data.id}`;
                     }
                 }, err => {
                     emitter.emit('showLoader', false);
-                    alert(err.response.data);
+                    alert(err.response.data.error);
                 })
             }
         }

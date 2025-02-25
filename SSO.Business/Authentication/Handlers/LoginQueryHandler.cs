@@ -1,9 +1,11 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
-using SSO.Infrastructure.Helpers;
+using SSO.Infrastructure.Settings.Services;
 using System.Security.Claims;
+using System.Text;
 
 namespace SSO.Business.Authentication.Handlers
 {
@@ -18,12 +20,18 @@ namespace SSO.Business.Authentication.Handlers
         readonly IApplicationRoleRepository _roleRepo;
         readonly IUserRoleRepository _userRoleRepo;
         readonly IGroupRoleRepository _groupRoleRepo;
+        readonly IMemoryCache _cache;
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
+        readonly JwtSecretService _jwtSecretService;
+        readonly RsaKeyService _rsaKeyService;
+        readonly MemoryCacheEntryOptions _cacheEntryOptions = new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(5));
 
         public LoginQueryHandler(ITokenService tokenService, IOtpService otpService, IApplicationRepository appRepo, IApplicationRoleRepository roleRepo, 
             IUserRoleRepository userRoleRepo, IGroupRoleRepository groupRoleRepo,
-            ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
+            IMemoryCache cache,
+            ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory,
+            RsaKeyService rsaKeyService, JwtSecretService jwtSecretService)
         {
             _tokenService = tokenService;
             _otpService = otpService;
@@ -33,6 +41,9 @@ namespace SSO.Business.Authentication.Handlers
             _groupRoleRepo = groupRoleRepo;
             _authServiceFactory = authServiceFactory;
             _userRepoFactory = userRepoFactory;
+            _jwtSecretService = jwtSecretService;
+            _rsaKeyService = rsaKeyService;
+            _cache = cache;
         }
 
         public async Task<TokenDto> Handle(LoginQuery request, CancellationToken cancellationToken)
@@ -52,7 +63,8 @@ namespace SSO.Business.Authentication.Handlers
                     throw new InvalidOperationException("OTP is required.");
                 else
                 {
-                    var secret = CryptographyHelper.DecryptStringFromBytes_Aes(user.TwoFactorSecret!, user.TwoFactorSecretKey!);
+                    var encSecretStr = Encoding.ASCII.GetString(user.TwoFactorSecret!);
+                    var secret = _rsaKeyService.DecryptString(encSecretStr, _jwtSecretService.PrivateKey);
                     var validOtp = _otpService.VerifyOtp(secret, request.Otp);
 
                     if (!validOtp)
@@ -89,7 +101,10 @@ namespace SSO.Business.Authentication.Handlers
             var expires = DateTime.Now.AddMinutes(app.TokenExpiration);
             var token = _tokenService.GenerateToken(new ClaimsIdentity(claims), expires, app.Name);
 
-            return new TokenDto { AccessToken = token, Expires = expires };
+            var id = Guid.NewGuid();
+            _cache.Set(id.ToString(), token, _cacheEntryOptions);
+
+            return new TokenDto { Id = id, AccessToken = token, Expires = expires };
         }
     }
 }

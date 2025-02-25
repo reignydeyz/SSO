@@ -48,21 +48,14 @@ namespace SSO.Controllers
         [HttpPost("changepassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand param)
         {
-            try
-            {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
-                param.User = new ApplicationUser { Id = userId! };
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
+            param.User = new ApplicationUser { Id = userId! };
 
-                await _mediator.Send(param);
+            await _mediator.Send(param);
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok();
         }
 
         /// <summary>

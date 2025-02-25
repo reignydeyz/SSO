@@ -6,7 +6,6 @@ using SSO.Business.RealmIdpSettings.Commands;
 using SSO.Business.RealmIdpSettings.Queries;
 using SSO.Infrastructure.LDAP.Models;
 using SSO.Infrastructure.Settings.Enums;
-using System.Security.Claims;
 
 namespace SSO.Controllers
 {
@@ -76,16 +75,9 @@ namespace SSO.Controllers
         [HttpPost("ldap/test")]
         public async Task<IActionResult> TestLdapSettings([FromBody] TestLdapSettingsQuery param)
         {
-            try
-            {
-                await _mediator.Send(param);
+            await _mediator.Send(param);
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok();
         }
     }
 }

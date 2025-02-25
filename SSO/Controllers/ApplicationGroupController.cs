@@ -32,26 +32,19 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(List<GroupDto>), 200)]
         public async Task<IActionResult> Get([FromRoute] Guid applicationId, [FromQuery] Guid? appId = null)
         {
-            try
+            if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
             {
-                if (Request.Path.HasValue && Request.Path.Value.Contains("/odata"))
-                {
-                    if (appId is null)
-                        throw new ArgumentNullException();
+                if (appId is null)
+                    throw new ArgumentNullException();
 
-                    var res = _mediator.Send(new GetGroupsByApplicationIdQuery { ApplicationId = appId!.Value }).Result;
+                var res = _mediator.Send(new GetGroupsByApplicationIdQuery { ApplicationId = appId!.Value }).Result;
 
-                    return Ok(res);
-                }
-
-                var res1 = _mediator.Send(new GetGroupsByApplicationIdQuery { ApplicationId = applicationId }).Result.Take(1000);
-
-                return Ok(res1);
+                return Ok(res);
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
+
+            var res1 = _mediator.Send(new GetGroupsByApplicationIdQuery { ApplicationId = applicationId }).Result.Take(1000);
+
+            return Ok(res1);
         }
 
         /// <summary>

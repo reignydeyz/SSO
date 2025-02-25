@@ -16,7 +16,7 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.7")
+                .HasAnnotation("ProductVersion", "8.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -350,12 +350,8 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<byte[]>("TwoFactorSecret")
-                        .HasMaxLength(88)
-                        .HasColumnType("varbinary(88)");
-
-                    b.Property<byte[]>("TwoFactorSecretKey")
-                        .HasMaxLength(88)
-                        .HasColumnType("varbinary(88)");
+                        .HasMaxLength(512)
+                        .HasColumnType("varbinary(512)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)

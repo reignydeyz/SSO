@@ -2,9 +2,10 @@
 using SSO.Business.Authentication.Queries;
 using SSO.Domain.Authentication.Interfaces;
 using SSO.Domain.Management.Interfaces;
-using SSO.Infrastructure.Helpers;
 using SSO.Infrastructure.Settings.Enums;
+using SSO.Infrastructure.Settings.Services;
 using System.Security.Claims;
+using System.Text;
 
 namespace SSO.Business.Authentication.Handlers
 {
@@ -19,12 +20,15 @@ namespace SSO.Business.Authentication.Handlers
         readonly IRealmRepository _realmRepo;
         readonly ServiceFactory _authServiceFactory;
         readonly Users.RepositoryFactory _userRepoFactory;
+        readonly JwtSecretService _jwtSecretService;
+        readonly RsaKeyService _rsaKeyService;
 
         public LoginToSystemQueryHandler(ITokenService tokenService, IOtpService otpService,
             IApplicationRepository applicationRepository, IApplicationRoleRepository roleRepo, IUserRoleRepository userRoleRepo,
             IGroupRoleRepository groupRoleRepository,
             IRealmRepository realmRepository,
-            ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory)
+            ServiceFactory authServiceFactory, Users.RepositoryFactory userRepoFactory,
+            JwtSecretService jwtSecretService, RsaKeyService rsaKeyService)
         {
             _tokenService = tokenService;
             _otpService = otpService;
@@ -35,6 +39,8 @@ namespace SSO.Business.Authentication.Handlers
             _realmRepo = realmRepository;
             _authServiceFactory = authServiceFactory;
             _userRepoFactory = userRepoFactory;
+            _jwtSecretService = jwtSecretService;
+            _rsaKeyService = rsaKeyService;
         }
 
         public async Task<TokenDto> Handle(LoginToSystemQuery request, CancellationToken cancellationToken)
@@ -62,7 +68,9 @@ namespace SSO.Business.Authentication.Handlers
                     throw new InvalidOperationException("OTP is required.");
                 else
                 {
-                    var secret = CryptographyHelper.DecryptStringFromBytes_Aes(user.TwoFactorSecret!, user.TwoFactorSecretKey!);
+                    var encSecretStr = Encoding.ASCII.GetString(user.TwoFactorSecret!);
+                    var secret = _rsaKeyService.DecryptString(encSecretStr, _jwtSecretService.PrivateKey);
+
                     var validOtp = _otpService.VerifyOtp(secret, request.Otp);
 
                     if (!validOtp)

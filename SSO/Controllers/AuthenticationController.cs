@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using SSO.Business.Authentication;
 using SSO.Business.Authentication.Queries;
 using SSO.Filters;
 using System.ComponentModel.DataAnnotations;
@@ -43,23 +44,17 @@ namespace SSO.Controllers
                     Response.Cookies.Append("token", token.AccessToken, new CookieOptions { Expires = token.Expires, HttpOnly = false });
 
                     var callbackUri = new Uri(form.CallbackUrl);
-                    var tokenParam = $"token={token.AccessToken}";
-
                     var uriBuilder = new UriBuilder(callbackUri);
                     var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
                     // Add the token parameter
-                    query["token"] = token.AccessToken;
+                    query["token"] = token.Id.ToString();
                     uriBuilder.Query = query.ToString();
 
                     return Redirect(uriBuilder.ToString());
                 }
 
                 return Redirect($"{Request.Scheme}://{Request.Host}/login?appId={form.ApplicationId}&callbackUrl={form.CallbackUrl}");
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
             }
             catch (UnauthorizedAccessException)
             {
@@ -82,25 +77,11 @@ namespace SSO.Controllers
         [ApiExplorerSettings(GroupName = "System")]
         public async Task<IActionResult> Login([FromBody] LoginQuery form, [FromQuery] Guid? realmId = null)
         {
-            try
-            {
-                var res = await _mediator.Send(form);
+            var res = await _mediator.Send(form);
 
-                Response.Cookies.Append("token", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
+            Response.Cookies.Append("token", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
 
-                return Ok(res);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message.Contains("OTP"))
-                    return Accepted(ex.Message);
-
-                return Unauthorized(ex.Message);
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -115,35 +96,13 @@ namespace SSO.Controllers
         [RealmIdValidator<LoginToSystemQuery>]
         public async Task<IActionResult> LoginToSystem([FromBody] LoginToSystemQuery form, [FromQuery] Guid? realmId = null)
         {
-            try
-            {
-                form.RealmId = realmId;
+            form.RealmId = realmId;
 
-                var res = await _mediator.Send(form);
+            var res = await _mediator.Send(form);
 
-                Response.Cookies.Append("system", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
+            Response.Cookies.Append("system", res.AccessToken, new CookieOptions { Expires = res.Expires, HttpOnly = false });
 
-                return Ok(res);
-            }           
-            catch (ArgumentNullException)
-            {
-                return Unauthorized();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-            catch (InvalidOperationException ex)
-            {
-                if (ex.Message.Contains("OTP"))
-                    return Accepted(ex.Message);
-
-                return Unauthorized(ex.Message);
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -162,6 +121,21 @@ namespace SSO.Controllers
                 return await Init(new InitLoginQuery { ApplicationId = applicationId, CallbackUrl = callbackUrl });
 
             return Redirect($"{Request.Scheme}://{Request.Host}");
+        }
+
+        /// <summary>
+        /// Gets access-token
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpGet("token")]
+        [EnableCors("AllowAnyOrigin")]
+        [ProducesResponseType(typeof(TokenDto), 200)]
+        public async Task<IActionResult> GetAccessToken([FromQuery] GetAccessTokenQuery param)
+        {
+            var res = await _mediator.Send(param);
+
+            return Ok(res);
         }
     }
 }

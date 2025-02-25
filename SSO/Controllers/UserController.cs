@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using Microsoft.EntityFrameworkCore;
 using SSO.Business.Users;
 using SSO.Business.Users.Commands;
 using SSO.Business.Users.Queries;
@@ -50,17 +49,10 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(UserDto), 200)]
         public async Task<IActionResult> GetById(Guid id)
         {
-            try
-            {
-                var realmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
-                var res = await _mediator.Send(new GetUserByIdQuery { UserId = id.ToString(), RealmId = realmId });
+            var realmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
+            var res = await _mediator.Send(new GetUserByIdQuery { UserId = id.ToString(), RealmId = realmId });
 
-                return Ok(res);
-            }
-            catch (ArgumentNullException)
-            {
-                return NotFound();
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -72,23 +64,12 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(UserDto), 200)]
         public async Task<IActionResult> Create([FromBody] CreateUserCommand param)
         {
-            try
-            {
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
-                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
+            param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -102,23 +83,12 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(UserDto), 200)]
         public async Task<IActionResult> Update([FromRoute] UserIdDto form, [FromBody] UpdateUserCommand param)
         {
-            try
-            {
-                param.UserId = form.UserId.ToString();
-                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+            param.UserId = form.UserId.ToString();
+            param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(res);
         }
 
         /// <summary>
@@ -132,24 +102,13 @@ namespace SSO.Controllers
         [ProducesResponseType(typeof(UserDto), 200)]
         public async Task<IActionResult> Copy([FromRoute] UserIdDto form, [FromBody] CopyUserCommand param)
         {
-            try
-            {
-                param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
-                param.UserId = form.UserId.ToString();
-                param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
+            param.RealmId = new Guid(User.Claims.First(x => x.Type == "realm").Value);
+            param.UserId = form.UserId.ToString();
+            param.Author = User.Claims.First(x => x.Type == ClaimTypes.GivenName).Value;
 
-                var res = await _mediator.Send(param);
+            var res = await _mediator.Send(param);
 
-                return Ok(res);
-            }
-            catch (DbUpdateException)
-            {
-                return Conflict();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(res);
         }
 
         /// <summary>
