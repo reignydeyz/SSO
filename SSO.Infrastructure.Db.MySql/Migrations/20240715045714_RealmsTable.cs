@@ -27,7 +27,7 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                 {
                     table.PrimaryKey("PK_Realms", x => x.RealmId);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:Charset", "utf8mb4");
 
             #region Realms data
             migrationBuilder.InsertData(
@@ -77,7 +77,7 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         principalColumn: "RealmId",
                         onDelete: ReferentialAction.Restrict);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:Charset", "utf8mb4");
 
             #region RealmUsers data
             migrationBuilder.Sql("insert into RealmUsers " +
