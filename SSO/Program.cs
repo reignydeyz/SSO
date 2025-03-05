@@ -1,9 +1,10 @@
-using Hangfire;
+﻿using Hangfire;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OwaspHeaders.Core.Enums;
@@ -25,6 +26,7 @@ using SSO.Infrastructure.Settings.Services;
 using System.Data.Common;
 using System.Reflection;
 using System.Security.Claims;
+using System.Threading.RateLimiting;
 using VueCliMiddleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +39,23 @@ builder.Services.AddControllers(options => {
     options => options.Select().Filter().OrderBy().Expand().Count().SetMaxTop(null).AddRouteComponents(
         "odata",
         modelBuilder.GetEdmModel()));
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsync("Too many requests. Try again later.", token);
+    };
+
+    options.AddFixedWindowLimiter("fixed", policy =>
+    {
+        policy.PermitLimit = 5;  // Allow 5 requests per window
+        policy.Window = TimeSpan.FromMinutes(1);
+        policy.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        policy.QueueLimit = 0;  // ❌ No queue, return 429 immediately
+    });
+});
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var connectionStringBuilder = new DbConnectionStringBuilder { ConnectionString = connectionString };
@@ -212,6 +231,7 @@ app.UseHangfireServer();
 #pragma warning restore CS0618 // Type or member is obsolete
 app.UseHangfireDashboard();
 
+app.UseRateLimiter();
 app.Run();
 
 SecureHeadersMiddlewareConfiguration CustomConfiguration()

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SSO.Business.Authentication;
 using SSO.Business.Authentication.Queries;
 using SSO.Filters;
@@ -11,6 +12,7 @@ namespace SSO.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("fixed")]
     public class AuthenticationController : ControllerBase
     {
         private readonly IMediator _mediator;
