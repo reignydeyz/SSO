@@ -29,7 +29,7 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         principalColumn: "RealmId",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:Charset", "utf8mb4");
         }
 
         /// <inheritdoc />

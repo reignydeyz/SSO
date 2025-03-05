@@ -26,7 +26,7 @@ namespace SSO.Infrastructure.Db.MySql.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("MySQL:Charset", "utf8mb4");
+                .Annotation("MySql:Charset", "utf8mb4");
 
             migrationBuilder.InsertData(
                 table: "RootUsers",
